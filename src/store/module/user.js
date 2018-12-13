@@ -33,7 +33,7 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, {username, password}) {
+    handleLogin ({ commit }, { username, password }) {
       username = username.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -41,7 +41,7 @@ export default {
           password
         }).then(res => {
           const data = res.data
-          if(data.code ===0){
+          if (data.code === 0) {
             commit('setToken', data.data.access_token)
             resolve(res)
           }

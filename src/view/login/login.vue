@@ -34,66 +34,64 @@
 </template>
 
 <script>
-  import {mapActions} from 'vuex'
+import { mapActions } from 'vuex'
 
-  export default {
-    name: 'LoginForm',
-    props: {
-      usernameRules: {
-        type: Array,
-        default: () => {
-          return [
-            {required: true, message: '账号不能为空', trigger: 'blur'}
-          ]
-        }
-      },
-      passwordRules: {
-        type: Array,
-        default: () => {
-          return [
-            {required: true, message: '密码不能为空', trigger: 'blur'}
-          ]
-        }
+export default {
+  name: 'LoginForm',
+  props: {
+    usernameRules: {
+      type: Array,
+      default: () => {
+        return [
+          { required: true, message: '账号不能为空', trigger: 'blur' }
+        ]
       }
     },
-    data() {
-      return {
-        form: {
-          username: 'super_admin',
-          password: ''
-        }
-      }
-    },
-    computed: {
-      rules() {
-        return {
-          username: this.usernameRules,
-          password: this.passwordRules
-        }
-      }
-    },
-    methods: {
-      ...mapActions([
-        'handleLogin',
-        'getUserInfo'
-      ]),
-      handleSubmit() {
-        this.$refs.loginForm.validate((valid) => {
-          if (valid) {
-            const username = this.form.username;
-            const password = this.form.password;
-            this.handleLogin({username, password}).then(res => {
-                this.getUserInfo().then(res => {
-                  this.$router.push({
-                    name: this.$config.homeName
-                  })
-                })
-            })
-          }
-        })
+    passwordRules: {
+      type: Array,
+      default: () => {
+        return [
+          { required: true, message: '密码不能为空', trigger: 'blur' }
+        ]
       }
     }
+  },
+  data () {
+    return {
+      form: {
+        username: 'super_admin',
+        password: ''
+      }
+    }
+  },
+  computed: {
+    rules () {
+      return {
+        username: this.usernameRules,
+        password: this.passwordRules
+      }
+    }
+  },
+  methods: {
+    ...mapActions([
+      'handleLogin',
+      'getUserInfo'
+    ]),
+    handleSubmit () {
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          const username = this.form.username
+          const password = this.form.password
+          this.handleLogin({ username, password }).then(res => {
+            this.$router.push({
+              name: this.$config.homeName
+            })
+          })
+        }
+      })
+    }
   }
+}
 </script>
 <style>
 
