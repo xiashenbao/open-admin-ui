@@ -64,5 +64,13 @@
       "vue-cli-service lint",
       "git add"
     ]
-  }
+  },
+  "main": ".eslintrc.js",
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/liuyadu/open-cloud-ui.git"
+  },
+  "keywords": [],
+  "license": "ISC",
+  "description": ""
 }
