@@ -60,6 +60,7 @@ export default {
         logout().then(() => {
           commit('setToken', '')
           commit('setAccess', [])
+          commit('setHasGetInfo', false)
           resolve()
         }).catch(err => {
           reject(err)
