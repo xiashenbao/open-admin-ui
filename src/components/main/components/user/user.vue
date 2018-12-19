@@ -28,12 +28,12 @@ export default {
   },
   methods: {
     ...mapActions([
-      'handleLogOut'
+      'handleLogout'
     ]),
     handleClick (name) {
       switch (name) {
         case 'logout':
-          this.handleLogOut().then(() => {
+          this.handleLogout().then(() => {
             this.$router.push({
               name: 'login'
             })

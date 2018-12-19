@@ -12,14 +12,14 @@ export const login = ({ username, password }) => {
   })
 }
 
-export const getUserInfo = (token) => {
+export const getUserInfo = () => {
   return request({
     url: 'auth/user',
     method: 'get'
   })
 }
 
-export const logout = (token) => {
+export const logout = () => {
   return request({
     url: 'logout',
     method: 'get'
