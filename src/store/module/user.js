@@ -1,6 +1,6 @@
-import { login, logout, getUserInfo } from '@/api/user'
+import { login, logout, getUserInfo,getUserMenus } from '@/api/user'
 import { setToken, getToken, getAccessArray } from '@/libs/util'
-
+import { Message } from 'iview'
 export default {
   state: {
     userName: '',
@@ -9,7 +9,8 @@ export default {
     avatarImgPath: '',
     token: getToken(),
     access: '',
-    hasGetInfo: false
+    hasGetInfo: false,
+    menus:[]
   },
   mutations: {
     setAvatar (state, avatarPath) {
@@ -33,6 +34,9 @@ export default {
     },
     setHasGetInfo (state, status) {
       state.hasGetInfo = status
+    },
+    setUserMenus (state, menus) {
+      state.menus = menus
     }
   },
   actions: {
@@ -48,6 +52,8 @@ export default {
           if (data.code === 0) {
             commit('setToken', data.data.access_token)
             resolve(res)
+          }else{
+            Message.error({content:data.message})
           }
         }).catch(err => {
           reject(err)
@@ -75,7 +81,7 @@ export default {
     getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         try {
-          getUserInfo(state.token).then(res => {
+          getUserInfo().then(res => {
             const data = res.data
             if (data.code === 0) {
               commit('setAvatar', data.data.avatar)
@@ -85,10 +91,19 @@ export default {
               // 转换权限
               commit('setAccess', getAccessArray(data.data.authorities))
               commit('setHasGetInfo', true)
-              resolve(res)
             }
           }).catch(err => {
             reject(err)
+          }).then(res => {
+                getUserMenus().then(res=>{
+                  const data = res.data
+                  if (data.code === 0) {
+                    commit('setUserMenus', data.data)
+                    resolve(res)
+                  }
+                }).catch(err => {
+                  reject(err)
+                })
           })
         } catch (error) {
           reject(error)

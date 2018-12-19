@@ -3,9 +3,10 @@ import Router from 'vue-router'
 import routes from './routers'
 import store from '@/store'
 import iView from 'iview'
-import { setToken, getToken, canTurnTo } from '@/libs/util'
+import {setToken, getToken, canTurnTo, getMenuRouters} from '@/libs/util'
 import config from '@/config'
-const { homeName } = config
+
+const {homeName} = config
 
 Vue.use(Router)
 const router = new Router({
@@ -16,7 +17,7 @@ const LOGIN_PAGE_NAME = 'login'
 
 const turnTo = (to, access, next) => {
   if (canTurnTo(to.name, access, routes)) next() // 有权限，可访问
-  else next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
+  else next({replace: true, name: 'error_401'}) // 无权限，重定向到401页面
 }
 
 router.beforeEach((to, from, next) => {
@@ -40,9 +41,13 @@ router.beforeEach((to, from, next) => {
       turnTo(to, store.state.user.access, next)
     } else {
       store.dispatch('getUserInfo').then(user => {
+        let menuRouters = getMenuRouters(store.state.user.menus, store.state.user.access)
+        router.addRoutes(menuRouters)
+        routes.push(...menuRouters)
         // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
         turnTo(to, user.access, next)
-      }).catch(() => {
+      }).catch(error => {
+        console.error(error)
         setToken('')
         next({
           name: 'login'

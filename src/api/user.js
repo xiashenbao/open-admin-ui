@@ -19,6 +19,13 @@ export const getUserInfo = () => {
   })
 }
 
+export const getUserMenus = () => {
+  return request({
+    url: 'rbac/permissions/tenant/menus',
+    method: 'get'
+  })
+}
+
 export const logout = () => {
   return request({
     url: 'logout',

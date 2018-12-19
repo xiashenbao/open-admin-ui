@@ -1,12 +1,12 @@
 import Cookies from 'js-cookie'
 // cookie保存的天数
 import config from '@/config'
-import { forEach, hasOneOf, objEqual } from '@/libs/tools'
+import {forEach, hasOneOf, objEqual} from '@/libs/tools'
 
 export const TOKEN_KEY = 'token'
 
 export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, { expires: config.cookieExpires || 1 })
+  Cookies.set(TOKEN_KEY, token, {expires: config.cookieExpires || 1})
 }
 
 export const getToken = () => {
@@ -53,13 +53,13 @@ export const getMenuByRouter = (list, access) => {
  * @returns {Array}
  */
 export const getBreadCrumbList = (route, homeRoute) => {
-  let homeItem = { ...homeRoute, icon: homeRoute.meta.icon }
+  let homeItem = {...homeRoute, icon: homeRoute.meta.icon}
   let routeMetched = route.matched
   if (routeMetched.some(item => item.name === homeRoute.name)) return [homeItem]
   let res = routeMetched.filter(item => {
     return item.meta === undefined || !item.meta.hide
   }).map(item => {
-    let meta = { ...item.meta }
+    let meta = {...item.meta}
     if (meta.title && typeof meta.title === 'function') meta.title = meta.title(route)
     let obj = {
       icon: (item.meta && item.meta.icon) || '',
@@ -71,12 +71,12 @@ export const getBreadCrumbList = (route, homeRoute) => {
   res = res.filter(item => {
     return !item.meta.hideInMenu
   })
-  return [{ ...homeItem, to: homeRoute.path }, ...res]
+  return [{...homeItem, to: homeRoute.path}, ...res]
 }
 
 export const getRouteTitleHandled = (route) => {
-  let router = { ...route }
-  let meta = { ...route.meta }
+  let router = {...route}
+  let meta = {...route.meta}
   let title = ''
   if (meta.title) {
     if (typeof meta.title === 'function') title = meta.title(router)
@@ -136,10 +136,10 @@ export const getHomeRoute = (routers, homeName = 'home') => {
  * @description 如果该newRoute已经存在则不再添加
  */
 export const getNewTagList = (list, newRoute) => {
-  const { name, path, meta } = newRoute
+  const {name, path, meta} = newRoute
   let newList = [...list]
   if (newList.findIndex(item => item.name === name) >= 0) return newList
-  else newList.push({ name, path, meta })
+  else newList.push({name, path, meta})
   return newList
 }
 
@@ -355,4 +355,136 @@ export const getAccessArray = (array) => {
     })
   }
   return access
+}
+
+export const isURL = (str_url) => {// 验证url
+  let strRegex = "^((https|http|ftp|rtsp|mms)?://)"
+    + "?(([0-9a-z_!~*'().&=+$%-]+: )?[0-9a-z_!~*'().&=+$%-]+@)?" // ftp的user@
+    + "(([0-9]{1,3}\.){3}[0-9]{1,3}" // IP形式的URL- 199.194.52.184
+    + "|" // 允许IP和DOMAIN（域名）
+    + "([0-9a-z_!~*'()-]+\.)*" // 域名- www.
+    + "([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\." // 二级域名
+    + "[a-z]{2,6})" // first level domain- .com or .museum
+    + "(:[0-9]{1,4})?" // 端口- :80
+    + "((/?)|" // a slash isn't required if there is no file name
+    + "(/[0-9a-z_!~*'().;?:@&=+$,%#-]+)+/?)$";
+  let re = new RegExp(strRegex);
+  return re.test(str_url);
+}
+
+
+export const _import = (component) => {
+  return () => import(component)
+}
+/**
+ * 转换菜单路由
+ * @param array
+ * @returns {Array}
+ */
+export const getMenuRouters = (array, access) => {
+  let opt = {
+    primaryKey: 'resourceId',
+    parentKey: 'resourcePid',
+    nameKey: 'name',
+    valueKey: 'resourceId',
+    extras: ["code", "url", "icon"] //附加属性
+  }
+  let menus = listConvert(array, opt);
+  let routers = filterAsyncRouter(menus, access, []);
+  console.log(routers)
+  return routers
+}
+
+export const filterAsyncRouter = (array, access, routers) => {
+  let list = []
+  list = array.map(item => {
+    let urlFlag = isURL(item.url)
+    let router = {
+      name: item.code,
+      path: urlFlag?'':'/' + item.code,
+      component: _import("@/components/main"),
+      meta: {
+        access: access,
+        hideInMenu: false,
+        title: item.name,
+        notCache: false,
+        icon: 'md-home',
+        hideInBread: false,
+        href:urlFlag?item.url:'',
+      }
+    }
+    console.log(urlFlag,item.url)
+    if (hasChild(item)) {
+      router.component = _import("@/components/parent-view")
+      router.children = filterAsyncRouter(item.children, access, [])
+    }
+    return router
+  })
+  routers.push(...list)
+  return routers
+}
+
+/**
+ * 将普通列表无限递归转换为树
+ * @param  {[type]} list       [普通的列表，必须包括 opt.primaryKey 指定的键和 opt.parentKey 指定的键]
+ * @param {[type]} opt [配置参数，支持 primaryKey(主键 默认id) parentKey(父级id对应键 默认pid) nameKey(节点标题对应的key 默认name) valueKey(节点值对应的key 默认id) checkedKey(节点是否选中的字段 默认checked，传入数组则判断主键是否在此数组中) startPid(第一层扫描的PID 默认0) currentDept(当前层 默认0) maxDept(最大递归层 默认100) childKey(递归完成后子节点对应键 默认list) deptPrefix(根据层级重复的前缀 默认'')]
+ * @return {[type]}            [description]
+ */
+export const listConvert = (array, opt) => {
+  let obj = {
+    primaryKey: opt.primaryKey || 'id',
+    parentKey: opt.parentKey || 'pid',
+    nameKey: opt.nameKey || 'name',
+    valueKey: opt.valueKey || 'id',
+    startPid: opt.startPid || 0,
+    currentDept: opt.currentDept || 0,
+    maxDept: opt.maxDept || 100,
+    childKey: opt.childKey || 'children',
+    extras: opt.extras || [] //附加属性
+  }
+  return listToTree(array, obj.startPid, obj.currentDept, obj);
+}
+
+/**
+ *  实际的递归函数，将会变化的参数抽取出来
+ * @param list
+ * @param startPid
+ * @param currentDept
+ * @param opt
+ * @returns {Array}
+ */
+export const listToTree = (array, startPid, currentDept, opt) => {
+  if (opt.maxDept < currentDept) {
+    return [];
+  }
+  let child = [];
+  if (array && array.length > 0) {
+    child = array.map(item => {
+      // 筛查符合条件的数据（主键 = startPid）
+      if (typeof item[opt.parentKey] !== 'undefined' && item[opt.parentKey] === startPid) {
+        // 满足条件则递归
+        let nextChild = listToTree(array, item[opt.primaryKey], currentDept + 1, opt);
+        // 节点信息保存
+        let node = {};
+        if (nextChild.length > 0) {
+          node[opt.childKey] = nextChild;
+        }
+        node['name'] = item[opt.nameKey];
+        node['value'] = item[opt.valueKey];
+        if (typeof opt.checkedKey === "string" || typeof opt.checkedKey === 'number') {
+          node['checked'] = item[opt.checkedKey];
+        } else {
+          node['checked'] = false;
+        }
+        // 附加属性
+        opt.extras.map(f => {
+          node[f] = item[f] || ''
+        })
+        return node
+      }
+    }).filter(item => {
+      return item != undefined
+    })
+  }
+  return child;
 }
