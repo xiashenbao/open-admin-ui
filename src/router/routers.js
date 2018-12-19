@@ -50,6 +50,29 @@ export default [
     ]
   },
   {
+    path: '/',
+    name: '_error_logger_page',
+    redirect: '/error_logger_page',
+    component: Main,
+    meta: {
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/error_logger_page',
+        name: 'error_logger_page',
+        meta: {
+          hideInMenu: true,
+          title: '首页',
+          notCache: true,
+          icon: 'md-home'
+        },
+        component: () => import('@/components/main/components/error-store/error-store')
+      }
+    ]
+  },
+  {
     path: '',
     name: 'doc',
     meta: {
@@ -80,7 +103,7 @@ export default [
         path: 'level_2_2',
         name: 'level_2_2',
         meta: {
-          access: ['super_admin'],
+          access: ['superAdmin'],
           icon: 'md-funnel',
           showAlways: true,
           title: '二级-2'

@@ -6,7 +6,7 @@ export const login = ({ username, password }) => {
     password
   }
   return request({
-    url: 'oauth/login',
+    url: 'rest/login',
     data,
     method: 'post'
   })
@@ -14,7 +14,7 @@ export const login = ({ username, password }) => {
 
 export const getUserInfo = (token) => {
   return request({
-    url: 'uaa/me',
+    url: 'auth/user',
     method: 'get'
   })
 }

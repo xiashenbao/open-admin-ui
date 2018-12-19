@@ -1,18 +1,22 @@
 import { login, logout, getUserInfo } from '@/api/user'
-import { setToken, getToken } from '@/libs/util'
+import { setToken, getToken, getAccessArray } from '@/libs/util'
 
 export default {
   state: {
     userName: '',
     userId: '',
-    avatorImgPath: '',
+    nickName: '',
+    avatarImgPath: '',
     token: getToken(),
     access: '',
     hasGetInfo: false
   },
   mutations: {
-    setAvator (state, avatorPath) {
-      state.avatorImgPath = avatorPath
+    setAvatar (state, avatarPath) {
+      state.avatarImgPath = avatarPath
+    },
+    setNickName (state, nickName) {
+      state.nickName = nickName
     },
     setUserId (state, id) {
       state.userId = id
@@ -72,12 +76,16 @@ export default {
         try {
           getUserInfo(state.token).then(res => {
             const data = res.data
-            commit('setAvator', data.avator)
-            commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
-            commit('setAccess', data.access)
-            commit('setHasGetInfo', true)
-            resolve(data)
+            if (data.code === 0) {
+              commit('setAvatar', data.data.avatar)
+              commit('setUserName', data.data.username)
+              commit('setNickName', data.data.nickName)
+              commit('setUserId', data.data.tenantId)
+              // 转换权限
+              commit('setAccess', getAccessArray(data.data.authorities))
+              commit('setHasGetInfo', true)
+              resolve(res)
+            }
           }).catch(err => {
             reject(err)
           })
