@@ -21,7 +21,7 @@ export const getUserInfo = () => {
 
 export const getUserMenus = () => {
   return request({
-    url: 'rbac/permissions/tenant/menus',
+    url: 'base/users/current/menus',
     method: 'get'
   })
 }
