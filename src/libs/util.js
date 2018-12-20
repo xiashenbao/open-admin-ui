@@ -373,9 +373,7 @@ export const isURL = (str_url) => {// 验证url
 }
 
 
-export const _import = (component) => {
-  return () => import(component)
-}
+
 /**
  * 转换菜单路由
  * @param array
@@ -391,32 +389,43 @@ export const getMenuRouters = (array, access) => {
   }
   let menus = listConvert(array, opt);
   let routers = filterAsyncRouter(menus, access, []);
-  console.log(routers)
   return routers
 }
-
+function isEmpty(obj){
+  if(typeof obj == "undefined" || obj == null || obj == ""){
+    return true;
+  }else{
+    return false;
+  }
+}
 export const filterAsyncRouter = (array, access, routers) => {
-  let list = []
-  list = array.map(item => {
+  let list = array.map(item => {
     let urlFlag = isURL(item.url)
     let router = {
       name: item.code,
-      path: urlFlag?'':'/' + item.code,
-      component: _import("@/components/main"),
+      path: urlFlag ? '' : '/' + item.code,
       meta: {
         access: access,
         hideInMenu: false,
         title: item.name,
         notCache: false,
         icon: 'md-home',
-        hideInBread: false,
-        href:urlFlag?item.url:'',
+        hideInBread: false
+      },
+      children: []
+    }
+
+    if (item.pid === 0) {
+      router.component = (resolve)=> {
+        require(['../components/main'], resolve)
+      }
+    } else {
+      router.component = (resolve)=> {
+        require([`../view/${item.url}.vue`], resolve)
       }
     }
-    console.log(urlFlag,item.url)
     if (hasChild(item)) {
-      router.component = _import("@/components/parent-view")
-      router.children = filterAsyncRouter(item.children, access, [])
+      router.children.push(...filterAsyncRouter(item.children, access, []))
     }
     return router
   })
@@ -469,6 +478,7 @@ export const listToTree = (array, startPid, currentDept, opt) => {
         if (nextChild.length > 0) {
           node[opt.childKey] = nextChild;
         }
+        node['pid'] = item[opt.parentKey]
         node['name'] = item[opt.nameKey];
         node['value'] = item[opt.valueKey];
         if (typeof opt.checkedKey === "string" || typeof opt.checkedKey === 'number') {
