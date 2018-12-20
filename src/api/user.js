@@ -21,7 +21,7 @@ export const getUserInfo = () => {
 
 export const getUserMenus = () => {
   return request({
-    url: 'base/users/current/menus',
+    url: 'base/user/menus',
     method: 'get'
   })
 }
