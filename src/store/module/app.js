@@ -9,14 +9,17 @@ import {
   routeEqual,
   getRouteTitleHandled,
   localSave,
-  localRead
+  localRead,
+  formatRouters
 } from '@/libs/util'
 import beforeClose from '@/router/before-close'
-import { saveErrorLogger } from '@/api/data'
+import {saveErrorLogger} from '@/api/data'
 import router from '@/router'
 import routers from '@/router/routers'
 import config from '@/config'
-const { homeName } = config
+import routes from '../../router/routers'
+
+const {homeName} = config
 
 const closePage = (state, route) => {
   const nextRoute = getNextRoute(state.tagNavList, route)
@@ -33,13 +36,25 @@ export default {
     homeRoute: getHomeRoute(routers, homeName),
     local: localRead('local'),
     errorList: [],
-    hasReadErrorPage: false
+    hasReadErrorPage: false,
+    hasUserRoutes: false
   },
   getters: {
-    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
+    menuList: (state, getters, rootState) => {
+      let r = formatRouters(rootState.user.menus, rootState.user.access)
+      if (!state.hasUserRoutes) {
+        // 防止重复添加路由报错, 在这里添加路由最合适，和获取数据完全分开
+        router.addRoutes(r)
+        state.hasUserRoutes = true
+      }
+      return getMenuByRouter(routes.concat(r), rootState.user.access)
+    },
     errorCount: state => state.errorList.length
   },
   mutations: {
+    setHasUserRoutes (state, hasUserRoutes) {
+      state.hasUserRoutes = hasUserRoutes
+    },
     setBreadCrumb (state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
     },
@@ -47,7 +62,9 @@ export default {
       let tagList = []
       if (list) {
         tagList = [...list]
-      } else tagList = getTagNavListFromLocalstorage() || []
+      } else {
+        tagList = getTagNavListFromLocalstorage() || []
+      }
       if (tagList[0] && tagList[0].name !== homeName) tagList.shift()
       let homeTagIndex = tagList.findIndex(item => item.name === homeName)
       if (homeTagIndex > 0) {
@@ -71,13 +88,17 @@ export default {
         closePage(state, route)
       }
     },
-    addTag (state, { route, type = 'unshift' }) {
+    addTag (state, {route, type = 'unshift'}) {
       let router = getRouteTitleHandled(route)
       if (!routeHasExist(state.tagNavList, router)) {
-        if (type === 'push') state.tagNavList.push(router)
-        else {
-          if (router.name === homeName) state.tagNavList.unshift(router)
-          else state.tagNavList.splice(1, 0, router)
+        if (type === 'push') {
+          state.tagNavList.push(router)
+        } else {
+          if (router.name === homeName) {
+            state.tagNavList.unshift(router)
+          } else {
+            state.tagNavList.splice(1, 0, router)
+          }
         }
         setTagNavListInLocalstorage([...state.tagNavList])
       }
@@ -94,9 +115,9 @@ export default {
     }
   },
   actions: {
-    addErrorLog ({ commit, rootState }, info) {
+    addErrorLog ({commit, rootState}, info) {
       if (!window.location.href.includes('error_logger_page')) commit('setHasReadErrorLoggerStatus', false)
-      const { user: { token, userId, userName } } = rootState
+      const {user: {token, userId, userName}} = rootState
       let data = {
         ...info,
         time: Date.parse(new Date()),

@@ -10,9 +10,10 @@
     }
   }
   .header-con{
-    background: #fff;
+    background: #13C2C2;
     padding: 0 20px;
     width: 100%;
+    color: #fff;
   }
   .main-layout-con{
     height: 100%;
@@ -33,6 +34,18 @@
     overflow: auto;
   }
   .left-sider{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    margin-top: 64px;
+    width: 200px;
+    background-color: #fff;
+    transition: width 0.2s cubic-bezier(0.25, 0, 0.15, 1), translate 0.2s cubic-bezier(0.25, 0, 0.15, 1);
+    z-index: 14;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-overflow-scrolling: touch;
+    background: #fff;
     .ivu-layout-sider-children{
       overflow-y: scroll;
       margin-right: -18px;

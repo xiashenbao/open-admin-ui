@@ -28,3 +28,11 @@ export const saveErrorLogger = info => {
     method: 'post'
   })
 }
+
+
+export const uploadImg = formData => {
+  return request({
+    url: 'image/upload',
+    data: formData
+  })
+}

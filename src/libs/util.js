@@ -25,6 +25,7 @@ const showThisMenuEle = (item, access) => {
     else return false
   } else return true
 }
+
 /**
  * @param {Array} list 通过路由列表得到菜单列表
  * @returns {Array}
@@ -386,8 +387,6 @@ export const formatRouters = (array, access) => {
   return routers
 }
 
-const _import = (name) => () => import(name)
-
 export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
     let urlFlag = isURL(item.url)
@@ -406,9 +405,13 @@ export const filterRouter = (array, access, routers) => {
     }
 
     if (item.pid === 0) {
-      router.component = _import('../components/main')
+      router.component =(resolve) => {
+        require(['../components/main'], resolve)
+      }
     } else {
-      router.component = _import(`../view/${item.url}.vue`)
+      router.component =(resolve) => {
+        require([`../view/${item.url}.vue`], resolve)
+      }
     }
     if (hasChild(item)) {
       router.children.push(...filterRouter(item.children, access, []))

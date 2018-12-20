@@ -1,6 +1,7 @@
-import { login, logout, getUserInfo, getUserMenus } from '@/api/user'
-import { setToken, getToken, getAccessArray } from '@/libs/util'
-import { Message } from 'iview'
+import {login, logout, getUserInfo, getUserMenus} from '@/api/user'
+import {setToken, getToken, getAccessArray} from '@/libs/util'
+import {Message} from 'iview'
+
 export default {
   state: {
     userName: '',
@@ -41,7 +42,7 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, { username, password }) {
+    handleLogin ({commit}, {username, password}) {
       username = username.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -51,9 +52,9 @@ export default {
           const data = res.data
           if (data.code === 0) {
             commit('setToken', data.data.access_token)
-            resolve(res)
+            resolve()
           } else {
-            Message.error({ content: data.message })
+            Message.error({content: data.message})
           }
         }).catch(err => {
           reject(err)
@@ -61,11 +62,12 @@ export default {
       })
     },
     // 退出登录
-    handleLogout ({ state, commit }) {
+    handleLogout ({state, commit}) {
       return new Promise((resolve, reject) => {
         logout().then(() => {
           commit('setToken', '')
           commit('setAccess', [])
+          commit('setHasGetInfo', false)
           resolve()
         }).catch(err => {
           reject(err)
@@ -77,29 +79,25 @@ export default {
       })
     },
     // 获取用户相关信息
-    getUserInfo ({ state, commit }) {
+    getUserInfo ({state, commit}) {
       return new Promise((resolve, reject) => {
         try {
           getUserInfo().then(res => {
             const data = res.data
-            if (data.code === 0) {
-              commit('setAvatar', data.data.avatar)
-              commit('setUserName', data.data.username)
-              commit('setNickName', data.data.nickName)
-              commit('setUserId', data.data.tenantId)
-              // 转换权限
-              commit('setAccess', getAccessArray(data.data.authorities))
-              commit('setHasGetInfo', true)
-            }
+            commit('setAvatar', data.data.avatar)
+            commit('setUserName', data.data.username)
+            commit('setNickName', data.data.nickName)
+            commit('setUserId', data.data.tenantId)
+            // 转换权限
+            commit('setAccess', getAccessArray(data.data.authorities))
+            commit('setHasGetInfo', true)
           }).catch(err => {
             reject(err)
           }).then(res => {
             getUserMenus().then(res => {
               const data = res.data
-              if (data.code === 0) {
-                commit('setUserMenus', data.data)
-                resolve(res)
-              }
+              commit('setUserMenus', data.data)
+              resolve(state)
             }).catch(err => {
               reject(err)
             })
