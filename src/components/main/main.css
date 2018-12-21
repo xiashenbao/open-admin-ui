@@ -25,6 +25,7 @@
   height: calc(100% - 60px);
   overflow: hidden;
   margin-left: 256px;
+  margin-top: 64px;
 }
 .main .main-content-con-collapsed {
   margin-left: 60px;
@@ -35,7 +36,6 @@
 }
 .main .tag-nav-wrapper {
   padding: 0;
-  top: 60px;
   height: 40px;
   background: #F0F0F0;
 }
