@@ -10,7 +10,7 @@
           <img v-show="!collapsed" :src="maxLogo"  key="max-logo" />
           <img v-show="collapsed" :src="minLogo" key="min-logo" />
         </div>
-        <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
+        <header-bar :collapsed="collapsed" :screenWidth="screenWidth" @on-coll-change="handleCollapsedChange">
           <user :user-avatar="userAvatar" :user-name="userName" />
           <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
           <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
