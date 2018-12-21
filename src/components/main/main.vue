@@ -61,7 +61,8 @@ export default {
       collapsed: false,
       minLogo,
       maxLogo,
-      isFullscreen: false
+      isFullscreen: false,
+      screenWidth: 0
     }
   },
   computed: {
@@ -152,6 +153,13 @@ export default {
     }
   },
   watch: {
+    'screenWidth' (val) {
+      if (val < 760) {
+        this.handleCollapsedChange(true)
+      } else {
+        this.handleCollapsedChange(false)
+      }
+    },
     '$route' (newRoute) {
       const { name, query, params, meta } = newRoute
       this.addTag({
@@ -164,9 +172,16 @@ export default {
     }
   },
   mounted () {
-    /**
-     * @description 初始化设置面包屑导航和标签导航
-     */
+    const that = this
+    // 宽度适应
+    that.screenWidth = document.body.clientWidth
+    window.onresize = () => {
+      return (() => {
+        that.screenWidth = document.body.clientWidth
+      })()
+    }
+
+    // 初始化设置面包屑导航和标签导航
     this.setTagNavList()
     this.addTag({
       route: this.$store.state.app.homeRoute
