@@ -37,6 +37,7 @@ export default {
       switch (name) {
         case 'logout':
           this.handleLogout().then(() => {
+            location.reload()
             this.$router.push({
               name: 'login'
             })

@@ -170,7 +170,6 @@ export const canTurnTo = (name, access, routes) => {
       }
     })
   }
-
   return routePermissionJudge(routes)
 }
 
@@ -403,13 +402,12 @@ export const filterRouter = (array, access, routers) => {
       },
       children: []
     }
-
     if (item.pid === 0) {
-      router.component =(resolve) => {
+      router.component = (resolve) => {
         require(['../components/main'], resolve)
       }
     } else {
-      router.component =(resolve) => {
+      router.component = (resolve) => {
         require([`../view/${item.url}.vue`], resolve)
       }
     }

@@ -13,13 +13,13 @@ import {
   formatRouters
 } from '@/libs/util'
 import beforeClose from '@/router/before-close'
-import {saveErrorLogger} from '@/api/data'
+import { saveErrorLogger } from '@/api/data'
 import router from '@/router'
 import routers from '@/router/routers'
 import config from '@/config'
 import routes from '../../router/routers'
 
-const {homeName} = config
+const { homeName } = config
 
 const closePage = (state, route) => {
   const nextRoute = getNextRoute(state.tagNavList, route)
@@ -44,10 +44,11 @@ export default {
       let r = formatRouters(rootState.user.menus, rootState.user.access)
       if (!state.hasUserRoutes) {
         // 防止重复添加路由报错, 在这里添加路由最合适，和获取数据完全分开
+        routes.push(...r)
         router.addRoutes(r)
         state.hasUserRoutes = true
       }
-      return getMenuByRouter(routes.concat(r), rootState.user.access)
+      return getMenuByRouter(routes, rootState.user.access)
     },
     errorCount: state => state.errorList.length
   },
@@ -88,7 +89,7 @@ export default {
         closePage(state, route)
       }
     },
-    addTag (state, {route, type = 'unshift'}) {
+    addTag (state, { route, type = 'unshift' }) {
       let router = getRouteTitleHandled(route)
       if (!routeHasExist(state.tagNavList, router)) {
         if (type === 'push') {
@@ -115,9 +116,9 @@ export default {
     }
   },
   actions: {
-    addErrorLog ({commit, rootState}, info) {
+    addErrorLog ({ commit, rootState }, info) {
       if (!window.location.href.includes('error_logger_page')) commit('setHasReadErrorLoggerStatus', false)
-      const {user: {token, userId, userName}} = rootState
+      const { user: { token, userId, userName } } = rootState
       let data = {
         ...info,
         time: Date.parse(new Date()),
