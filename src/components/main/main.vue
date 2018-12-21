@@ -2,11 +2,14 @@
   <Layout style="height: 100%" class="main">
     <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider" :style="{overflow: 'hidden'}">
       <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage" :menu-list="menuList">
-
       </side-menu>
     </Sider>
     <Layout>
       <Header class="header-con">
+        <div :class="headerLogoClass" >
+          <img v-show="!collapsed" :src="maxLogo"  key="max-logo" />
+          <img v-show="collapsed" :src="minLogo" key="min-logo" />
+        </div>
         <header-bar :collapsed="collapsed" @on-coll-change="handleCollapsedChange">
           <user :user-avatar="userAvatar" :user-name="userName" />
           <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
@@ -14,12 +17,12 @@
           <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
         </header-bar>
       </Header>
-      <Content class="main-content-con">
+      <Content :class="mainClass">
         <Layout class="main-layout-con">
           <div class="tag-nav-wrapper">
             <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
           </div>
-          <Content class="content-wrapper">
+          <Content class="content-wrapper"  >
             <keep-alive :include="cacheList">
               <router-view/>
             </keep-alive>
@@ -65,6 +68,18 @@ export default {
     ...mapGetters([
       'errorCount'
     ]),
+    headerLogoClass () {
+      return [
+        'header-logo-con',
+        this.collapsed ? 'header-logo-con-collapsed' : ''
+      ]
+    },
+    mainClass () {
+      return [
+        'main-content-con',
+        this.collapsed ? 'main-content-con-collapsed' : ''
+      ]
+    },
     tagNavList () {
       return this.$store.state.app.tagNavList
     },

@@ -1,0 +1,14 @@
+.header-bar .custom-content-con {
+  float: right;
+  right: 0;
+  position: relative;
+  height: auto;
+  padding-right: 20px;
+  line-height: 64px;
+}
+.header-bar .custom-content-con > * {
+  float: right;
+}
+.header-bar .ivu-icon-md-menu {
+  color: #fff;
+}
