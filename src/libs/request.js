@@ -30,17 +30,19 @@ service.interceptors.response.use(
       // 使用Promise.resolve 正常响应
       return Promise.resolve(response.data)
     } else {
-      return Promise.reject(response.data)
+      Message.error({ content: response.data.message })
+      return Promise.reject("error")
     }
   }, error => {
     let message = ''
     if (error && error.response) {
       switch (error.response.status) {
         case 400:
-          message = '错误请求'
+          message = '无效的请求'
           break
         case 401:
           message = '未授权，请重新登录'
+          location.reload()
           break
         case 403:
           message = '拒绝访问'
@@ -76,7 +78,7 @@ service.interceptors.response.use(
           message = `连接错误${error.response.status}`
       }
     } else {
-      message = '连接到服务器失败'
+      message = '连接服务器失败'
     }
     Message.error({ content: message })
     // 请求错误处理

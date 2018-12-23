@@ -10,7 +10,7 @@ const {homeName} = config
 
 Vue.use(Router)
 const router = new Router({
-  routes: [].concat(...formatRouters(store.state.user.menus), routes),
+  routes,
   mode: 'history'
 })
 const LOGIN_PAGE_NAME = 'login'
@@ -23,7 +23,9 @@ const turnTo = (to, access, next) => {
     next({replace: true, name: 'error_401'})
   } // 无权限，重定向到401页面
 }
-let hasAddUserRouter = false
+// 存放加载的动态路由
+const dyncRouters = []
+
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   const token = getToken()
@@ -44,11 +46,16 @@ router.beforeEach((to, from, next) => {
     if (store.state.user.hasGetInfo) {
       turnTo(to, store.state.user.access, next)
     } else {
-      store.dispatch('getUserInfo').then(user => {
-        // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-        turnTo(to, user.access, next)
-      }).catch(err => {
-        console.error(err)
+      store.dispatch('getUserInfo').then(res => {
+        if (!dyncRouters || dyncRouters.length === 0) {
+          let r = formatRouters(store.state.user.menus, store.state.user.access)
+          dyncRouters.push(...r)
+          // 防止重复添加路由报错, 在这里添加路由最合适，和获取数据完全分开
+          routes.push(...dyncRouters)
+          router.addRoutes(r)
+        }
+        turnTo(to, store.state.user.access, next)
+      }).catch(() => {
         setToken('')
         next({
           name: 'login'

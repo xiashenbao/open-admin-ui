@@ -9,8 +9,7 @@ import {
   routeEqual,
   getRouteTitleHandled,
   localSave,
-  localRead,
-  formatRouters
+  localRead
 } from '@/libs/util'
 import beforeClose from '@/router/before-close'
 import { saveErrorLogger } from '@/api/data'
@@ -36,26 +35,13 @@ export default {
     homeRoute: getHomeRoute(routers, homeName),
     local: localRead('local'),
     errorList: [],
-    hasReadErrorPage: false,
-    hasUserRoutes: false
+    hasReadErrorPage: false
   },
   getters: {
-    menuList: (state, getters, rootState) => {
-      let r = formatRouters(rootState.user.menus, rootState.user.access)
-      if (!state.hasUserRoutes) {
-        // 防止重复添加路由报错, 在这里添加路由最合适，和获取数据完全分开
-        routes.push(...r)
-        router.addRoutes(r)
-        state.hasUserRoutes = true
-      }
-      return getMenuByRouter(routes, rootState.user.access)
-    },
+    menuList: (state, getters, rootState) => getMenuByRouter(routes, rootState.user.access),
     errorCount: state => state.errorList.length
   },
   mutations: {
-    setHasUserRoutes (state, hasUserRoutes) {
-      state.hasUserRoutes = hasUserRoutes
-    },
     setBreadCrumb (state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)
     },

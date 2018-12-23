@@ -12,10 +12,13 @@ import installPlugin from '@/plugin'
 import 'iview/dist/styles/iview.css'
 import './index.less'
 import '@/assets/icons/iconfont.css'
+import TreeTable from 'tree-table-vue'
 
 Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)
 })
+Vue.use(TreeTable)
+
 /**
  * @description 注册admin内置插件
  */

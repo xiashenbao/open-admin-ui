@@ -1,7 +1,7 @@
 <template>
   <div class="user-avatar-dropdown">
     <Dropdown @on-click="handleClick">
-      <Avatar  :src="userAvatar"/>
+      <Avatar :src="userAvatar"/>
       <label class="user-name">{{userName}}</label>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
@@ -13,38 +13,38 @@
 </template>
 
 <script>
-import './user.less'
-import { mapActions } from 'vuex'
-import minLogo from '@/assets/images/avatar.jpg'
+  import './user.less'
+  import {mapActions} from 'vuex'
 
-export default {
-  name: 'User',
-  props: {
-    userName: {
-      type: String,
-      default: ''
+  export default {
+    name: 'User',
+    props: {
+      userName: {
+        type: String,
+        default: ''
+      },
+      userAvatar: {
+        type: String,
+        default: ''
+      }
     },
-    userAvatar: {
-      type: String,
-      default: minLogo
-    }
-  },
-  methods: {
-    ...mapActions([
-      'handleLogout'
-    ]),
-    handleClick (name) {
-      switch (name) {
-        case 'logout':
-          this.handleLogout().then(() => {
-            location.reload()
-            this.$router.push({
-              name: 'login'
+    methods: {
+      ...mapActions([
+        'handleLogout'
+      ]),
+      handleClick (name) {
+        switch (name) {
+          case 'logout':
+            this.handleLogout().then(() => {
+              // 地址栏重新刷新
+              location.reload()
+              this.$router.push({
+                name: 'login'
+              })
             })
-          })
-          break
+            break
+        }
       }
     }
   }
-}
 </script>

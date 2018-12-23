@@ -1,6 +1,5 @@
-import { login, logout, getUserInfo, getUserMenus } from '@/api/user'
-import { setToken, getToken, getAccessArray } from '@/libs/util'
-import { Message } from 'iview'
+import {login, logout, getUserInfo, getUserMenus} from '@/api/user'
+import {setToken, getToken, getAccessArray} from '@/libs/util'
 
 export default {
   state: {
@@ -42,7 +41,7 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, { username, password }) {
+    handleLogin ({commit}, {username, password}) {
       username = username.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -53,8 +52,6 @@ export default {
             if (res.code === 0) {
               commit('setToken', res.data.access_token)
               resolve()
-            } else {
-              Message.error({ content: res.data.message })
             }
           }
         }).catch(err => {
@@ -63,13 +60,13 @@ export default {
       })
     },
     // 退出登录
-    handleLogout ({ state, commit }) {
+    handleLogout ({state, commit}) {
       return new Promise((resolve, reject) => {
-        logout().then(() => {
+        logout().then(res => {
           commit('setToken', '')
           commit('setAccess', [])
           commit('setHasGetInfo', false)
-          resolve()
+          resolve(res)
         }).catch(err => {
           reject(err)
         })
@@ -80,10 +77,10 @@ export default {
       })
     },
     // 获取用户相关信息
-    getUserInfo ({ state, commit }) {
+    getUserInfo ({state, commit}) {
       return new Promise((resolve, reject) => {
         getUserInfo().then(res => {
-          if (res) {
+          if (res.code === 0) {
             commit('setAvatar', res.data.avatar)
             commit('setUserName', res.data.username)
             commit('setNickName', res.data.nickName)
@@ -91,16 +88,22 @@ export default {
             // 转换权限
             commit('setAccess', getAccessArray(res.data.authorities))
             commit('setHasGetInfo', true)
+          } else {
+            reject()
           }
         }).catch(err => {
           reject(err)
-        })
-
-        getUserMenus().then(res => {
-          commit('setUserMenus', res.data)
-          resolve(state)
-        }).catch(err => {
-          reject(err)
+        }).then(res => {
+          getUserMenus().then(res => {
+            if (res.code === 0) {
+              commit('setUserMenus', res.data)
+              resolve(state)
+            } else {
+              reject()
+            }
+          }).catch(err => {
+            reject(err)
+          })
         })
       })
     }

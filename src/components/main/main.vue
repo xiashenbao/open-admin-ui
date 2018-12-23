@@ -7,8 +7,10 @@
     <Layout>
       <Header class="header-con">
         <div :class="headerLogoClass" >
-          <img v-show="!collapsed" :src="maxLogo"  key="max-logo" />
-          <img v-show="collapsed" :src="minLogo" key="min-logo" />
+          <p v-show="!collapsed" class="header-logo-text" style="font-size: 24px">开放平台运维系统</p>
+          <!-- <img v-show="!collapsed" :src="maxLogo"  key="max-logo" />
+           <img v-show="collapsed" :src="minLogo" key="min-logo" />-->
+          <p v-show="collapsed" class="header-logo-text"  style="font-size:14px">开放平台</p>
         </div>
         <header-bar :collapsed="collapsed" :screenWidth="screenWidth" @on-coll-change="handleCollapsedChange">
           <user :user-avatar="userAvatar" :user-name="userName" />

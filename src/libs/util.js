@@ -407,10 +407,7 @@ export const isURL = (url) => {
 export const formatRouters = (array, access) => {
   let opt = {
     primaryKey: 'resourceId',
-    parentKey: 'resourcePid',
-    nameKey: 'name',
-    valueKey: 'resourceId',
-    extras: ['code', 'url', 'icon'] // 附加属性
+    parentKey: 'resourcePid'
   }
   let menus = listConvertTree(array, opt)
   let routers = filterRouter(menus, access, [])
@@ -434,7 +431,7 @@ export const filterRouter = (array, access, routers) => {
       },
       children: []
     }
-    if (item.pid === 0) {
+    if (item.resourcePid === 0) {
       router.component = (resolve) => {
         require(['../components/main'], resolve)
       }
@@ -462,15 +459,12 @@ export const listConvertTree = (array, opt) => {
   let obj = {
     primaryKey: opt.primaryKey || 'id',
     parentKey: opt.parentKey || 'pid',
-    nameKey: opt.nameKey || 'name',
-    valueKey: opt.valueKey || 'id',
     startPid: opt.startPid || 0,
     currentDept: opt.currentDept || 0,
     maxDept: opt.maxDept || 100,
-    childKey: opt.childKey || 'children',
-    extras: opt.extras || [] // 附加属性
+    childKey: opt.childKey || 'children'
   }
-  return listToTree(array, obj.startPid, obj.currentDept, obj)
+  return listToTree(array, 0,  0, obj)
 }
 
 /**
@@ -493,23 +487,10 @@ export const listToTree = (array, startPid, currentDept, opt) => {
         // 满足条件则递归
         let nextChild = listToTree(array, item[opt.primaryKey], currentDept + 1, opt)
         // 节点信息保存
-        let node = {}
         if (nextChild.length > 0) {
-          node[opt.childKey] = nextChild
+          item[opt.childKey] = nextChild
         }
-        node['pid'] = item[opt.parentKey]
-        node['name'] = item[opt.nameKey]
-        node['value'] = item[opt.valueKey]
-        if (typeof opt.checkedKey === 'string' || typeof opt.checkedKey === 'number') {
-          node['checked'] = item[opt.checkedKey]
-        } else {
-          node['checked'] = false
-        }
-        // 附加属性
-        opt.extras.map(f => {
-          node[f] = item[f] || ''
-        })
-        return node
+        return item
       }
     }).filter(item => {
       return item !== undefined
