@@ -9,7 +9,8 @@
       <tree-table expand-key="menuName" :expand-type="false" :is-fold="false" :selectable="false" :columns="columns"
                   :data="data">
         <template slot="action" slot-scope="scope">
-          <a @click="showModal(scope)">编辑</a>
+          <a @click="showModal(scope)">编辑</a> &nbsp;&nbsp;
+          <a @click="handleRemoveMenu(scope)">删除</a>
         </template>
         <template slot="status" slot-scope="scope">
           <Tag v-if="scope.row.status===1" color="blue">有效</Tag>
@@ -53,7 +54,7 @@
 
 <script>
   import {listConvertTree} from '@/libs/util'
-  import {getMenus} from '@/api/menu'
+  import {getMenus,updateMenu,addMenu,removeMenu} from '@/api/menu'
   import '_c/common/common.less';
   export default {
     name: 'tree_table_page',
@@ -109,6 +110,11 @@
             template: 'status'
           },
           {
+            title: '描述',
+            key: 'menuDesc',
+            minWidth: '100px'
+          },
+          {
             title: '创建时间',
             key: 'createTime',
             minWidth: '100px'
@@ -129,7 +135,6 @@
     },
     methods: {
       showModal(data){
-
         if (data) {
           this.modalTitle = '编辑'
           this.formItem = data.row;
@@ -157,9 +162,30 @@
       handleSubmit(){
         this.$refs['menuForm'].validate((valid) => {
           if (valid) {
-             this.handleCancel()
+              if(this.formItem.menuId){
+                updateMenu(this.formItem).then(res =>{
+                  if(res && res.code ===0){
+                    this.handleCancel()
+                    this.getMenus()
+                  }
+                })
+              }else{
+                addMenu(this.formItem).then(res =>{
+                  if(res && res.code ===0){
+                    this.handleCancel()
+                    this.getMenus()
+                  }
+                })
+              }
           }
         })
+      },
+      handleRemoveMenu(data){
+          removeMenu({menuId:data.row.menuId}).then(res =>{
+            if(res && res.code ===0){
+              this.getMenus()
+            }
+          })
       },
       getMenus() {
         getMenus().then(res => {
