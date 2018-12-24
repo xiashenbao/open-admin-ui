@@ -10,7 +10,12 @@
                   :data="data">
         <template slot="action" slot-scope="scope">
           <a @click="showModal(scope)">编辑</a> &nbsp;&nbsp;
-          <a @click="handleRemoveMenu(scope)">删除</a>
+          <Poptip
+            confirm
+            title="确定删除吗"
+            @on-ok="handleRemoveMenu(scope)">
+            <a>删除</a>
+          </Poptip>
         </template>
         <template slot="status" slot-scope="scope">
           <Tag v-if="scope.row.status===1" color="blue">有效</Tag>
@@ -18,27 +23,39 @@
         </template>
       </tree-table>
     </Card>
-    <template>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="780"
            @on-ok="handleSubmit"
            @on-cancel="handleCancel">
       <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
-        <FormItem label="菜单编码" prop="menuCode">
+        <FormItem label="上级" prop="menuCode">
+          <Input v-model="formItem.parentId" placeholder="Enter something..."></Input>
+        </FormItem>
+        <FormItem label="编码" prop="menuCode">
           <Input v-model="formItem.menuCode" placeholder="Enter something..."></Input>
         </FormItem>
-        <FormItem label="菜单名称" prop="menuName">
+        <FormItem label="名称" prop="menuName">
           <Input v-model="formItem.menuName" placeholder="Enter something..."></Input>
         </FormItem>
-        <FormItem label="请求地址" prop="url">
-          <Input v-model="formItem.url" placeholder="Enter something..."></Input>
+        <FormItem label="请求地址" prop="path">
+          <Input v-model="formItem.path" placeholder="Enter something...">
+            <Select v-model="formItem.prefix" slot="prepend" style="width: 80px">
+              <Option value="/">/</Option>
+              <Option value="http://">http://</Option>
+              <Option value="https://">https://</Option>
+            </Select>
+            <Select v-model="formItem.target" slot="append" style="width: 100px">
+              <Option value="_self">窗口内打开</Option>
+              <Option value="_blank">新窗口打开</Option>
+            </Select>
+          </Input>
         </FormItem>
         <FormItem label="优先级">
           <InputNumber v-model="formItem.priority"></InputNumber>
         </FormItem>
         <FormItem label="状态">
-          <i-switch v-model="formItem.status === 1" size="large">
+          <i-switch v-model="formItem.statusSwatch" size="large">
             <span slot="open">有效</span>
             <span slot="close">无效</span>
           </i-switch>
@@ -48,14 +65,12 @@
         </FormItem>
       </Form>
     </Modal>
-    </template>
   </div>
 </template>
 
 <script>
   import {listConvertTree} from '@/libs/util'
   import {getMenus,updateMenu,addMenu,removeMenu} from '@/api/menu'
-  import '_c/common/common.less';
   export default {
     name: 'tree_table_page',
     data () {
@@ -76,32 +91,45 @@
           menuCode: '',
           menuName: '',
           icon: '',
-          url: '',
+          path: '',
+          prefix:'/',
+          target:'_self',
           status: 1,
-          parentId: '',
+          statusSwatch:true,
+          parentId: '0',
           priority: 0,
           menuDesc: ''
         },
         columns: [
           {
-            title: '菜单名称',
+            title: '名称',
             key: 'menuName',
             minWidth: '200px'
           },
           {
-            title: '菜单编码',
+            title: '编码',
             key: 'menuCode',
             minWidth: '100px'
           },
           {
-            title: '上级菜单',
+            title: '上一级',
             key: 'parentId',
             minWidth: '100px'
           },
           {
-            title: '地址',
-            key: 'url',
+            title: '请求前缀',
+            key: 'prefix',
+            minWidth: '100px'
+          },
+          {
+            title: '请求路径',
+            key: 'path',
             minWidth: '200px'
+          },
+          {
+            title: '打开方式',
+            key: 'target',
+            minWidth: '100px'
           },
           {
             title: '状态',
@@ -135,23 +163,28 @@
     },
     methods: {
       showModal(data){
+        const  newData = {
+          menuId: '',
+          menuCode: '',
+          menuName: '',
+          icon: '',
+          path: '',
+          prefix:'/',
+          target:'_self',
+          status: 1,
+          statusSwatch:true,
+          parentId: '0',
+          priority: 0,
+          menuDesc: ''
+        }
         if (data) {
-          this.modalTitle = '编辑'
-          this.formItem = data.row;
+          this.modalTitle = '编辑资源'
+          this.formItem = Object.assign({},newData,data.row);
+          this.formItem.statusSwatch = this.formItem.status===1?true:false;
         }
         else {
-          this.modalTitle = '添加'
-          this.formItem = {
-            menuId: '',
-            menuCode: '',
-            menuName: '',
-            icon: '',
-            url: '',
-            status: 1,
-            parentId: '',
-            priority: 0,
-            menuDesc: ''
-          };
+          this.modalTitle = '添加资源'
+          this.formItem = newData;
         }
         this.modalVisible = true
       },
@@ -162,19 +195,16 @@
       handleSubmit(){
         this.$refs['menuForm'].validate((valid) => {
           if (valid) {
+              this.formItem.status = this.formItem.statusSwatch?1:0;
               if(this.formItem.menuId){
                 updateMenu(this.formItem).then(res =>{
-                  if(res && res.code ===0){
-                    this.handleCancel()
-                    this.getMenus()
-                  }
+                  this.handleCancel()
+                  this.getMenus()
                 })
               }else{
                 addMenu(this.formItem).then(res =>{
-                  if(res && res.code ===0){
-                    this.handleCancel()
-                    this.getMenus()
-                  }
+                  this.handleCancel()
+                  this.getMenus()
                 })
               }
           }
@@ -182,16 +212,15 @@
       },
       handleRemoveMenu(data){
           removeMenu({menuId:data.row.menuId}).then(res =>{
-            if(res && res.code ===0){
-              this.getMenus()
-            }
+            this.getMenus()
           })
       },
       getMenus() {
         getMenus().then(res => {
           let opt = {
             primaryKey: 'menuId',
-            parentKey: 'parentId'
+            parentKey: 'parentId',
+            startPid:'0'
           }
           this.data = listConvertTree(res.data.list, opt)
         })

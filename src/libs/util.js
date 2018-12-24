@@ -407,7 +407,8 @@ export const isURL = (url) => {
 export const formatRouters = (array, access) => {
   let opt = {
     primaryKey: 'resourceId',
-    parentKey: 'resourcePid'
+    parentKey: 'resourcePid',
+    startPid: '0'
   }
   let menus = listConvertTree(array, opt)
   let routers = filterRouter(menus, access, [])
@@ -416,43 +417,53 @@ export const formatRouters = (array, access) => {
 
 export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
-    item.url = startWith(item.url,"/")?item.url.substring(1,item.url.length):`${item.url}`
-    let isUrl = isURL(item.url)
-    let router = {
-      name: item.code,
-      path: isUrl ? `/iframe?src=${encodeURIComponent(item.url)}`: '/' + item.code,
-      meta: {
-        access: access,
-        hideInMenu: false,
-        title: item.name,
-        notCache: false,
-        icon: 'md-home',
-        hideInBread: false
-      },
-      children: []
-    }
-
-    if (item.resourcePid === 0) {
-      router.component = (resolve) => {
-        require(['_c/main'], resolve)
+      let url = item.prefix + (item.path ? item.path : item.code)
+      let router = {
+        name: item.code,
+        path: url,
+        meta: {
+          access: access,
+          hideInMenu: false,
+          title: item.name,
+          notCache: false,
+          icon: 'md-home',
+          hideInBread: false,
+        },
+        children: []
       }
-    } else{
-      if(!isUrl){
+      if (item.resourcePid === 0 || item.resourcePid === '0') {
+        // 根节点
+        router.path = '/'
         router.component = (resolve) => {
-          require([`@/view/module/${item.url}.vue`], resolve)
+          require(['_c/main'], resolve)
         }
-      }else{
-        // url路径
-        router.component = (resolve) => {
-          require([`_c/iframe-view`], resolve)
+      } else {
+        // 非根节点
+        if (item.target === '_blank') {
+          // 新窗口打开,使用meta.href
+          router.meta.href = url
+        } else {
+          if (item.prefix === '/') {
+            // 内部组件
+            router.component = (resolve) => {
+              require([`@/view/module/${item.path}.vue`], resolve)
+            }
+          } else {
+            // 传递iframe路径参数
+            router.path = `/iframe?src=${encodeURIComponent(url)}`
+            // frame组件
+            router.component = (resolve) => {
+              require([`_c/iframe-view`], resolve)
+            }
+          }
         }
       }
+      if (hasChild(item)) {
+        router.children.push(...filterRouter(item.children, access, []))
+      }
+      return router
     }
-    if (hasChild(item)) {
-      router.children.push(...filterRouter(item.children, access, []))
-    }
-    return router
-  })
+  )
   routers.push(...list)
   const error_404 = {
     path: '*',
@@ -482,7 +493,7 @@ export const listConvertTree = (array, opt) => {
     maxDept: opt.maxDept || 100,
     childKey: opt.childKey || 'children'
   }
-  return listToTree(array, 0,  0, obj)
+  return listToTree(array, obj.startPid, obj.currentDept, obj)
 }
 
 /**
@@ -517,12 +528,12 @@ export const listToTree = (array, startPid, currentDept, opt) => {
   return child
 }
 
-export const startWith = (str,prefix) => {
+export const startWith = (str, prefix) => {
   let reg = new RegExp('^' + prefix)
   return reg.test(str)
 }
 
-export const endWith = (str,suffix) => {
+export const endWith = (str, suffix) => {
   let reg = new RegExp(suffix + '$')
   return reg.test(str)
 }

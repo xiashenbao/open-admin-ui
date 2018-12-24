@@ -58,6 +58,7 @@ router.beforeEach((to, from, next) => {
         }
         turnTo(to, store.state.user.access, next)
       }).catch(err => {
+        console.error(err)
         setToken('')
         next({
           name: 'login'
