@@ -394,7 +394,7 @@ export const getAccessArray = (array) => {
  * @returns {boolean}
  */
 export const isURL = (url) => {
-  let strRegex = '^((https|http|ftp|rtsp|mms)?://)$'
+  let strRegex = '((https|http|ftp|rtsp|mms)?://)'
   let re = new RegExp(strRegex)
   return re.test(url)
 }
@@ -417,10 +417,10 @@ export const formatRouters = (array, access) => {
 export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
     item.url = startWith(item.url,"/")?item.url.substring(1,item.url.length):`${item.url}`
-    let urlFlag = isURL(item.url)
+    let isUrl = isURL(item.url)
     let router = {
       name: item.code,
-      path: urlFlag ? '' : '/' + item.code,
+      path: isUrl ? `/iframe?src=${encodeURIComponent(item.url)}`: '/' + item.code,
       meta: {
         access: access,
         hideInMenu: false,
@@ -431,13 +431,21 @@ export const filterRouter = (array, access, routers) => {
       },
       children: []
     }
+
     if (item.resourcePid === 0) {
       router.component = (resolve) => {
-        require(['../components/main'], resolve)
+        require(['_c/main'], resolve)
       }
-    } else {
-      router.component = (resolve) => {
-        require([`../view/module/${item.url}.vue`], resolve)
+    } else{
+      if(!isUrl){
+        router.component = (resolve) => {
+          require([`@/view/module/${item.url}.vue`], resolve)
+        }
+      }else{
+        // url路径
+        router.component = (resolve) => {
+          require([`_c/iframe-view`], resolve)
+        }
       }
     }
     if (hasChild(item)) {
@@ -446,6 +454,16 @@ export const filterRouter = (array, access, routers) => {
     return router
   })
   routers.push(...list)
+  const error_404 = {
+    path: '*',
+    name: 'error_404',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/error-page/404.vue')
+  }
+  // 放到最后
+  routers.push(error_404)
   return routers
 }
 

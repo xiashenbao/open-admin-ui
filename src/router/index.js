@@ -3,28 +3,31 @@ import Router from 'vue-router'
 import routes from './routers'
 import store from '@/store'
 import iView from 'iview'
-import {setToken, getToken, canTurnTo, formatRouters} from '@/libs/util'
+import { setToken, getToken, canTurnTo, formatRouters } from '@/libs/util'
 import config from '@/config'
 
-const {homeName} = config
-
+const { homeName } = config
 Vue.use(Router)
+// 存放加载的动态路由
+let dyncRouters = []
 const router = new Router({
-  routes,
+  routes: routes.concat(...dyncRouters),
   mode: 'history'
 })
 const LOGIN_PAGE_NAME = 'login'
 
 const turnTo = (to, access, next) => {
-  if (canTurnTo(to.name, access, routes)) {
+  if(!to.name){
+    // 防止地址栏刷新跳转到401,强制跳转到home
+    next({ replace: true, name: 'home' })
+  }else if (canTurnTo(to.name, access, routes)) {
+    // 有权限，可访问
     next()
-  }// 有权限，可访问
-  else {
-    next({replace: true, name: 'error_401'})
-  } // 无权限，重定向到401页面
+  } else {
+    // 无权限，重定向到401页面
+    next({ replace: true, name: 'error_401' })
+  }
 }
-// 存放加载的动态路由
-const dyncRouters = []
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
@@ -48,14 +51,13 @@ router.beforeEach((to, from, next) => {
     } else {
       store.dispatch('getUserInfo').then(res => {
         if (!dyncRouters || dyncRouters.length === 0) {
-          let r = formatRouters(store.state.user.menus, store.state.user.access)
-          dyncRouters.push(...r)
-          // 防止重复添加路由报错, 在这里添加路由最合适，和获取数据完全分开
+          dyncRouters = dyncRouters.concat(...formatRouters(store.state.user.menus, store.state.user.access))
+          // 防止重复添加路由报错
+          router.addRoutes(dyncRouters)
           routes.push(...dyncRouters)
-          router.addRoutes(r)
         }
         turnTo(to, store.state.user.access, next)
-      }).catch(() => {
+      }).catch(err => {
         setToken('')
         next({
           name: 'login'

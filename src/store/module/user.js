@@ -1,5 +1,5 @@
-import {login, logout, getUserInfo, getUserMenus} from '@/api/user'
-import {setToken, getToken, getAccessArray} from '@/libs/util'
+import { login, logout, getUserInfo, getUserMenus } from '@/api/user'
+import { setToken, getToken, getAccessArray } from '@/libs/util'
 
 export default {
   state: {
@@ -41,7 +41,7 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({commit}, {username, password}) {
+    handleLogin ({ commit }, { username, password }) {
       username = username.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -60,7 +60,7 @@ export default {
       })
     },
     // 退出登录
-    handleLogout ({state, commit}) {
+    handleLogout ({ state, commit }) {
       return new Promise((resolve, reject) => {
         logout().then(res => {
           commit('setToken', '')
@@ -77,7 +77,7 @@ export default {
       })
     },
     // 获取用户相关信息
-    getUserInfo ({state, commit}) {
+    getUserInfo ({ state, commit }) {
       return new Promise((resolve, reject) => {
         getUserInfo().then(res => {
           if (res.code === 0) {
@@ -88,8 +88,6 @@ export default {
             // 转换权限
             commit('setAccess', getAccessArray(res.data.authorities))
             commit('setHasGetInfo', true)
-          } else {
-            reject()
           }
         }).catch(err => {
           reject(err)
@@ -98,8 +96,6 @@ export default {
             if (res.code === 0) {
               commit('setUserMenus', res.data)
               resolve(state)
-            } else {
-              reject()
             }
           }).catch(err => {
             reject(err)

@@ -156,10 +156,9 @@ export default {
   },
   watch: {
     'screenWidth' (val) {
-      if (val < 760) {
+      if (val < 768) {
+          // 小于768强制折叠
         this.handleCollapsedChange(true)
-      } else {
-        this.handleCollapsedChange(false)
       }
     },
     '$route' (newRoute) {
@@ -170,7 +169,7 @@ export default {
       })
       this.setBreadCrumb(newRoute)
       this.setTagNavList(getNewTagList(this.tagNavList, newRoute))
-      this.$refs.sideMenu.updateOpenName(newRoute.name)
+      this.$refs['sideMenu'].updateOpenName(newRoute.name)
     }
   },
   mounted () {
