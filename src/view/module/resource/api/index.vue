@@ -6,7 +6,7 @@
           <Icon type="search"/>&nbsp;&nbsp;添加
         </Button>
       </div>
-      <Alert show-icon>资源服务器启动后,自动扫描@RestController下的方法,并自动添加或更新(名称、编码、路径、备注)</Alert>
+      <Alert show-icon>资源服务器启动后,自动扫描@RestController下的方法,并自动添加或覆盖已有API资源(名称、编码、路径、备注)</Alert>
       <tree-table expand-key="apiName"  :expand-type="false" :is-fold="false" :selectable="false" :columns="columns"
                   :data="data">
         <template slot="action" slot-scope="scope">
