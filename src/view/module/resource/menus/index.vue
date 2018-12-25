@@ -31,7 +31,10 @@
            @on-cancel="handleCancel">
       <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
         <FormItem label="父级菜单" prop="parentId">
-          <Input v-model="formItem.parentId" placeholder="请输入内容"></Input>
+          <Select   v-model="formItem.parentId" @on-change="selectTree" >
+            <Option value="0">根节点</Option>
+            <Tree :data="data"  :render="renderTree"></Tree>
+          </Select>
         </FormItem>
         <FormItem label="菜单编码" prop="menuCode">
           <Input v-model="formItem.menuCode" placeholder="请输入内容"></Input>
@@ -66,6 +69,8 @@
         </FormItem>
       </Form>
     </Modal>
+
+
   </div>
 </template>
 
@@ -79,6 +84,46 @@
         modalVisible: false,
         modalTitle: "",
         loading: true,
+        treeData:[
+          {
+            title: 'parent 1',
+            expand: true,
+            selected: true,
+            value: '1',
+            children: [
+              {
+                title: 'parent 1-1',
+                expand: true,
+                value: '11',
+                children: [
+                  {
+                    value: '111',
+                    title: 'leaf 1-1-1'
+                  },
+                  {
+                    value: '112',
+                    title: 'leaf 1-1-2'
+                  }
+                ]
+              },
+              {
+                title: 'parent 1-2',
+                value: '12',
+                expand: true,
+                children: [
+                  {
+                    value: '121',
+                    title: 'leaf 1-2-1'
+                  },
+                  {
+                    value: '122',
+                    title: 'leaf 1-2-2'
+                  }
+                ]
+              }
+            ]
+          }
+        ],
         formItemRules: {
           parentId: [
             {required: true, message: '父级菜单不能为空', trigger: 'blur'}
@@ -122,8 +167,7 @@
           },
           {
             title: '请求前缀',
-            key: 'prefix',
-            minWidth: '100px'
+            key: 'prefix'
           },
           {
             title: '请求路径',
@@ -132,8 +176,7 @@
           },
           {
             title: '打开方式',
-            key: 'target',
-            minWidth: '100px'
+            key: 'target'
           },
           {
             title: '状态',
@@ -144,12 +187,12 @@
           {
             title: '描述',
             key: 'menuDesc',
-            minWidth: '100px'
+            minWidth: '200px'
           },
           {
-            title: '创建时间',
-            key: 'createTime',
-            minWidth: '100px'
+            title: '更新时间',
+            key: 'updateTime',
+            minWidth: '150px'
           },
           {
             title: '操作',
@@ -166,6 +209,19 @@
       this.getMenus();
     },
     methods: {
+      // 子节点的option
+      renderTree(h, { root, node, data }) {
+        return  h('Option', {
+          style: {
+            display: 'inline-block',
+            margin: '0'
+          },
+          props:{
+            key:data.menuId,
+            value: data.menuId
+          }
+        }, data.menuName);
+      },
       showModal(data){
         const newData = {
           menuId: '',
@@ -219,12 +275,16 @@
           this.getMenus()
         })
       },
+      selectTree(data){
+        console.log(data)
+      },
       getMenus() {
         getMenus().then(res => {
           let opt = {
             primaryKey: 'menuId',
             parentKey: 'parentId',
-            startPid: '0'
+            startPid: '0',
+            extraData:{expand:true}
           }
           this.data = listConvertTree(res.data.list, opt)
         })

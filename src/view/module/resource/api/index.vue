@@ -6,8 +6,14 @@
           <Icon type="search"/>&nbsp;&nbsp;添加
         </Button>
       </div>
-      <Alert show-icon>接口服务器启动后,自动扫描@RestController下的方法,并自动添加或覆盖已有API接口(名称、编码、路径、备注)</Alert>
-      <tree-table expand-key="apiName"  :expand-type="false" :is-fold="false" :selectable="false" :columns="columns"
+      <Alert show-icon>服务器启动后(仅限资源服务器@EnableResourceServer),自动扫描@RestController标注的类,并自动添加或覆盖已有API接口(名称、编码、路径、备注)
+      <br>方法上含有:@GetMapping、@PostMapping、@RequestMapping、@PutMapping、@DeleteMapping,结合Swagger注解@ApiOperation可设置接口名称</Alert>
+      <tree-table expand-key="apiName"
+                  @on-row-click='rowClick'
+                  :expand-type="false"
+                  :is-fold="false"
+                  :selectable="false"
+                  :columns="columns"
                   :data="data">
         <template slot="action" slot-scope="scope">
           <a v-if="scope.row.serviceId!='0'"  @click="showModal(scope)">编辑</a> &nbsp;&nbsp;
@@ -34,7 +40,7 @@
         <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="80">
           <FormItem label="所属服务" prop="serviceId">
             <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
-              <Option v-for="item in apiGroup" :value="item.apiId" :key="item.apiId">{{ item.apiName }}</Option>
+              <Option v-for="(item,index) in apiGroup" :value="item.apiId" :key="index">{{ item.apiName }}</Option>
             </Select>
           </FormItem>
           <FormItem label="接口编码" prop="apiCode">
@@ -126,12 +132,12 @@
           {
             title: '描述',
             key: 'apiDesc',
-            minWidth: '100px'
+            minWidth: '200px'
           },
           {
-            title: '创建时间',
-            key: 'createTime',
-            minWidth: '100px'
+            title: '更新时间',
+            key: 'updateTime',
+            minWidth: '150px'
           },
           {
             title: '操作',
@@ -196,6 +202,9 @@
         removeApi({apiId: data.row.apiId}).then(res => {
           this.getApis()
         })
+      },
+      rowClick(data){
+          console.log(data)
       },
       getApis () {
         getApis().then(res => {
