@@ -1,83 +1,84 @@
 <template>
   <div>
-    <Card shadow >
-      <div class="search-con search-con-top">
-        <Button class="search-btn" type="primary" @click="handleEdit()">
-          <Icon type="search"/>&nbsp;&nbsp;添加
-        </Button>
-      </div>
+    <Card shadow>
       <Row :gutter="16">
-        <Col span="10">
-          <tree-table height="900" expand-key="menuName" :expand-type="false" :is-fold="false" :selectable="false" :columns="columns"
+        <Col span="6">
+          <tree-table height="900"
+                      expand-key="menuName"
+                      @radio-click="handleView"
+                      :expand-type="false"
+                      :is-fold="false"
+                      :tree-type="true"
+                      :selectable="false"
+                      :columns="columns"
                       :data="data">
-            <template slot="action" slot-scope="scope">
-              <a @click="handleEdit(scope)">编辑</a> &nbsp;&nbsp;
-              <Poptip
-                confirm
-                title="确定删除吗"
-                @on-ok="handleRemoveMenu(scope)">
-                <a>删除</a>
-              </Poptip>
-            </template>
-            <template slot="status" slot-scope="scope">
-              <Tag v-if="scope.row.status===1" color="blue">有效</Tag>
-              <Tag v-else="" color="default">无效</Tag>
-            </template>
           </tree-table>
         </Col>
-        <div style="display: block;position: absolute;top: 0;bottom: 0;left: 42%;border: 1px dashed #eee;"></div>
-        <Col span="14">
+        <div style="display: block;position: absolute;top: 0;bottom: 0;left: 25%;border: 1px dashed #eee;"></div>
+        <Col span="18">
           <Row>
-            <Col span="20">
+            <Col span="18">
+              <div class="search-con search-con-top">
+                <ButtonGroup size="small">
+                  <Button type="primary" @click="handleEnabled(true)">新增</Button>
+                  <Button type="primary" :disabled="formItem.menuId?false:true" @click="handleEnabled(false)">编辑
+                  </Button>
+                  <Button type="primary" :disabled="formItem.menuId?false:true" @click="handleRemove()">删除</Button>
+                </ButtonGroup>
+              </div>
               <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
                 <FormItem label="父级菜单" prop="parentId">
-                  <treeselect v-model="formItem.parentId"
+                  <treeselect :disabled="disabled"
+                              v-model="formItem.parentId"
                               :options="selectTreeData"
                               :default-expand-level="1"
                               :normalizer="treeSelectNormalizer"/>
                 </FormItem>
                 <FormItem label="菜单编码" prop="menuCode">
-                  <Input v-model="formItem.menuCode" placeholder="请输入内容"></Input>
+                  <Input :disabled="disabled" v-model="formItem.menuCode" placeholder="请输入内容"></Input>
                 </FormItem>
                 <FormItem label="菜单名称" prop="menuName">
-                  <Input v-model="formItem.menuName" placeholder="请输入内容"></Input>
+                  <Input :disabled="disabled" v-model="formItem.menuName" placeholder="请输入内容"></Input>
                 </FormItem>
                 <FormItem label="请求地址" prop="path">
-                  <Input v-model="formItem.path" placeholder="请输入内容">
-                    <Select v-model="formItem.prefix" slot="prepend" style="width: 80px">
+                  <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
+                    <Select :disabled="disabled" v-model="formItem.prefix" slot="prepend" style="width: 80px">
                       <Option value="/">/</Option>
                       <Option value="http://">http://</Option>
                       <Option value="https://">https://</Option>
                     </Select>
-                    <Select v-model="formItem.target" slot="append" style="width: 100px">
+                    <Select :disabled="disabled" v-model="formItem.target" slot="append" style="width: 100px">
                       <Option value="_self">窗口内打开</Option>
                       <Option value="_blank">新窗口打开</Option>
                     </Select>
                   </Input>
                 </FormItem>
                 <FormItem label="优先级">
-                  <InputNumber v-model="formItem.priority"></InputNumber>
+                  <InputNumber :disabled="disabled" v-model="formItem.priority"></InputNumber>
                 </FormItem>
                 <FormItem label="状态">
-                  <i-switch v-model="formItem.statusSwatch" size="large">
+                  <i-switch :disabled="disabled" v-model="formItem.statusSwatch" size="large">
                     <span slot="open">有效</span>
                     <span slot="close">无效</span>
                   </i-switch>
                 </FormItem>
                 <FormItem label="描述">
-                  <Input v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
+                  <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
                 </FormItem>
                 <FormItem>
-                  <Button @click="handleSubmit" type="primary" >保存</Button>
-                  <Button @click="handleReset" style="margin-left: 8px">重置</Button>
+                  <Button :disabled="disabled" @click="handleSubmit" type="primary">保存</Button>
+                  <Button :disabled="disabled" @click="handleReset" style="margin-left: 8px">重置</Button>
                 </FormItem>
               </Form>
-            </Col>
-          </Row>
-          <Row>
-            <Col span="24">
               <Divider orientation="left">操作资源</Divider>
-              <Table  :columns="columns2" :data="actionData"></Table>
+              <div class="search-con search-con-top">
+                <ButtonGroup size="small">
+                  <Button class="search-btn" type="primary" @click="handleView()">
+                    <Icon type="search"/>&nbsp;&nbsp;新增
+                  </Button>
+                </ButtonGroup>
+              </div>
+              <Table :columns="columns2" :data="actionData"></Table>
             </Col>
           </Row>
         </Col>
@@ -90,11 +91,12 @@
   import {listConvertTree, updateTreeNode} from '@/libs/util'
   import {getMenus, updateMenu, addMenu, removeMenu} from '@/api/menu'
   import {getActions, updateAction, addAction, removeAction} from '@/api/action'
+
   export default {
     name: 'tree_table_page',
     data () {
       return {
-        loading: true,
+        disabled: true,
         selectTreeData: [],
         formItemRules: {
           parentId: [
@@ -124,13 +126,8 @@
         columns: [
           {
             title: '菜单名称',
-            key: 'menuName'
-          },
-          {
-            title: '操作',
-            key: '',
-            type: 'template',
-            template: 'action'
+            key: 'menuName',
+            minWidth: '200px'
           }
         ],
         columns2: [
@@ -144,7 +141,7 @@
           }
         ],
         data: [],
-        actionData:[]
+        actionData: []
       }
     },
     methods: {
@@ -155,7 +152,21 @@
           children: node.children
         }
       },
-      handleEdit (data) {
+      handleEnabled (reset) {
+        if (reset) {
+          this.handleReset()
+        }
+        this.disabled = false
+      },
+      handleView (data) {
+        this.disabled = true
+        if (data) {
+          this.formItem = data.row
+          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
+          this.getActions(this.formItem.menuId)
+        }
+      },
+      handleReset () {
         const newData = {
           menuId: '',
           menuCode: '',
@@ -170,18 +181,8 @@
           priority: 0,
           menuDesc: ''
         }
-        if (data) {
-          this.formItem = Object.assign({}, newData, data.row)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-        } else {
-          this.formItem = newData
-        }
-       this.getActions(this.formItem.menuId)
-        //重置验证
-       this.handleReset()
-      },
-      handleReset () {
-        this.$refs['menuForm'].resetFields();
+        this.formItem = newData
+        this.$refs['menuForm'].resetFields()
       },
       handleSubmit () {
         this.$refs['menuForm'].validate((valid) => {
@@ -189,11 +190,17 @@
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.menuId) {
               updateMenu(this.formItem).then(res => {
+                if (res.code === 0) {
+                  this.$Message.success('保存成功')
+                }
                 this.handleReset()
                 this.getMenus()
               })
             } else {
               addMenu(this.formItem).then(res => {
+                if (res.code === 0) {
+                  this.$Message.success('保存成功')
+                }
                 this.handleReset()
                 this.getMenus()
               })
@@ -201,9 +208,13 @@
           }
         })
       },
-      handleRemoveMenu (data) {
-        removeMenu({menuId: data.row.menuId}).then(res => {
+      handleRemove () {
+        removeMenu({menuId: this.formItem.menuId}).then(res => {
+          if (res.code === 0) {
+            this.$Message.success('删除成功')
+          }
           this.getMenus()
+          this.handleReset()
         })
       },
       setSelectTree (data) {
@@ -225,6 +236,10 @@
         })
       },
       getActions (menuId) {
+        if (!menuId) {
+          this.actionData = []
+          return
+        }
         getActions(menuId).then(res => {
           this.actionData = res.data.list
         })

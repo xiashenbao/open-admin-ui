@@ -19,7 +19,8 @@ import Treeselect from '@riophae/vue-treeselect'
 Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)
 })
-Vue.component('tree-table', TreeTable)
+
+Vue.component(TreeTable.name, TreeTable)
 // 注册组件
 Vue.component('treeselect', Treeselect)
 
