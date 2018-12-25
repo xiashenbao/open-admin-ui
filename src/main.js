@@ -12,12 +12,16 @@ import installPlugin from '@/plugin'
 import 'iview/dist/styles/iview.css'
 import './index.less'
 import '@/assets/icons/iconfont.css'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import TreeTable from 'tree-table-vue'
+import Treeselect from '@riophae/vue-treeselect'
 
 Vue.use(iView, {
   i18n: (key, value) => i18n.t(key, value)
 })
-Vue.use(TreeTable)
+Vue.component('tree-table', TreeTable)
+// 注册组件
+Vue.component('treeselect', Treeselect)
 
 /**
  * @description 注册admin内置插件

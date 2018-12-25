@@ -491,10 +491,25 @@ export const listConvertTree = (array, opt) => {
     startPid: opt.startPid || 0,
     currentDept: opt.currentDept || 0,
     maxDept: opt.maxDept || 100,
-    childKey: opt.childKey || 'children',
-    extraData:opt.extraData, // 附加数据
+    childKey: opt.childKey || 'children'
   }
   return listToTree(array, obj.startPid, obj.currentDept, obj)
+}
+
+export const updateTreeNode = (nodes,primaryKey,value, data) => {
+  const update = (list) => {
+    return list.some(item => {
+       if (item[primaryKey] && item[primaryKey] === value) {
+         Object.assign(item,data)
+         return true
+      }else if (item.children && item.children.length>0) {
+        return update(item.children)
+      }else{
+        return false
+      }
+    })
+  }
+  return update(nodes)
 }
 
 /**
@@ -519,10 +534,6 @@ export const listToTree = (array, startPid, currentDept, opt) => {
         // 节点信息保存
         if (nextChild.length > 0) {
           item[opt.childKey] = nextChild
-        }
-        // 增加附加数据
-        if(opt.extraData){
-          item = Object.assign(item,opt.extraData)
         }
         return item
       }

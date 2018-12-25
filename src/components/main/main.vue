@@ -155,7 +155,7 @@ export default {
     }
   },
   watch: {
-    'screenWidth' (val) {
+    screenWidth(val) {
       if (val < 768) {
           // 小于768强制折叠
         this.handleCollapsedChange(true)

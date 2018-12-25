@@ -15,7 +15,6 @@ const router = new Router({
   mode: 'history'
 })
 const LOGIN_PAGE_NAME = 'login'
-
 const turnTo = (to, access, next) => {
   if(!to.name){
     // 防止地址栏刷新跳转到401,强制跳转到home

@@ -3,7 +3,7 @@ import request from '@/libs/request'
 export const getMenus = () => {
   const data = {}
   return request({
-    url: 'base/menu/all',
+    url: 'base/menu/list',
     data,
     method: 'post'
   })

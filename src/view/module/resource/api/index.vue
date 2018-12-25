@@ -7,7 +7,7 @@
         </Button>
       </div>
       <Alert show-icon>服务器启动后(仅限资源服务器@EnableResourceServer),自动扫描@RestController标注的类,并自动添加或覆盖已有API接口(名称、编码、路径、备注)
-      <br>方法上含有:@GetMapping、@PostMapping、@RequestMapping、@PutMapping、@DeleteMapping,结合Swagger注解@ApiOperation可设置接口名称</Alert>
+     方法上含有:@GetMapping、@PostMapping、@RequestMapping、@PutMapping、@DeleteMapping,结合Swagger注解@ApiOperation可设置接口名称</Alert>
       <tree-table expand-key="apiName"
                   @on-row-click='rowClick'
                   :expand-type="false"
@@ -150,9 +150,7 @@
         data: []
       }
     },
-    created: function () {
-      this.getApis()
-    },
+
     methods: {
       showModal (data) {
         const newData = {
@@ -217,7 +215,10 @@
           this.data = listConvertTree(res.data.list.concat(this.apiGroup), opt)
         })
       }
-    }
+    },
+    mounted: function () {
+      this.getApis()
+    },
   }
 </script>
 
