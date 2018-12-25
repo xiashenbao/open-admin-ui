@@ -159,6 +159,8 @@ export default {
       if (val < 768) {
           // 小于768强制折叠
         this.handleCollapsedChange(true)
+      }else{
+        this.handleCollapsedChange(false)
       }
     },
     '$route' (newRoute) {

@@ -2,11 +2,11 @@
   <div class="user-avatar-dropdown">
     <Dropdown @on-click="handleClick">
       <Avatar :src="userAvatar"/>
-      <label class="user-name">{{userName}}</label>
+      <label class="user-name">{{userName}} </label>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
-        <DropdownItem name="info">个人信息</DropdownItem>
-        <DropdownItem divided name="logout">退出登录</DropdownItem>
+        <DropdownItem name="info"><Icon size="16" type="md-person" /> 个人信息</DropdownItem>
+        <DropdownItem divided name="logout"><Icon size="16" type="md-power" /> 退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   </div>

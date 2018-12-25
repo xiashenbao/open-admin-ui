@@ -412,6 +412,16 @@ export const formatRouters = (array, access) => {
   }
   let menus = listConvertTree(array, opt)
   let routers = filterRouter(menus, access, [])
+  const error_404 = {
+    path: '*',
+    name: 'error_404',
+    meta: {
+      hideInMenu: true
+    },
+    component: () => import('@/view/error-page/404.vue')
+  }
+  // 放到最后
+  routers.push(error_404)
   return routers
 }
 
@@ -465,16 +475,6 @@ export const filterRouter = (array, access, routers) => {
     }
   )
   routers.push(...list)
-  const error_404 = {
-    path: '*',
-    name: 'error_404',
-    meta: {
-      hideInMenu: true
-    },
-    component: () => import('@/view/error-page/404.vue')
-  }
-  // 放到最后
-  routers.push(error_404)
   return routers
 }
 

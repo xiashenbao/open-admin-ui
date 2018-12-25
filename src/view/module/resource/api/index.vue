@@ -6,7 +6,7 @@
           <Icon type="search"/>&nbsp;&nbsp;添加
         </Button>
       </div>
-      <Alert show-icon>资源服务器启动后,自动扫描@RestController下的方法,并自动添加或覆盖已有API资源(名称、编码、路径、备注)</Alert>
+      <Alert show-icon>接口服务器启动后,自动扫描@RestController下的方法,并自动添加或覆盖已有API接口(名称、编码、路径、备注)</Alert>
       <tree-table expand-key="apiName"  :expand-type="false" :is-fold="false" :selectable="false" :columns="columns"
                   :data="data">
         <template slot="action" slot-scope="scope">
@@ -28,31 +28,23 @@
     <template>
       <Modal v-model="modalVisible"
              :title="modalTitle"
-             width="780"
+             width="680"
              @on-ok="handleSubmit"
              @on-cancel="handleCancel">
         <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="80">
-          <FormItem label="上级Api" prop="apiCode">
-            <Input v-model="formItem.parentId" placeholder="Enter something..."></Input>
+          <FormItem label="所属服务" prop="serviceId">
+            <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
+              <Option v-for="item in apiGroup" :value="item.apiId" :key="item.apiId">{{ item.apiName }}</Option>
+            </Select>
           </FormItem>
-          <FormItem label="Api编码" prop="apiCode">
-            <Input v-model="formItem.apiCode" placeholder="Enter something..."></Input>
+          <FormItem label="接口编码" prop="apiCode">
+            <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
           </FormItem>
-          <FormItem label="Api名称" prop="apiName">
-            <Input v-model="formItem.apiName" placeholder="Enter something..."></Input>
+          <FormItem label="接口名称" prop="apiName">
+            <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiName" placeholder="请输入内容"></Input>
           </FormItem>
           <FormItem label="请求地址" prop="path">
-            <Input v-model="formItem.path" placeholder="Enter something...">
-              <Select v-model="formItem.prefix" slot="prepend" style="width: 80px">
-                <Option value="/">/</Option>
-                <Option value="http://">http://</Option>
-                <Option value="https://">https://</Option>
-              </Select>
-              <Select v-model="formItem.target" slot="append" style="width: 100px">
-                <Option value="_self">窗口内打开</Option>
-                <Option value="_blank">新窗口打开</Option>
-              </Select>
-            </Input>
+            <Input :disabled="formItem.apiId?true:false" v-model="formItem.path" placeholder="请输入内容"></Input>
           </FormItem>
           <FormItem label="优先级">
             <InputNumber v-model="formItem.priority"></InputNumber>
@@ -64,7 +56,7 @@
             </i-switch>
           </FormItem>
           <FormItem label="描述">
-            <Input v-model="formItem.apiDesc" type="textarea" placeholder="Enter something..."></Input>
+            <Input v-model="formItem.apiDesc" type="textarea" placeholder="请输入内容"></Input>
           </FormItem>
         </Form>
       </Modal>
@@ -84,11 +76,14 @@
         modalTitle: '',
         loading: true,
         formItemRules: {
+          serviceId: [
+            {required: true, message: '所属服务不能为空', trigger: 'blur'}
+          ],
           apiCode: [
-            {required: true, message: 'The name cannot be empty', trigger: 'blur'}
+            {required: true, message: '接口编码不能为空', trigger: 'blur'}
           ],
           apiName: [
-            {required: true, message: 'Mailbox cannot be empty', trigger: 'blur'}
+            {required: true, message: '接口名称不能为空', trigger: 'blur'}
           ]
         },
         apiGroup: [
@@ -99,22 +94,21 @@
           apiId: '',
           apiCode: '',
           apiName: '',
-          icon: '',
           path: '',
           status: 1,
           statusSwatch: true,
-          parentId: '0',
+          serviceId: '',
           priority: 0,
           apiDesc: ''
         },
         columns: [
           {
-            title: '名称',
+            title: '接口名称',
             key: 'apiName',
             minWidth: '200px'
           },
           {
-            title: '编码',
+            title: '接口编码',
             key: 'apiCode',
             minWidth: '100px'
           },
@@ -159,20 +153,19 @@
           apiId: '',
           apiCode: '',
           apiName: '',
-          icon: '',
           path: '',
           status: 1,
           statusSwatch: true,
-          parentId: '0',
+          serviceId: '',
           priority: 0,
           apiDesc: ''
         }
         if (data) {
-          this.modalTitle = '编辑资源'
+          this.modalTitle = '编辑接口'
           this.formItem = Object.assign({}, newData, data.row)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         } else {
-          this.modalTitle = '添加资源'
+          this.modalTitle = '添加接口'
           this.formItem = newData
         }
         this.modalVisible = true
