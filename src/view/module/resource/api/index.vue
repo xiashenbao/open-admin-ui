@@ -21,7 +21,7 @@
             v-if="scope.row.serviceId!='0'"
             confirm
             title="确定删除吗"
-            @on-ok="remove(scope)">
+            @on-ok="removeApi(scope)">
             <a>删除</a>
           </Poptip>
         </template>
@@ -35,8 +35,8 @@
       <Modal v-model="modalVisible"
              :title="modalTitle"
              width="680"
-             @on-ok="submit"
-             @on-cancel="reset">
+             @on-ok="submitForm"
+             @on-cancel="resetForm">
         <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="80">
           <FormItem label="所属服务" prop="serviceId">
             <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
@@ -72,7 +72,7 @@
 
 <script>
   import {listConvertTree} from '@/libs/util'
-  import {getApis, updateApi, addApi, removeApi} from '@/api/apis'
+  import {getApis, updateApi, addApi, removeApiApi} from '@/api/apis'
 
   export default {
     name: 'tree_table_page',
@@ -174,11 +174,11 @@
         }
         this.modalVisible = true
       },
-      reset () {
+      resetForm () {
         //重置验证
         this.$refs['apiForm'].resetFields()
       },
-      submit () {
+      submitForm () {
         this.$refs['apiForm'].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
@@ -196,8 +196,8 @@
           }
         })
       },
-      remove (data) {
-        removeApi({apiId: data.row.apiId}).then(res => {
+      removeApi (data) {
+        removeApiApi({apiId: data.row.apiId}).then(res => {
           this.getApis()
         })
       },

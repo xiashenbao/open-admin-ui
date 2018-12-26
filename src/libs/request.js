@@ -1,8 +1,8 @@
 import axios from 'axios'
 import qs from 'qs'
 import config from '@/config'
-import { getToken } from '@/libs/util'
-import { Message } from 'iview'
+import {getToken} from '@/libs/util'
+import {Message} from 'iview'
 
 const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
 /** **** 创建axios实例 ******/
@@ -12,15 +12,15 @@ const service = axios.create({
 })
 /** **** request拦截器==>对请求参数做处理 ******/
 service.interceptors.request.use((config) => {
-  config.method === 'post'
-    ? config.data = qs.stringify({ ...config.data })
-    : config.params = { ...config.params }
-  config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-  if (getToken()) {
-    config.headers['Authorization'] = 'Bearer ' + getToken()
+    config.method === 'post'
+      ? config.data = qs.stringify({...config.data})
+      : config.params = {...config.params}
+    config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    if (getToken()) {
+      config.headers['Authorization'] = 'Bearer ' + getToken()
+    }
+    return config
   }
-  return config
-}
 )
 
 service.interceptors.response.use(
@@ -30,8 +30,10 @@ service.interceptors.response.use(
       // 使用Promise.resolve 正常响应
       return Promise.resolve(response.data)
     } else {
-      Message.error({ content: response.data.message })
-      return Promise.reject(response.data)
+      // 若不是正确的返回code，抛出错误
+      const err = new Error(response.data.message)
+      err.response = response
+      throw err
     }
   }, error => {
     let message = ''
@@ -41,14 +43,14 @@ service.interceptors.response.use(
           message = '未授权，请重新登录'
           location.reload()
         default:
-          message = error.response.data.message
+          message = error.response.data.message ? error.response.data.message : "服务器错误"
       }
-      Message.error({ content: message })
+      Message.error({content: message})
       // 请求错误处理
-      return Promise.reject(error.response)
+      return Promise.reject(error)
     } else {
       message = '连接服务器失败'
-      Message.error({ content: message })
+      Message.error({content: message})
       return Promise.reject(error)
     }
   }
