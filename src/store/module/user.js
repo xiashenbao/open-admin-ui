@@ -88,18 +88,17 @@ export default {
             // 转换权限
             commit('setAccess', getAccessArray(res.data.authorities))
             commit('setHasGetInfo', true)
+            getUserMenus().then(res => {
+              if (res.code === 0) {
+                commit('setUserMenus', res.data)
+                resolve(state)
+              }
+            }).catch(err => {
+              reject(err)
+            })
           }
         }).catch(err => {
           reject(err)
-        }).then(res => {
-          getUserMenus().then(res => {
-            if (res.code === 0) {
-              commit('setUserMenus', res.data)
-              resolve(state)
-            }
-          }).catch(err => {
-            reject(err)
-          })
         })
       })
     }

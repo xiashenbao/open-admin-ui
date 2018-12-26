@@ -31,7 +31,7 @@ service.interceptors.response.use(
       return Promise.resolve(response.data)
     } else {
       Message.error({ content: response.data.message })
-      return Promise.reject("error")
+      return Promise.reject(response.data)
     }
   }, error => {
     let message = ''
@@ -45,11 +45,11 @@ service.interceptors.response.use(
       }
       Message.error({ content: message })
       // 请求错误处理
-      return Promise.resolve(error.response)
+      return Promise.reject(error.response)
     } else {
       message = '连接服务器失败'
       Message.error({ content: message })
-      return Promise.resolve(error)
+      return Promise.reject(error)
     }
   }
 )
