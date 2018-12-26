@@ -2,26 +2,26 @@
   <div>
     <Card shadow>
       <div class="search-con search-con-top">
-        <Button class="search-btn" type="primary" @click="showModal()">
+        <Button class="search-btn" type="primary" @click="openModal()">
           <Icon type="search"/>&nbsp;&nbsp;添加
         </Button>
       </div>
       <Alert show-icon>服务器启动后(仅限资源服务器@EnableResourceServer),自动扫描@RestController标注的类,并自动添加或覆盖已有API接口(名称、编码、路径、备注)
      方法上含有:@GetMapping、@PostMapping、@RequestMapping、@PutMapping、@DeleteMapping,结合Swagger注解@ApiOperation可设置接口名称</Alert>
       <tree-table expand-key="apiName"
-                  @on-row-click='rowClick'
+                  @radio-click="rowClick"
                   :expand-type="false"
                   :is-fold="false"
                   :selectable="false"
                   :columns="columns"
                   :data="data">
         <template slot="action" slot-scope="scope">
-          <a v-if="scope.row.serviceId!='0'"  @click="showModal(scope)">编辑</a> &nbsp;&nbsp;
+          <a v-if="scope.row.serviceId!='0'"  @click="openModal(scope)">编辑</a> &nbsp;&nbsp;
           <Poptip
             v-if="scope.row.serviceId!='0'"
             confirm
             title="确定删除吗"
-            @on-ok="handleRemoveApi(scope)">
+            @on-ok="remove(scope)">
             <a>删除</a>
           </Poptip>
         </template>
@@ -35,8 +35,8 @@
       <Modal v-model="modalVisible"
              :title="modalTitle"
              width="680"
-             @on-ok="handleSubmit"
-             @on-cancel="handleCancel">
+             @on-ok="submit"
+             @on-cancel="reset">
         <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="80">
           <FormItem label="所属服务" prop="serviceId">
             <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
@@ -152,7 +152,7 @@
     },
 
     methods: {
-      showModal (data) {
+      openModal (data) {
         const newData = {
           apiId: '',
           apiCode: '',
@@ -174,29 +174,29 @@
         }
         this.modalVisible = true
       },
-      handleCancel () {
+      reset () {
         //重置验证
         this.$refs['apiForm'].resetFields()
       },
-      handleSubmit () {
+      submit () {
         this.$refs['apiForm'].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.apiId) {
               updateApi(this.formItem).then(res => {
-                this.handleCancel()
+                this.reset()
                 this.getApis()
               })
             } else {
               addApi(this.formItem).then(res => {
-                this.handleCancel()
+                this.reset()
                 this.getApis()
               })
             }
           }
         })
       },
-      handleRemoveApi (data) {
+      remove (data) {
         removeApi({apiId: data.row.apiId}).then(res => {
           this.getApis()
         })
