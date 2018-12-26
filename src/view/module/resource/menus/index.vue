@@ -12,6 +12,10 @@
                       :selectable="false"
                       :columns="columns"
                       :data="data">
+            <template slot="status" slot-scope="scope">
+              <Tag v-if="scope.row.status===1" color="blue">有效</Tag>
+              <Tag v-else="" color="default">无效</Tag>
+            </template>
           </tree-table>
         </Col>
         <div style="display: block;position: absolute;top: 0;bottom: 0;left: 25%;border: 1px dashed #eee;"></div>
@@ -22,8 +26,14 @@
                 <ButtonGroup size="small">
                   <Button type="primary" @click="setEnabled(true)">新增</Button>
                   <Button type="primary" :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
-                  <Button type="primary" :disabled="formItem.menuId?false:true" @click="removeMenu">删除</Button>
+                  <Button type="primary" :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
                 </ButtonGroup>
+                <Modal
+                  v-model="confirmModal"
+                  title="提示"
+                  @on-ok="removeMenu">
+                  确定删除,菜单资源【{{formItem.menuName}}】吗?{{formItem.children && formItem.children.length>0 ?'存在子菜单,将一起删除.是否继续?':''}}
+                </Modal>
               </div>
               <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
                 <FormItem label="父级菜单" prop="parentId">
@@ -66,18 +76,11 @@
                 </FormItem>
                 <FormItem>
                   <Button :disabled="disabled" @click="submitForm" type="primary">保存</Button>
-                  <Button :disabled="disabled" @click="resetForm" style="margin-left: 8px">重置</Button>
+                  <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
                 </FormItem>
               </Form>
               <Divider orientation="left">操作资源</Divider>
-              <div class="search-con search-con-top">
-                <ButtonGroup size="small">
-                  <Button class="search-btn" type="primary" @click="rowClick()">
-                    <Icon type="search"/>&nbsp;&nbsp;新增
-                  </Button>
-                </ButtonGroup>
-              </div>
-              <Table :columns="columns2" :data="actionData"></Table>
+              <menu-action :value="formItem"></menu-action>
             </Col>
           </Row>
         </Col>
@@ -89,12 +92,16 @@
 <script>
   import {listConvertTree, updateTreeNode} from '@/libs/util'
   import {getMenus, updateMenu, addMenu, removeMenu} from '@/api/menu'
-  import {getActions, updateAction, addAction, removeAction} from '@/api/action'
+  import MenuAction from './menu-action'
 
   export default {
     name: 'tree_table_page',
+    components: {
+      MenuAction
+    },
     data () {
       return {
+        confirmModal: false,
         disabled: true,
         selectTreeData: [],
         formItemRules: {
@@ -126,25 +133,20 @@
           {
             title: '菜单名称',
             key: 'menuName',
-            minWidth: '200px'
-          }
-        ],
-        columns2: [
-          {
-            title: '操作名称',
-            key: 'actionName'
+            minWidth: '200px',
           },
           {
-            title: '请求地址',
-            key: 'path'
-          }
+            title: '状态',
+            key: 'status',
+            type: 'template',
+            template: 'status'
+          },
         ],
-        data: [],
-        actionData: []
+        data: []
       }
     },
     methods: {
-      treeSelectNormalizer(node) {
+      treeSelectNormalizer (node) {
         return {
           id: node.menuId,
           label: node.menuName,
@@ -166,10 +168,10 @@
       },
       rowClick (data) {
         this.disabled = true
+        this.resetForm()
         if (data) {
-          this.formItem = data.row
+          this.formItem = Object.assign({}, data.row)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-          this.getActions(this.formItem.menuId)
         }
       },
       resetForm () {
@@ -199,7 +201,6 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
                 this.getMenus()
               })
             } else {
@@ -207,7 +208,6 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
                 this.getMenus()
               })
             }
@@ -233,23 +233,10 @@
           this.data = listConvertTree(res.data.list, opt)
           this.setSelectTree(this.data)
         })
-      },
-      getActions (menuId) {
-        if (!menuId) {
-          this.actionData = []
-          return
-        }
-        getActions(menuId).then(res => {
-          this.actionData = res.data.list
-        })
       }
     },
     mounted: function () {
       this.getMenus()
-    },
+    }
   }
 </script>
-
-<style>
-
-</style>

@@ -4,20 +4,38 @@
 @menu-dark-active-bg: #000c17;
 @layout-sider-background: #001529;
 
-.search-con{
+.search-con {
   padding: 0 0 10px 0;
-  .search{
-    &-col{
+
+  .search {
+    &-col {
       display: inline-block;
       width: 200px;
     }
-    &-input{
+
+    &-input {
       display: inline-block;
       width: 200px;
       margin-left: 2px;
     }
-    &-btn{
+
+    &-btn {
       margin-left: 2px;
     }
   }
+}
+
+.vue-treeselect--disabled .vue-treeselect__control .vue-treeselect__single-value {
+  color: #999;
+}
+.ivu-input[disabled], fieldset[disabled] .ivu-input {
+  color: #999;
+}
+
+.ivu-select-disabled .ivu-select-selection {
+  color: #999;
+}
+
+.ivu-input-number-input[disabled] {
+  color: #999;
 }
