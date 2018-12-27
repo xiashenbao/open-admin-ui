@@ -74,7 +74,7 @@
   import {getApis, updateApi, addApi, removeApi} from '@/api/apis'
 
   export default {
-    name: 'tree_table_page',
+    name: 'Api',
     data () {
       return {
         modalVisible: false,

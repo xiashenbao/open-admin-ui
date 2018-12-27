@@ -99,7 +99,7 @@
   import MenuAction from './menu-action'
 
   export default {
-    name: 'tree_table_page',
+    name: 'Menu',
     components: {
       MenuAction
     },

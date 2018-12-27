@@ -64,7 +64,7 @@
   import {getRoles, updateRole, addRole, removeRole} from '@/api/role'
 
   export default {
-    name: 'MenuRole',
+    name: 'Role',
     data () {
       return {
         modalVisible: false,
