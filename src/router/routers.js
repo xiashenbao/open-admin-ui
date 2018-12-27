@@ -44,7 +44,7 @@ export default [
           notCache: true,
           icon: 'md-home'
         },
-        component: () => import('@/view/single-page/home')
+        component: () => import('@/view/home')
       }
     ]
   },
@@ -64,7 +64,7 @@ export default [
           icon: 'md-notifications',
           title: '消息中心'
         },
-        component: () => import('@/view/single-page/message/index.vue')
+        component: () => import('@/view/message/index.vue')
       }
     ]
   },
@@ -177,7 +177,7 @@ export default [
           icon: 'ios-bug',
           title: '错误收集'
         },
-        component: () => import('@/view/single-page/error-logger.vue')
+        component: () => import('@/view/error-page/error-logger.vue')
       }
     ]
   },
