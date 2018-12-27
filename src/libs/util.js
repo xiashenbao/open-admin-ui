@@ -436,7 +436,7 @@ export const filterRouter = (array, access, routers) => {
           hideInMenu: false,
           title: item.name,
           notCache: false,
-          icon: 'md-home',
+          icon: item.icon||'md-document',
           hideInBread: false,
         },
         children: []

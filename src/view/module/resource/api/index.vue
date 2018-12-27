@@ -27,8 +27,8 @@
           </Poptip>
         </template>
         <template slot="status" slot-scope="scope">
-          <Tag v-if="scope.row.status===1 && scope.row.serviceId!='0'" color="blue">有效</Tag>
-          <Tag v-else-if="scope.row.status!==1 && scope.row.serviceId!='0'" color="default">无效</Tag>
+          <Badge v-if="scope.row.status===1 && scope.row.serviceId!='0'" status="success" text="有效"/>
+          <Badge v-else-if="scope.row.status!==1 && scope.row.serviceId!='0'" status="default" text="无效"/>
         </template>
       </tree-table>
     </Card>

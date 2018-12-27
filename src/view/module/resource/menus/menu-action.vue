@@ -9,8 +9,8 @@
     </div>
       <Table :columns="columns" :data="data">
         <template slot="status" slot-scope="{ row }">
-          <Tag v-if="row.status===1" color="blue">有效</Tag>
-          <Tag v-else-if="row.status!==1" color="default">无效</Tag>
+          <Badge v-if="row.status===1" status="success" text="有效"/>
+          <Badge v-else="" status="default" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="openModal(row)">
@@ -71,14 +71,13 @@
       return {
         modalVisible: false,
         modalTitle: '',
-        spinShow:false,
         confirmModal: false,
         formItemRules: {
           actionCode: [
-            {required: true, message: '接口编码不能为空', trigger: 'blur'}
+            {required: true, message: '操作编码不能为空', trigger: 'blur'}
           ],
           actionName: [
-            {required: true, message: '接口名称不能为空', trigger: 'blur'}
+            {required: true, message: '操作名称不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -109,6 +108,10 @@
             title: '状态',
             slot: 'status',
             key: 'status'
+          },
+          {
+            title: '描述',
+            key: 'actionDesc'
           },
           {
             title: '操作',
@@ -176,10 +179,8 @@
           this.data = []
           return
         }
-        this.spinShow=true
         getActions(this.value.menuId).then(res => {
           this.data = res.data.list
-          this.spinShow=false
         })
       },
       removeAction (data) {

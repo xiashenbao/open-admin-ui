@@ -30,10 +30,9 @@ service.interceptors.response.use(
       // 使用Promise.resolve 正常响应
       return Promise.resolve(response.data)
     } else {
-      // 若不是正确的返回code，抛出错误
-      const err = new Error(response.data.message)
-      err.response = response
-      throw err
+      // 使用Promise.reject 响应
+      Message.error({content: response.data.message})
+      return Promise.reject(response.data.message)
     }
   }, error => {
     let message = ''
