@@ -32,7 +32,7 @@ service.interceptors.response.use(
     } else {
       // 使用Promise.reject 响应
       Message.error({content: response.data.message})
-      return Promise.reject(response.data.message)
+      return Promise.reject(response.data)
     }
   }, error => {
     let message = ''
