@@ -44,7 +44,7 @@
       <Steps :current="current">
         <Step title="开发者" icon="ios-person"></Step>
         <Step title="完善信息" icon="ios-person"></Step>
-        <Step title="添加功能" icon="ios-camera"></Step>
+        <Step title="功能授权" icon="ios-camera"></Step>
       </Steps>
       <Form ref="appForm" :model="formItem" :rules="formItemRules" :label-width="135">
         <FormItem v-show="current==0" label="开发者类型">
