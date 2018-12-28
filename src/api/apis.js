@@ -1,7 +1,7 @@
 import request from '@/libs/request'
 
-export const getApis = () => {
-  const data = {}
+export const getApis = ({page,limit}) => {
+  const data = {page:page,limit:limit}
   return request({
     url: 'base/api',
     data,

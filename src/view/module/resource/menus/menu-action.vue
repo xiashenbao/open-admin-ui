@@ -2,7 +2,7 @@
   <div>
     <div class="search-con search-con-top">
       <ButtonGroup size="small">
-        <Button :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="openModal()">
+        <Button :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;新增操作
         </Button>
       </ButtonGroup>
@@ -13,13 +13,13 @@
           <Badge v-else="" status="default" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="openModal(row)">
+          <a @click="handleModal(row)">
             <Icon type="md-create"/>
             编辑</a> &nbsp;
           <Poptip
             confirm
             title="确定删除吗?"
-            @on-ok="removeAction(row)">
+            @on-ok="handleRemove(row)">
             <a><Icon type="md-close"/>删除</a>
           </Poptip>
         </template>
@@ -27,8 +27,8 @@
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="submitForm"
-           @on-cancel="resetForm">
+           @on-ok="handleSubmit"
+           @on-cancel="handleReset">
       <Form ref="actionForm" :model="formItem" :rules="formItemRules" :label-width="80">
         <FormItem label="所属菜单" >
           <Input disabled v-model="value.menuName" ></Input>
@@ -123,7 +123,7 @@
       }
     },
     methods: {
-      openModal (data) {
+      handleModal (data) {
         if (data) {
           this.modalTitle = '编辑操作'
           this.formItem = Object.assign({}, this.formItem, data)
@@ -134,7 +134,7 @@
         this.formItem.menuId= this.value.menuId
         this.modalVisible = true
       },
-      resetForm () {
+      handleReset () {
         const newData = {
           actionId: '',
           actionCode: '',
@@ -150,7 +150,7 @@
         //重置验证
         this.$refs['actionForm'].resetFields()
       },
-      submitForm () {
+      handleSubmit () {
         this.$refs['actionForm'].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
@@ -159,22 +159,22 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getActions()
+                this.handleReset()
+                this.handleSearch()
               })
             } else {
               addAction(this.formItem).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getActions()
+                this.handleReset()
+                this.handleSearch()
               })
             }
           }
         })
       },
-      getActions () {
+      handleSearch () {
         if (!this.value.menuId) {
           this.data = []
           return
@@ -183,18 +183,18 @@
           this.data = res.data.list
         })
       },
-      removeAction (data) {
+      handleRemove (data) {
         removeAction({actionId: data.actionId}).then(res => {
           if (res.code === 0) {
             this.$Message.success('删除成功')
           }
-          this.getActions()
+          this.handleSearch()
         })
       }
     },
     watch: {
       value (val) {
-        this.getActions()
+        this.handleSearch()
       }
     },
     mounted: function () {

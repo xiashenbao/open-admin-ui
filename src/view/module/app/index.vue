@@ -2,7 +2,7 @@
   <div>
     <div class="search-con search-con-top">
       <ButtonGroup size="small">
-        <Button class="search-btn" type="primary" @click="openModal()">
+        <Button class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;新增
 
         </Button>
@@ -19,21 +19,23 @@
         <Badge v-else="" status="default" text="无效"/>
       </template>
       <template slot="action" slot-scope="{ row }">
-        <a @click="openModal(row)">
+        <a @click="handleModal(row)">
           编辑</a>&nbsp;
         <Poptip
           confirm
           title="确定删除吗?"
-          @on-ok="removeApp(row)">
+          @on-ok="handleRemove(row)">
           <a>删除</a>
         </Poptip>&nbsp;
       </template>
     </Table>
+    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
+          @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="submitForm"
-           @on-cancel="resetForm">
+           @on-ok="handleSubmit"
+           @on-cancel="handleReset">
       <Alert  v-if="formItem.appId?true:false" show-icon>
         重要信息,请妥善保管：<span>AppId： </span><strong>{{formItem.appId}}</strong>&nbsp;&nbsp;<span>AppSecret：</span><strong>{{formItem.appSecret}}</strong>
      </Alert>
@@ -50,7 +52,7 @@
               <img :src="item.url">
               <div class="upload-list-cover">
                 <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-                <Icon type="ios-trash-outline" @click.native="handleRemove(item)"></Icon>
+                <Icon type="ios-trash-outline" @click.native="handleRemoveImg(item)"></Icon>
               </div>
             </template>
             <template v-else>
@@ -128,8 +130,8 @@
         </FormItem>
         <FormItem >
           <FormItem>
-            <Button type="primary" @click="next">下一步</Button>
-            <Button  @click="resetForm()" style="margin-left: 8px">重置</Button>
+            <Button type="primary" @click="handleNext">下一步</Button>
+            <Button  @click="handleReset" style="margin-left: 8px">重置</Button>
           </FormItem>
         </FormItem>
         </template>
@@ -146,6 +148,11 @@
     data () {
       return {
         current: 0,
+        pageInfo:{
+          total:0,
+          page:1,
+          limit:10
+        },
         defaultList: [
           {
             name:'',
@@ -241,14 +248,14 @@
       }
     },
     methods: {
-      next () {
+      handleNext () {
         if (this.current == 1) {
           this.current = 0;
         } else {
           this.current += 1;
         }
       },
-      openModal (data) {
+      handleModal (data) {
         if (data) {
           this.modalTitle = '编辑应用'
           this.formItem = Object.assign({}, this.formItem, data)
@@ -259,7 +266,7 @@
         }
         this.modalVisible = true
       },
-      resetForm () {
+      handleReset () {
         this.current = 0
         //重置验证
         const newData = {
@@ -281,7 +288,7 @@
         this.formItem = newData
         this.$refs['appForm'].resetFields()
       },
-      submitForm () {
+      handleSubmit () {
         this.$refs['appForm'].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
@@ -290,39 +297,48 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getApps()
+                this.handleReset()
+                this.handleSearch()
               })
             } else {
               addApp(this.formItem).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getApps()
+                this.handleReset()
+                this.handleSearch()
               })
             }
           }
         })
       },
-      getApps () {
-        getApps().then(res => {
+      handleSearch(){
+        getApps({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
+          this.pageInfo.total= parseInt(res.data.total)
         })
       },
-      removeApp (data) {
+      handleRemove (data) {
         removeApp({appId: data.appId}).then(res => {
           if (res.code === 0) {
             this.$Message.success('删除成功')
           }
-          this.getApps()
+          this.handleSearch()
         })
+      },
+      handlePage(current){
+        this.pageInfo.page=current;
+        this.getApis()
+      },
+      handlePageSize(size){
+        this.pageInfo.limit = size
+        this.getApis()
       },
       handleView (name) {
         this.imgName = name;
         this.visible = true;
       },
-      handleRemove (file) {
+      handleRemoveImg (file) {
         const fileList = this.$refs.upload.fileList;
         this.$refs.upload.fileList.splice(fileList.indexOf(file), 1);
       },
@@ -353,7 +369,7 @@
       }
     },
     mounted: function () {
-      this.getApps()
+      this.handleSearch()
       this.uploadList = this.$refs.upload.fileList;
     }
   }

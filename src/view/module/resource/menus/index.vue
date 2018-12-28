@@ -31,13 +31,13 @@
             <Modal
               v-model="confirmModal"
               title="提示"
-              @on-ok="removeMenu">
+              @on-ok="handleRemove">
               确定删除,菜单资源【{{formItem.menuName}}】吗?{{formItem.children && formItem.children.length > 0 ? '存在子菜单,将一起删除.是否继续?' : ''}}
 
             </Modal>
           </div>
           <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
-            <FormItem label="父级菜单" prop="parentId">
+            <FormItem label="父级菜单" >
               <treeselect :disabled="disabled"
                           v-model="formItem.parentId"
                           :options="selectTreeData"
@@ -79,7 +79,7 @@
               <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem>
-              <Button :disabled="disabled" @click="submitForm" type="primary">保存</Button>
+              <Button :disabled="disabled" @click="handleSubmit" type="primary">保存</Button>
               <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
             </FormItem>
           </Form>
@@ -109,9 +109,6 @@
         disabled: true,
         selectTreeData: [],
         formItemRules: {
-          parentId: [
-            {required: true, message: '父级菜单不能为空', trigger: 'blur'}
-          ],
           menuCode: [
             {required: true, message: '菜单编码不能为空', trigger: 'blur'}
           ],
@@ -159,26 +156,26 @@
       },
       setSelectTree (data) {
         const root = {
-          menuId: '0',
+          menuId: 0,
           menuName: '根节点'
         }
         this.selectTreeData = [root].concat(data)
       },
       setEnabled (enabled) {
         if (enabled) {
-          this.resetForm()
+          this.handleReset()
         }
         this.disabled = false
       },
       rowClick (data) {
         this.disabled = true
-        this.resetForm()
+        this.handleReset()
         if (data) {
           this.formItem = Object.assign({}, data.row)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         }
       },
-      resetForm () {
+      handleReset () {
         const newData = {
           menuId: '',
           menuCode: '',
@@ -196,7 +193,7 @@
         this.formItem = newData
         this.$refs['menuForm'].resetFields()
       },
-      submitForm () {
+      handleSubmit () {
         this.$refs['menuForm'].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
@@ -205,29 +202,29 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.getMenus()
+                this.handleSearch()
               })
             } else {
               addMenu(this.formItem).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.getMenus()
+                this.handleSearch()
               })
             }
           }
         })
       },
-      removeMenu () {
+      handleRemove() {
         removeMenu({menuId: this.formItem.menuId}).then(res => {
           if (res.code === 0) {
             this.$Message.success('删除成功')
           }
-          this.getMenus()
-          this.resetForm()
-        })
+          this.handleReset()
+          this.handleSearch()
+        })()
       },
-      getMenus () {
+      handleSearch () {
         getMenus().then(res => {
           let opt = {
             primaryKey: 'menuId',
@@ -240,7 +237,7 @@
       }
     },
     mounted: function () {
-      this.getMenus()
+      this.handleSearch()
     }
   }
 </script>

@@ -2,11 +2,13 @@
   <div>
     <Alert show-icon>服务器启动后(仅限资源服务器@EnableResourceServer),自动扫描@RestController标注的类,并自动添加或覆盖已有API接口(名称、编码、路径、备注)
       方法上含有:@GetMapping、@PostMapping、@RequestMapping、@PutMapping、@DeleteMapping,结合Swagger注解@ApiOperation可设置接口名称
+
     </Alert>
     <Card shadow>
       <div class="search-con search-con-top">
-        <Button class="search-btn" type="primary" @click="openModal()">
+        <Button class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;添加
+
         </Button>
       </div>
       <Table :columns="columns" :data="data">
@@ -15,22 +17,25 @@
           <Badge v-else="" status="default" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="openModal(row)">
+          <a @click="handleModal(row)">
             编辑</a>&nbsp;
           <Poptip
             confirm
             title="确定删除吗?"
-            @on-ok="removeApi(row)">
+            @on-ok="handleRemove(row)">
             <a>删除</a>
           </Poptip>&nbsp;
         </template>
       </Table>
+      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+            show-total
+            @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="submitForm"
-           @on-cancel="resetForm">
+           @on-ok="handleSubmit"
+           @on-cancel="handleReset">
       <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="80">
         <FormItem label="所属服务" prop="serviceId">
           <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
@@ -73,6 +78,11 @@
       return {
         modalVisible: false,
         modalTitle: '',
+        pageInfo: {
+          total: 0,
+          page: 1,
+          limit: 10
+        },
         apiGroup: [
           {apiId: 'opencloud-base-producer', apiName: '基础服务', apiCode: 'opencloud-base-producer', serviceId: '0'},
           {apiId: 'opencloud-auth-producer', apiName: '认证服务', apiCode: 'opencloud-auth-producer', serviceId: '0'}
@@ -109,6 +119,10 @@
             key: 'apiCode'
           },
           {
+            title: '接口分类',
+            key: 'apiCategory'
+          },
+          {
             title: '请求路径',
             key: 'path'
           },
@@ -140,7 +154,7 @@
     },
 
     methods: {
-      openModal (data) {
+      handleModal (data) {
         if (data) {
           this.modalTitle = '编辑接口'
           this.formItem = Object.assign({}, this.formItem, data)
@@ -150,7 +164,7 @@
         }
         this.modalVisible = true
       },
-      resetForm () {
+      handleReset () {
         const newData = {
           apiId: '',
           apiCode: '',
@@ -166,7 +180,7 @@
         //重置验证
         this.$refs['apiForm'].resetFields()
       },
-      submitForm () {
+      handleSubmit () {
         this.$refs['apiForm'].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
@@ -175,39 +189,48 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getApis()
+                this.handleReset()
+                this.handleSearch()
               })
             } else {
               addApi(this.formItem).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getApis()
+                this.handleReset()
+                this.handleSearch()
               })
             }
           }
         })
       },
-      removeApi (data) {
+      handleRemove (data) {
         removeApi({apiId: data.row.apiId}).then(res => {
           if (res.code === 0) {
             this.$Message.success('删除成功')
           }
-          this.getApis()
+          this.handleSearch()
         })
       },
       rowClick (data) {
       },
-      getApis () {
-        getApis().then(res => {
+      handleSearch () {
+        getApis({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
+          this.pageInfo.total = parseInt(res.data.total)
         })
+      },
+      handlePage(current){
+        this.pageInfo.page = current;
+        this.handleSearch()
+      },
+      handlePageSize(size){
+        this.pageInfo.limit = size
+        this.handleSearch()
       }
     },
     mounted: function () {
-      this.getApis()
+      this.handleSearch()
     }
   }
 </script>

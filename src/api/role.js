@@ -1,7 +1,7 @@
 import request from '@/libs/request'
 
-export const getRoles = () => {
-  const data = {}
+export const getRoles = ({page,limit}) => {
+  const data = {page:page,limit:limit}
   return request({
     url: 'base/role',
     data,

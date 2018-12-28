@@ -1,7 +1,7 @@
 import request from '@/libs/request'
 
-export const getApps = () => {
-  const data = {}
+export const getApps = ({page,limit}) => {
+  const data = {page:page,limit:limit}
   return request({
     url: 'base/app',
     data,

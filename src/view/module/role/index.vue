@@ -2,7 +2,7 @@
   <div>
     <div class="search-con search-con-top">
       <ButtonGroup size="small">
-        <Button  class="search-btn" type="primary" @click="openModal()">
+        <Button  class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;新增
         </Button>
       </ButtonGroup>
@@ -13,12 +13,12 @@
         <Badge v-else="" status="default" text="无效"/>
       </template>
       <template slot="action" slot-scope="{ row }">
-        <a @click="openModal(row)">
+        <a @click="handleModal(row)">
           编辑</a>&nbsp;
         <Poptip
           confirm
           title="确定删除吗?"
-          @on-ok="removeRole(row)">
+          @on-ok="handleRemove(row)">
           <a>删除</a>
         </Poptip>&nbsp;
         <Dropdown @on-click="handleClick">
@@ -33,11 +33,13 @@
         </Dropdown>&nbsp;
       </template>
     </Table>
+    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
+          @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="submitForm"
-           @on-cancel="resetForm">
+           @on-ok="handleSubmit"
+           @on-cancel="handleReset">
       <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="80">
         <FormItem label="角色编码" prop="roleCode">
           <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
@@ -68,6 +70,11 @@
       return {
         modalVisible: false,
         modalTitle: '',
+        pageInfo:{
+          total:0,
+          page:1,
+          limit:10
+        },
         spinShow:false,
         confirmModal: false,
         formItemRules: {
@@ -121,7 +128,7 @@
       }
     },
     methods: {
-      openModal (data) {
+      handleModal (data) {
         const newData = {
           roleId: '',
           roleCode: '',
@@ -143,11 +150,11 @@
         }
         this.modalVisible = true
       },
-      resetForm () {
+      handleReset () {
         //重置验证
         this.$refs['roleForm'].resetFields()
       },
-      submitForm () {
+      handleSubmit () {
         this.$refs['roleForm'].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
@@ -156,32 +163,41 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getRoles()
+                this.handleReset()
+                this.handleSearch()
               })
             } else {
               addRole(this.formItem).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.resetForm()
-                this.getRoles()
+                this.handleReset()
+                this.handleSearch()
               })
             }
           }
         })
       },
-      getRoles () {
-        getRoles().then(res => {
+      handleSearch () {
+        getRoles({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
+          this.pageInfo.total = parseInt(res.data.total)
         })
       },
-      removeRole (data) {
+      handlePage(current){
+        this.pageInfo.page = current;
+        this.handleSearch()
+      },
+      handlePageSize(size){
+        this.pageInfo.limit = size
+        this.handleSearch()
+      },
+      handleRemove (data) {
         removeRole({roleId: data.roleId}).then(res => {
           if (res.code === 0) {
             this.$Message.success('删除成功')
           }
-          this.getRoles()
+          this.handleSearch()
         })
       },
       handleClick (name) {
@@ -193,7 +209,7 @@
       }
     },
     mounted: function () {
-      this.getRoles()
+      this.handleSearch()
     }
   }
 </script>
