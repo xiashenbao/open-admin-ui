@@ -38,9 +38,6 @@
             this.handleLogout().then(() => {
               // 地址栏重新刷新
               location.reload()
-              this.$router.push({
-                name: 'login'
-              })
             })
             break
         }
