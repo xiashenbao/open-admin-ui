@@ -34,7 +34,11 @@
            width="680"
            @on-ok="submitForm"
            @on-cancel="resetForm">
+      <Alert  v-if="formItem.appId?true:false" show-icon>
+        重要信息,请妥善保管：<span>AppId： </span><strong>{{formItem.appId}}</strong>&nbsp;&nbsp;<span>AppSecret：</span><strong>{{formItem.appSecret}}</strong>
+     </Alert>
       <Steps :current="current">
+        <Step title="开发者" icon="ios-person"></Step>
         <Step title="基础信息" icon="ios-person"></Step>
         <Step title="开发信息" icon="ios-camera"></Step>
       </Steps>
@@ -80,18 +84,18 @@
         <FormItem label="官网" prop="website">
           <Input v-model="formItem.website" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="授权重定向地址" prop="redirectUrls">
-          <Input v-model="formItem.redirectUrls" placeholder="请输入内容"></Input>
+        <FormItem label="第三方授权回掉地址" prop="redirectUrls">
+          <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="应用类型" prop="appType">
+        <FormItem label="应用类型">
           <Select v-model="formItem.appType">
-            <Option value="server">服务应用</Option>
+            <Option value="server">服务器应用</Option>
             <Option value="app">手机应用</Option>
             <Option value="pc">PC网页应用</Option>
             <Option value="wap">手机网页应用</Option>
           </Select>
         </FormItem>
-        <FormItem v-if="formItem.appType === 'app'" label="操作系统" prop="appOs">
+        <FormItem v-if="formItem.appType === 'app'" label="操作系统" >
           <RadioGroup v-model="formItem.appOs">
             <Radio label="ios">
               <Icon type="logo-apple"></Icon>
@@ -125,7 +129,7 @@
         <FormItem >
           <FormItem>
             <Button type="primary" @click="next">下一步</Button>
-            <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
+            <Button  @click="resetForm()" style="margin-left: 8px">重置</Button>
           </FormItem>
         </FormItem>
         </template>
@@ -156,9 +160,6 @@
         visible: false,
         uploadList: [],
         formItemRules: {
-          appIcon: [
-            {required: true, message: '图标不能为空', trigger: 'blur'}
-          ],
           website: [
             {required: true, message: '官网不能为空', trigger: 'blur'}
           ],
@@ -205,11 +206,6 @@
             width: 200
           },
           {
-            title: '应用秘钥',
-            key: 'appSecret',
-            width: 300
-          },
-          {
             title: '应用类型',
             key: 'appType'
           },
@@ -253,6 +249,19 @@
         }
       },
       openModal (data) {
+        if (data) {
+          this.modalTitle = '编辑应用'
+          this.formItem = Object.assign({}, this.formItem, data)
+          this.formItem.userType = this.formItem.userType + ''
+          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
+        } else {
+          this.modalTitle = '添加应用'
+        }
+        this.modalVisible = true
+      },
+      resetForm () {
+        this.current = 0
+        //重置验证
         const newData = {
           appId: '',
           appSecret: '',
@@ -269,20 +278,7 @@
           userId: 0,
           userType: 'platform'
         }
-        if (data) {
-          this.modalTitle = '编辑应用'
-          this.formItem = Object.assign({}, newData, data)
-          this.formItem.userType = this.formItem.userType + ''
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-        } else {
-          this.modalTitle = '添加应用'
-          this.formItem = newData
-        }
-        this.modalVisible = true
-      },
-      resetForm () {
-        this.current = 0
-        //重置验证
+        this.formItem = newData
         this.$refs['appForm'].resetFields()
       },
       submitForm () {

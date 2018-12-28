@@ -9,6 +9,7 @@ export const getApps = () => {
   })
 }
 
+
 export const updateApp = (data) => {
   return request({
     url: 'base/app/update',

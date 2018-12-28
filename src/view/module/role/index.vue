@@ -29,7 +29,6 @@
           <DropdownMenu slot="list">
             <DropdownItem name="grantMenu">菜单授权</DropdownItem>
             <DropdownItem name="grantApi">接口授权</DropdownItem>
-            <DropdownItem name="grantApp">应用授权</DropdownItem>
           </DropdownMenu>
         </Dropdown>&nbsp;
       </template>

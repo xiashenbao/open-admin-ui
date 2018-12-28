@@ -124,6 +124,17 @@
     },
     methods: {
       openModal (data) {
+        if (data) {
+          this.modalTitle = '编辑操作'
+          this.formItem = Object.assign({}, this.formItem, data)
+          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
+        } else {
+          this.modalTitle = '添加操作'
+        }
+        this.formItem.menuId= this.value.menuId
+        this.modalVisible = true
+      },
+      resetForm () {
         const newData = {
           actionId: '',
           actionCode: '',
@@ -135,18 +146,7 @@
           priority: 0,
           actionDesc: ''
         }
-        if (data) {
-          this.modalTitle = '编辑操作'
-          this.formItem = Object.assign({}, newData, data)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-        } else {
-          this.modalTitle = '添加操作'
-          this.formItem = newData
-        }
-        this.formItem.menuId= this.value.menuId
-        this.modalVisible = true
-      },
-      resetForm () {
+        this.formItem = newData
         //重置验证
         this.$refs['actionForm'].resetFields()
       },

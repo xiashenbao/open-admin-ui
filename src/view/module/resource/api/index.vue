@@ -9,28 +9,22 @@
           <Icon type="search"/>&nbsp;&nbsp;添加
         </Button>
       </div>
-      <tree-table expand-key="apiName"
-                  @radio-click="rowClick"
-                  :expand-type="false"
-                  :is-fold="false"
-                  :tree-type="true"
-                  :selectable="false"
-                  :columns="columns"
-                  :data="data">
-        <template slot="action" slot-scope="scope">
-          <a v-if="scope.row.serviceId!='0'" @click="openModal(scope)"><Icon type="md-create"/>编辑</a> &nbsp;
+      <Table :columns="columns" :data="data">
+        <template slot="status" slot-scope="{ row }">
+          <Badge v-if="row.status===1" status="success" text="有效"/>
+          <Badge v-else="" status="default" text="无效"/>
+        </template>
+        <template slot="action" slot-scope="{ row }">
+          <a @click="openModal(row)">
+            编辑</a>&nbsp;
           <Poptip
             confirm
-            title="确定删除吗"
-            @on-ok="removeApi(scope)">
-            <a  v-if="scope.row.serviceId!='0'"><Icon type="md-close"/>删除</a>
-          </Poptip>
+            title="确定删除吗?"
+            @on-ok="removeApi(row)">
+            <a>删除</a>
+          </Poptip>&nbsp;
         </template>
-        <template slot="status" slot-scope="scope">
-          <Badge v-if="scope.row.status===1 && scope.row.serviceId!='0'" status="success" text="有效"/>
-          <Badge v-else-if="scope.row.status!==1 && scope.row.serviceId!='0'" status="default" text="无效"/>
-        </template>
-      </tree-table>
+      </Table>
     </Card>
     <Modal v-model="modalVisible"
            :title="modalTitle"
@@ -108,41 +102,37 @@
         columns: [
           {
             title: '接口名称',
-            key: 'apiName',
-            minWidth: '200px'
+            key: 'apiName'
           },
           {
             title: '接口编码',
-            key: 'apiCode',
-            minWidth: '100px'
+            key: 'apiCode'
           },
           {
             title: '请求路径',
-            key: 'path',
-            minWidth: '200px'
+            key: 'path'
+          },
+          {
+            title: 'serviceId',
+            key: 'serviceId'
           },
           {
             title: '状态',
             key: 'status',
-            type: 'template',
-            template: 'status'
+            slot: 'status'
           },
           {
             title: '描述',
-            key: 'apiDesc',
-            minWidth: '200px'
+            key: 'apiDesc'
           },
           {
             title: '更新时间',
-            key: 'updateTime',
-            minWidth: '150px'
+            key: 'updateTime'
           },
           {
             title: '操作',
             key: '',
-            minWidth: '100px',
-            type: 'template',
-            template: 'action'
+            slot: 'action'
           }
         ],
         data: []
@@ -151,6 +141,16 @@
 
     methods: {
       openModal (data) {
+        if (data) {
+          this.modalTitle = '编辑接口'
+          this.formItem = Object.assign({}, this.formItem, data)
+          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
+        } else {
+          this.modalTitle = '添加接口'
+        }
+        this.modalVisible = true
+      },
+      resetForm () {
         const newData = {
           apiId: '',
           apiCode: '',
@@ -162,17 +162,7 @@
           priority: 0,
           apiDesc: ''
         }
-        if (data) {
-          this.modalTitle = '编辑接口'
-          this.formItem = Object.assign({}, newData, data.row)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-        } else {
-          this.modalTitle = '添加接口'
-          this.formItem = newData
-        }
-        this.modalVisible = true
-      },
-      resetForm () {
+        this.formItem = newData
         //重置验证
         this.$refs['apiForm'].resetFields()
       },
@@ -212,13 +202,7 @@
       },
       getApis () {
         getApis().then(res => {
-
-          let opt = {
-            primaryKey: 'apiId',
-            parentKey: 'serviceId',
-            startPid: '0'
-          }
-          this.data = listConvertTree(res.data.list.concat(this.apiGroup), opt)
+          this.data = res.data.list
         })
       }
     },

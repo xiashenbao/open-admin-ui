@@ -3,7 +3,16 @@ import request from '@/libs/request'
 export const getApis = () => {
   const data = {}
   return request({
-    url: 'base/api/list',
+    url: 'base/api',
+    data,
+    method: 'post'
+  })
+}
+
+export const getAllApps = () => {
+  const data = {}
+  return request({
+    url: 'base/app/list',
     data,
     method: 'post'
   })
