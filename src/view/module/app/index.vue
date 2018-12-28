@@ -47,17 +47,17 @@
         <Step title="添加功能" icon="ios-camera"></Step>
       </Steps>
       <Form ref="appForm" :model="formItem" :rules="formItemRules" :label-width="135">
-        <FormItem v-if="current==0" label="开发者类型">
+        <FormItem v-show="current==0" label="开发者类型">
           <RadioGroup v-model="formItem.userType">
             <Radio label="platform">平台</Radio>
             <Radio label="isp">服务提供商</Radio>
             <Radio label="dev">自研开发者</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem v-if="current==0" label="开发者" prop="userId">
+        <FormItem v-show="current==0" label="开发者" prop="userId">
           <Input v-model="formItem.userId" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem v-if="current==1" label="应用图标">
+        <FormItem v-show="current==1" label="应用图标">
           <div class="upload-list" v-for="item in uploadList">
             <template v-if="item.status === 'finished'">
               <img :src="item.url">
@@ -88,13 +88,13 @@
             </div>
           </Upload>
         </FormItem>
-        <FormItem v-if="current==1" label="应用名称" prop="appName">
+        <FormItem v-show="current==1" label="应用名称" prop="appName">
           <Input v-model="formItem.appName" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem v-if="current==1" label="英文名称" prop="appNameEn">
+        <FormItem v-show="current==1" label="英文名称" prop="appNameEn">
           <Input v-model="formItem.appNameEn" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem v-if="current==1" label="应用类型">
+        <FormItem v-show="current==1" label="应用类型">
           <Select v-model="formItem.appType">
             <Option value="server">服务器应用</Option>
             <Option value="app">手机应用</Option>
@@ -102,7 +102,7 @@
             <Option value="wap">手机网页应用</Option>
           </Select>
         </FormItem>
-        <FormItem v-if="current==1 && formItem.appType === 'app'" label="操作系统">
+        <FormItem v-show="current==1 && formItem.appType === 'app'" label="操作系统">
           <RadioGroup v-model="formItem.appOs">
             <Radio label="ios">
               <Icon type="logo-apple"></Icon>
@@ -114,19 +114,19 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem v-if="current==1" label="官网" prop="website">
+        <FormItem v-show="current==1" label="官网" prop="website">
           <Input v-model="formItem.website" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem v-if="current==1" label="第三方授权回掉地址" prop="redirectUrls">
+        <FormItem v-show="current==1" label="第三方授权回掉地址" prop="redirectUrls">
           <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem v-if="current==1" label="状态">
+        <FormItem v-show="current==1" label="状态">
           <i-switch v-model="formItem.statusSwatch" size="large">
             <span slot="open">有效</span>
             <span slot="close">无效</span>
           </i-switch>
         </FormItem>
-        <FormItem v-if="current==1" label="描述">
+        <FormItem v-show="current==1" label="描述">
           <Input v-model="formItem.appDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem>
