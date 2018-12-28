@@ -65,7 +65,7 @@
   import {getRoles, updateRole, addRole, removeRole} from '@/api/role'
 
   export default {
-    name: 'Role',
+    name: 'SystemRole',
     data () {
       return {
         modalVisible: false,
@@ -129,6 +129,16 @@
     },
     methods: {
       handleModal (data) {
+        if (data) {
+          this.modalTitle = '编辑角色'
+          this.formItem = Object.assign({},  this.formItem, data)
+          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
+        } else {
+          this.modalTitle = '添加角色'
+        }
+        this.modalVisible = true
+      },
+      handleReset () {
         const newData = {
           roleId: '',
           roleCode: '',
@@ -140,17 +150,7 @@
           priority: 0,
           roleDesc: ''
         }
-        if (data) {
-          this.modalTitle = '编辑角色'
-          this.formItem = Object.assign({}, newData, data)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-        } else {
-          this.modalTitle = '添加角色'
-          this.formItem = newData
-        }
-        this.modalVisible = true
-      },
-      handleReset () {
+        this.formItem = newData
         //重置验证
         this.$refs['roleForm'].resetFields()
       },

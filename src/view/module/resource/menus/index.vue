@@ -99,7 +99,7 @@
   import MenuAction from './menu-action'
 
   export default {
-    name: 'Menu',
+    name: 'SystemMenu',
     components: {
       MenuAction
     },

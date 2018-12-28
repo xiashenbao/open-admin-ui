@@ -5,6 +5,7 @@
         <Button class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;新增
 
+
         </Button>
       </ButtonGroup>
     </div>
@@ -29,24 +30,34 @@
         </Poptip>&nbsp;
       </template>
     </Table>
-    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
+    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+          show-total
           @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
            @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Alert  v-if="formItem.appId?true:false" show-icon>
+      <Alert v-if="formItem.appId?true:false" show-icon>
         重要信息,请妥善保管：<span>AppId： </span><strong>{{formItem.appId}}</strong>&nbsp;&nbsp;<span>AppSecret：</span><strong>{{formItem.appSecret}}</strong>
-     </Alert>
+      </Alert>
       <Steps :current="current">
         <Step title="开发者" icon="ios-person"></Step>
-        <Step title="基础信息" icon="ios-person"></Step>
-        <Step title="开发信息" icon="ios-camera"></Step>
+        <Step title="完善信息" icon="ios-person"></Step>
+        <Step title="添加功能" icon="ios-camera"></Step>
       </Steps>
-      <Form   ref="appForm" :model="formItem" :rules="formItemRules" :label-width="80">
-        <template  v-if="current==0">
-        <FormItem label="应用图标">
+      <Form ref="appForm" :model="formItem" :rules="formItemRules" :label-width="135">
+        <FormItem v-if="current==0" label="开发者类型">
+          <RadioGroup v-model="formItem.userType">
+            <Radio label="platform">平台</Radio>
+            <Radio label="isp">服务提供商</Radio>
+            <Radio label="dev">自研开发者</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem v-if="current==0" label="开发者" prop="userId">
+          <Input v-model="formItem.userId" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem v-if="current==1" label="应用图标">
           <div class="upload-list" v-for="item in uploadList">
             <template v-if="item.status === 'finished'">
               <img :src="item.url">
@@ -77,19 +88,13 @@
             </div>
           </Upload>
         </FormItem>
-        <FormItem label="应用名称" prop="appName">
+        <FormItem v-if="current==1" label="应用名称" prop="appName">
           <Input v-model="formItem.appName" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="英文名称" prop="appNameEn">
+        <FormItem v-if="current==1" label="英文名称" prop="appNameEn">
           <Input v-model="formItem.appNameEn" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="官网" prop="website">
-          <Input v-model="formItem.website" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="第三方授权回掉地址" prop="redirectUrls">
-          <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="应用类型">
+        <FormItem v-if="current==1" label="应用类型">
           <Select v-model="formItem.appType">
             <Option value="server">服务器应用</Option>
             <Option value="app">手机应用</Option>
@@ -97,7 +102,7 @@
             <Option value="wap">手机网页应用</Option>
           </Select>
         </FormItem>
-        <FormItem v-if="formItem.appType === 'app'" label="操作系统" >
+        <FormItem v-if="current==1 && formItem.appType === 'app'" label="操作系统">
           <RadioGroup v-model="formItem.appOs">
             <Radio label="ios">
               <Icon type="logo-apple"></Icon>
@@ -109,33 +114,29 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="开发者">
-          <Input v-model="formItem.userId" placeholder="请输入内容"></Input>
+        <FormItem v-if="current==1" label="官网" prop="website">
+          <Input v-model="formItem.website" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="开发者类型">
-          <RadioGroup v-model="formItem.userType">
-            <Radio label="platform">平台</Radio>
-            <Radio label="isp">服务提供商</Radio>
-            <Radio label="dev">自研开发者</Radio>
-          </RadioGroup>
+        <FormItem v-if="current==1" label="第三方授权回掉地址" prop="redirectUrls">
+          <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="状态">
+        <FormItem v-if="current==1" label="状态">
           <i-switch v-model="formItem.statusSwatch" size="large">
             <span slot="open">有效</span>
             <span slot="close">无效</span>
           </i-switch>
         </FormItem>
-        <FormItem label="描述">
+        <FormItem v-if="current==1" label="描述">
           <Input v-model="formItem.appDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem >
+        <FormItem>
           <FormItem>
             <Button type="primary" @click="handleNext">下一步</Button>
-            <Button  @click="handleReset" style="margin-left: 8px">重置</Button>
+            <Button @click="handleReset" style="margin-left: 8px">重置</Button>
           </FormItem>
         </FormItem>
-        </template>
       </Form>
+
     </Modal>
   </div>
 </template>
@@ -144,18 +145,18 @@
   import {getApps, updateApp, addApp, removeApp} from '@/api/app'
 
   export default {
-    name: 'App',
+    name: 'SystemApp',
     data () {
       return {
         current: 0,
-        pageInfo:{
-          total:0,
-          page:1,
-          limit:10
+        pageInfo: {
+          total: 0,
+          page: 1,
+          limit: 10
         },
         defaultList: [
           {
-            name:'',
+            name: '',
             'url': 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
           }
         ],
@@ -167,6 +168,9 @@
         visible: false,
         uploadList: [],
         formItemRules: {
+          userId: [
+            {required: true, message: '开发者不能为空', trigger: 'blur'}
+          ],
           website: [
             {required: true, message: '官网不能为空', trigger: 'blur'}
           ],
@@ -190,12 +194,12 @@
           appIcon: 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar',
           appOs: '',
           path: '',
-          website:'',
+          website: '',
           appDesc: '',
           status: 1,
-          redirectUrls:'',
+          redirectUrls: '',
           statusSwatch: true,
-          userId: 0,
+          userId: '0',
           userType: 'platform'
         },
         columns: [
@@ -249,11 +253,15 @@
     },
     methods: {
       handleNext () {
-        if (this.current == 1) {
-          this.current = 0;
-        } else {
-          this.current += 1;
-        }
+        this.$refs['appForm'].validate((valid) => {
+          if (valid) {
+            if (this.current == 2) {
+              this.current = 0;
+            } else {
+              this.current += 1;
+            }
+          }
+        })
       },
       handleModal (data) {
         if (data) {
@@ -278,11 +286,11 @@
           appType: '',
           appIcon: 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar',
           appOs: '',
-          website:'',
+          website: '',
           appDesc: '',
           status: 1,
           statusSwatch: true,
-          userId: 0,
+          userId: '0',
           userType: 'platform'
         }
         this.formItem = newData
@@ -315,7 +323,7 @@
       handleSearch(){
         getApps({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
-          this.pageInfo.total= parseInt(res.data.total)
+          this.pageInfo.total = parseInt(res.data.total)
         })
       },
       handleRemove (data) {
@@ -327,7 +335,7 @@
         })
       },
       handlePage(current){
-        this.pageInfo.page=current;
+        this.pageInfo.page = current;
         this.getApis()
       },
       handlePageSize(size){
@@ -375,7 +383,7 @@
   }
 </script>
 <style scoped>
-  .upload-list{
+  .upload-list {
     display: inline-block;
     width: 60px;
     height: 60px;
@@ -386,26 +394,30 @@
     overflow: hidden;
     background: #fff;
     position: relative;
-    box-shadow: 0 1px 1px rgba(0,0,0,.2);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
     margin-right: 4px;
   }
-  .upload-list img{
+
+  .upload-list img {
     width: 100%;
     height: 100%;
   }
-  .upload-list-cover{
+
+  .upload-list-cover {
     display: none;
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0,0,0,.6);
+    background: rgba(0, 0, 0, .6);
   }
-  .upload-list:hover .upload-list-cover{
+
+  .upload-list:hover .upload-list-cover {
     display: block;
   }
-  .upload-list-cover i{
+
+  .upload-list-cover i {
     color: #fff;
     font-size: 20px;
     cursor: pointer;

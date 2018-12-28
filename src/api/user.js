@@ -18,7 +18,14 @@ export const getUserInfo = () => {
     method: 'get'
   })
 }
-
+export const getUsers = ({page,limit}) => {
+  const data = {page:page,limit:limit}
+  return request({
+    url: 'base/user',
+    data,
+    method: 'post'
+  })
+}
 export const getUserMenus = () => {
   return request({
     url: 'base/user/grant/menus',

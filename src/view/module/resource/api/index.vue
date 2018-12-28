@@ -73,7 +73,7 @@
   import {getApis, updateApi, addApi, removeApi} from '@/api/apis'
 
   export default {
-    name: 'Api',
+    name: 'SystemApi',
     data () {
       return {
         modalVisible: false,
