@@ -427,16 +427,16 @@ export const formatRouters = (array, access) => {
 
 export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
-      let url = item.prefix + (item.path ? item.path : item.code)
+      let url = item.resource.prefix + (item.path ? item.path : item.resource.menuCode)
       let router = {
-        name: item.code,
+        name: item.resource.menuCode,
         path: url,
         meta: {
           access: access,
           hideInMenu: false,
-          title: item.name,
+          title: item.resource.name,
           notCache: false,
-          icon: item.icon||'md-document',
+          icon: item.resource.icon||'md-document',
           hideInBread: false,
         },
         children: []
@@ -449,11 +449,11 @@ export const filterRouter = (array, access, routers) => {
         }
       } else {
         // 非根节点
-        if (item.target === '_blank') {
+        if (item.resource.target === '_blank') {
           // 新窗口打开,使用meta.href
           router.meta.href = url
         } else {
-          if (item.prefix === '/') {
+          if (item.resource.prefix === '/') {
             // 内部组件
             router.component = (resolve) => {
               require([`@/view/module/${item.path}.vue`], resolve)

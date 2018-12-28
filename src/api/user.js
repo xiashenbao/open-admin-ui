@@ -6,7 +6,7 @@ export const login = ({ username, password }) => {
     password
   }
   return request({
-    url: 'rest/login',
+    url: 'login/token',
     data,
     method: 'post'
   })
@@ -21,7 +21,7 @@ export const getUserInfo = () => {
 
 export const getUserMenus = () => {
   return request({
-    url: 'base/user/menus',
+    url: 'base/user/grant/menus',
     method: 'get'
   })
 }
