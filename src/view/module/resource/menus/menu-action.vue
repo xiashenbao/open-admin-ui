@@ -13,14 +13,12 @@
           <Badge v-else="" status="default" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">
-            <Icon type="md-create"/>
-            编辑</a> &nbsp;
+          <a @click="handleModal(row)">编辑</a> &nbsp;
           <Poptip
             confirm
             title="确定删除吗?"
             @on-ok="handleRemove(row)">
-            <a><Icon type="md-close"/>删除</a>
+            <a>删除</a>
           </Poptip>
         </template>
       </Table>
@@ -116,7 +114,8 @@
           {
             title: '操作',
             slot: 'action',
-            width: 150
+            width: 150,
+            fixed: 'right'
           }
         ],
         data: []
@@ -186,6 +185,7 @@
       handleRemove (data) {
         removeAction({actionId: data.actionId}).then(res => {
           if (res.code === 0) {
+            this.pageInfo.page=1
             this.$Message.success('删除成功')
           }
           this.handleSearch()

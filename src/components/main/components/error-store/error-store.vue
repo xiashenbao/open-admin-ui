@@ -1,10 +1,8 @@
 <template>
   <div class="error-store">
-    <Badge dot :count="countComputed">
-      <a  @click="openErrorLoggerPage">
-        <Icon :size="20" type="ios-bug" color="#fff"/>
-      </a>
-    </Badge>
+      <Badge dot :count="countComputed">
+        <Icon :size="20" @click="openErrorLoggerPage" type="ios-bug" />
+      </Badge>
   </div>
 </template>
 

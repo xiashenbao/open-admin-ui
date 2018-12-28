@@ -1,9 +1,5 @@
 <template>
   <div class="header-bar">
-    <!--   <div class="logo-con" style="width: 200px">
-      <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
-      <img v-show="collapsed" :src="minLogo" key="min-logo" />
-    </div>-->
     <sider-trigger :collapsed="collapsed" icon="md-menu" @on-change="handleCollpasedChange"></sider-trigger>
     <custom-bread-crumb v-show="screenWidth>768" show-icon :list="breadCrumbList"></custom-bread-crumb>
     <div class="custom-content-con">

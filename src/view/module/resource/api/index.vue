@@ -19,12 +19,7 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
-          <Poptip
-            confirm
-            title="确定删除吗?"
-            @on-ok="handleRemove(row)">
-            <a>删除</a>
-          </Poptip>&nbsp;
+          <a @click="handleRemove(row)">删除</a>
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
@@ -119,16 +114,12 @@
             key: 'apiCode'
           },
           {
-            title: '接口分类',
+            title: '分类',
             key: 'apiCategory'
           },
           {
             title: '请求路径',
             key: 'path'
-          },
-          {
-            title: 'serviceId',
-            key: 'serviceId'
           },
           {
             title: '状态',
@@ -140,13 +131,15 @@
             key: 'apiDesc'
           },
           {
-            title: '更新时间',
+            title: '上次更新时间',
             key: 'updateTime'
           },
           {
             title: '操作',
             key: '',
-            slot: 'action'
+            slot: 'action',
+            width: 150,
+            fixed: 'right'
           }
         ],
         data: []
@@ -205,12 +198,18 @@
         })
       },
       handleRemove (data) {
-        removeApi({apiId: data.row.apiId}).then(res => {
-          if (res.code === 0) {
-            this.$Message.success('删除成功')
+        this.$Modal.confirm({
+          title: '确定删除吗？',
+          onOk: () => {
+            removeApi({apiId: data.apiId}).then(res => {
+              if (res.code === 0) {
+                this.pageInfo.page=1
+                this.$Message.success('删除成功')
+              }
+              this.handleSearch()
+            })
           }
-          this.handleSearch()
-        })
+        });
       },
       rowClick (data) {
       },

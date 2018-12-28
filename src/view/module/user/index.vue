@@ -139,13 +139,14 @@
             key: 'userDesc'
           },
           {
-            title: '更新时间',
+            title: '上次更新时间',
             key: 'updateTime'
           },
           {
             title: '操作',
             slot: 'action',
-            width: 200
+            width: 150,
+            fixed: 'right'
           }
         ],
         data: []

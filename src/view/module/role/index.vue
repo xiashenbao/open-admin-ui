@@ -1,40 +1,37 @@
 <template>
   <div>
-    <div class="search-con search-con-top">
-      <ButtonGroup size="small">
-        <Button  class="search-btn" type="primary" @click="handleModal()">
-          <Icon type="search"/>&nbsp;&nbsp;新增
-        </Button>
-      </ButtonGroup>
-    </div>
-    <Table :columns="columns" :data="data">
-      <template slot="status" slot-scope="{ row }">
-        <Badge v-if="row.status===1" status="success" text="有效"/>
-        <Badge v-else="" status="default" text="无效"/>
-      </template>
-      <template slot="action" slot-scope="{ row }">
-        <a @click="handleModal(row)">
-          编辑</a>&nbsp;
-        <Poptip
-          confirm
-          title="确定删除吗?"
-          @on-ok="handleRemove(row)">
-          <a>删除</a>
-        </Poptip>&nbsp;
-        <Dropdown @on-click="handleClick">
-          <a href="javascript:void(0)">
-            授权
-            <Icon type="ios-arrow-down"></Icon>
-          </a>
-          <DropdownMenu slot="list">
-            <DropdownItem name="grantMenu">菜单授权</DropdownItem>
-            <DropdownItem name="grantApi">接口授权</DropdownItem>
-          </DropdownMenu>
-        </Dropdown>&nbsp;
-      </template>
-    </Table>
-    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
-          @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
+    <Card shadow>
+      <div class="search-con search-con-top">
+        <ButtonGroup size="small">
+          <Button  class="search-btn" type="primary" @click="handleModal()">
+            <Icon type="search"/>&nbsp;&nbsp;新增
+          </Button>
+        </ButtonGroup>
+      </div>
+      <Table :columns="columns" :data="data">
+        <template slot="status" slot-scope="{ row }">
+          <Badge v-if="row.status===1" status="success" text="有效"/>
+          <Badge v-else="" status="default" text="无效"/>
+        </template>
+        <template slot="action" slot-scope="{ row }">
+          <a @click="handleModal(row)">
+            编辑</a>&nbsp;
+          <Dropdown ref="dropdown" @on-click="handleClick($event,row)">
+            <a href="javascript:void(0)">
+              更多
+              <Icon type="ios-arrow-down"></Icon>
+            </a>
+            <DropdownMenu slot="list">
+              <DropdownItem name="grantMenu">菜单授权</DropdownItem>
+              <DropdownItem name="grantApi">接口授权</DropdownItem>
+              <DropdownItem name="remove">删除</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>&nbsp;
+        </template>
+      </Table>
+      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
+            @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
+    </Card>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
@@ -115,13 +112,13 @@
             key: 'roleDesc'
           },
           {
-            title: '更新时间',
+            title: '上次更新时间',
             key: 'updateTime'
           },
           {
             title: '角色',
             slot: 'action',
-            width: 200
+            width: 120
           }
         ],
         data: []
@@ -193,17 +190,23 @@
         this.handleSearch()
       },
       handleRemove (data) {
-        removeRole({roleId: data.roleId}).then(res => {
-          if (res.code === 0) {
-            this.$Message.success('删除成功')
+        this.$Modal.confirm({
+          title: '确定删除吗？',
+          onOk: () => {
+            removeRole({roleId: data.roleId}).then(res => {
+              if (res.code === 0) {
+                this.pageInfo.page=1
+                this.$Message.success('删除成功')
+              }
+              this.handleSearch()
+            })
           }
-          this.handleSearch()
-        })
+        });
       },
-      handleClick (name) {
-          console.log(name)
+      handleClick (name,row) {
         switch (name) {
-          case 'logout':
+          case 'remove':
+            this.handleRemove(row)
             break
         }
       }

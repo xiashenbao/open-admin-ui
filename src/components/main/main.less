@@ -1,38 +1,35 @@
 .main{
+  .logo-con{
+    height: 64px;
+    transition: all .3s;
+    background: #002140;
+    overflow: hidden;
+    img{
+      height: 44px;
+      width: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    .logo-text{
+      color:white;
+      text-align: center;
+      line-height: 64px;
+    }
+  }
   .header-con{
-    background: #1890ff;
+    background: #fff;
     padding: 0 20px;
     width: 100%;
-    color: #fff;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 99;
   }
-  .header-logo-con{
-    width: 256px;
-    margin-left: -20px;
-    float: left;
-    img{
-      max-height: 65px;
-    }
-    .header-logo-text{
-        color:white;
-        text-align: center;
-        line-height: 65px;
-    }
-  }
+
   .header-logo-con-collapsed{
     width: 60px;
   }
   .main-content-con{
     height: ~"calc(100% - 60px)";
     overflow: hidden;
-    margin-left: 256px;
-    margin-top:65px;
   }
   .main-content-con-collapsed{
-    margin-left: 60px;
   }
   .main-layout-con{
     height: 100%;
@@ -49,15 +46,6 @@
     overflow: auto;
   }
   .left-sider{
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    margin-top: 65px;
-    z-index: 14;
-    overflow: hidden;
-    backface-visibility: hidden;
-    -webkit-overflow-scrolling: touch;
-    background: #fff;
     .ivu-layout-sider-children{
       overflow-y: scroll;
       margin-right: -18px;
