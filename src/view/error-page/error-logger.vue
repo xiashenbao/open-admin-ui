@@ -33,7 +33,7 @@ export default {
         },
         {
           key: 'code',
-          title: '编码',
+          title: '标识',
           render: (h, { row }) => {
             return (
               <span>{ row.code === 0 ? '-' : row.code }</span>

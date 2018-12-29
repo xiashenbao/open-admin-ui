@@ -1,5 +1,5 @@
 import { login, logout, getUserInfo, getUserMenus } from '@/api/user'
-import { setToken, getToken, getAccessArray } from '@/libs/util'
+import { setToken, getToken} from '@/libs/util'
 
 export default {
   state: {
@@ -82,11 +82,11 @@ export default {
         getUserInfo().then(res => {
           if (res.code === 0) {
             commit('setAvatar', res.data.avatar)
-            commit('setUserName', res.data.username)
+            commit('setUserName', res.data.userName)
             commit('setNickName', res.data.nickName)
-            commit('setUserId', res.data.tenantId)
+            commit('setUserId', res.data.userId)
             // 转换权限
-            commit('setAccess', getAccessArray(res.data.authorities))
+            commit('setAccess', res.data.authorities)
             commit('setHasGetInfo', true)
             getUserMenus().then(res => {
               if (res.code === 0) {

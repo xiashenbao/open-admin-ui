@@ -31,6 +31,7 @@
             </a>
             <DropdownMenu slot="list">
               <DropdownItem name="grantApi">功能授权</DropdownItem>
+              <DropdownItem name="resetSecret">重置密钥</DropdownItem>
               <DropdownItem name="remove">删除应用</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
@@ -45,7 +46,7 @@
            @on-cancel="handleReset"
            width="680">
       <Alert v-if="formItem.appId?true:false" show-icon>
-        重要信息,请妥善保管：<span>AppId： </span><strong>{{formItem.appId}}</strong>&nbsp;&nbsp;<span>AppSecret：</span><strong>{{formItem.appSecret}}</strong>
+        重要信息,请妥善保管：AppId：<code>{{formItem.appId}}</code>AppSecret：<code>{{formItem.appSecret}}</code> <a>重置密钥</a>
       </Alert>
       <Steps :current="current" size="small">
         <Step title="填写开发者"></Step>
@@ -269,9 +270,9 @@
             key: 'appDesc'
           },
           {
-            title: '上次更新时间',
+            title: '创建时间',
             sortable: true,
-            key: 'updateTime'
+            key: 'createTime'
           },
           {
             title: '操作',

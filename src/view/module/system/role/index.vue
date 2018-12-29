@@ -38,7 +38,7 @@
            @on-ok="handleSubmit"
            @on-cancel="handleReset">
       <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="80">
-        <FormItem label="角色编码" prop="roleCode">
+        <FormItem label="角色标识" prop="roleCode">
           <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="角色名称" prop="roleName">
@@ -75,7 +75,7 @@
         },
         formItemRules: {
           roleCode: [
-            {required: true, message: '角色编码不能为空', trigger: 'blur'}
+            {required: true, message: '角色标识不能为空', trigger: 'blur'}
           ],
           roleName: [
             {required: true, message: '角色名称不能为空', trigger: 'blur'}
@@ -98,8 +98,12 @@
             key: 'roleName'
           },
           {
-            title: '角色编码',
+            title: '角色标识',
             key: 'roleCode'
+          },
+          {
+            title: '描述',
+            key: 'roleDesc'
           },
           {
             title: '状态',
@@ -107,12 +111,8 @@
             key: 'status'
           },
           {
-            title: '描述',
-            key: 'roleDesc'
-          },
-          {
-            title: '上次更新时间',
-            key: 'updateTime'
+            title: '创建时间',
+            key: 'createTime'
           },
           {
             title: '角色',

@@ -54,11 +54,11 @@
           <Input v-model="formItem.mobile" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="状态">
-          <Select v-model="formItem.status">
-            <Option value="0">禁用</Option>
-            <Option value="1">正常</Option>
-            <Option value="2">锁定</Option>
-          </Select>
+          <RadioGroup v-model="formItem.status">
+            <Radio label="0">禁用</Radio>
+            <Radio label="1">正常</Radio>
+            <Radio label="2">锁定</Radio>
+          </RadioGroup>
         </FormItem>
         <FormItem label="描述">
           <Input v-model="formItem.userDesc" type="textarea" placeholder="请输入内容"></Input>
@@ -141,8 +141,8 @@
             key: 'userDesc'
           },
           {
-            title: '上次更新时间',
-            key: 'updateTime'
+            title: '注册时间',
+            key: 'registerTime'
           },
           {
             title: '操作',

@@ -31,7 +31,7 @@
         <FormItem label="所属菜单" >
           <Input disabled v-model="value.menuName" ></Input>
         </FormItem>
-        <FormItem label="操作编码" prop="actionCode">
+        <FormItem label="操作标识" prop="actionCode">
           <Input  v-model="formItem.actionCode" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="操作名称" prop="actionName">
@@ -72,7 +72,7 @@
         confirmModal: false,
         formItemRules: {
           actionCode: [
-            {required: true, message: '操作编码不能为空', trigger: 'blur'}
+            {required: true, message: '操作标识不能为空', trigger: 'blur'}
           ],
           actionName: [
             {required: true, message: '操作名称不能为空', trigger: 'blur'}
@@ -95,7 +95,7 @@
             key: 'actionName'
           },
           {
-            title: '操作编码',
+            title: '操作标识',
             key: 'actionCode'
           },
           {

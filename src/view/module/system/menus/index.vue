@@ -2,26 +2,26 @@
   <div>
     <Card shadow>
       <Row :gutter="16">
-        <Col span="6">
-        <tree-table height="900"
-                    expand-key="menuName"
-                    @radio-click="rowClick"
-                    :expand-type="false"
-                    :is-fold="false"
-                    :tree-type="true"
-                    :selectable="false"
-                    :columns="columns"
-                    :data="data">
-          <template slot="status" slot-scope="scope">
-            <Badge v-if="scope.row.status===1" status="success" text="有效"/>
-            <Badge v-else="" status="default" text="无效"/>
-          </template>
-        </tree-table>
+        <Col span="6" >
+            <tree-table height="900"
+                        expand-key="menuName"
+                        @radio-click="rowClick"
+                        :expand-type="false"
+                        :is-fold="false"
+                        :tree-type="true"
+                        :selectable="false"
+                        :columns="columns"
+                        :data="data">
+              <template slot="status" slot-scope="scope">
+                <Badge v-if="scope.row.status===1" status="success" text="有效"/>
+                <Badge v-else="" status="default" text="无效"/>
+              </template>
+            </tree-table>
         </Col>
         <div style="display: block;position: absolute;top: 0;bottom: 0;left: 25%;border: 1px dashed #eee;"></div>
         <Col span="18">
         <Row>
-          <Col span="18">
+          <Col span="24">
           <div class="search-con search-con-top">
             <ButtonGroup size="small">
               <Button type="primary" @click="setEnabled(true)">新增</Button>
@@ -44,7 +44,7 @@
                           :default-expand-level="1"
                           :normalizer="treeSelectNormalizer"/>
             </FormItem>
-            <FormItem label="菜单编码" prop="menuCode">
+            <FormItem label="菜单标识" prop="menuCode">
               <Input :disabled="disabled" v-model="formItem.menuCode" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem label="菜单名称" prop="menuName">
@@ -110,7 +110,7 @@
         selectTreeData: [],
         formItemRules: {
           menuCode: [
-            {required: true, message: '菜单编码不能为空', trigger: 'blur'}
+            {required: true, message: '菜单标识不能为空', trigger: 'blur'}
           ],
           menuName: [
             {required: true, message: '菜单名称不能为空', trigger: 'blur'}
@@ -134,7 +134,7 @@
           {
             title: '菜单名称',
             key: 'menuName',
-            minWidth: '200px',
+            minWidth: '200px'
           },
           {
             title: '状态',
@@ -200,6 +200,7 @@
             if (this.formItem.menuId) {
               updateMenu(this.formItem).then(res => {
                 if (res.code === 0) {
+                  this.disabled=true
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()
@@ -207,6 +208,7 @@
             } else {
               addMenu(this.formItem).then(res => {
                 if (res.code === 0) {
+                  this.disabled=true
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()

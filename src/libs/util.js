@@ -374,21 +374,6 @@ export const localRead = (key) => {
 }
 
 /**
- * 转换权限标识
- * @param array
- * @returns {Array}
- */
-export const getAccessArray = (array) => {
-  let access = []
-  if (array && array.length > 0) {
-    access = array.map(item => {
-      return item.authority
-    })
-  }
-  return access
-}
-
-/**
  *  验证url
  * @param str_url
  * @returns {boolean}

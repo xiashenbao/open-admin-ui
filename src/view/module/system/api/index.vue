@@ -1,7 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>服务器启动后(仅限资源服务器@EnableResourceServer),自动扫描@RestController标注的类,并自动添加或覆盖已有API接口(名称、编码、路径、备注)
-      方法上含有:@GetMapping、@PostMapping、@RequestMapping、@PutMapping、@DeleteMapping,结合Swagger注解@ApiOperation可设置接口名称
+    <Alert show-icon>服务器启动后,自动添加和更新API列表(需开启<code>@EnableResourceServer</code>)
     </Alert>
     <Card shadow>
       <div class="search-con search-con-top">
@@ -30,13 +29,16 @@
            width="680"
            @on-ok="handleSubmit"
            @on-cancel="handleReset">
+      <Alert show-icon  v-if="formItem.apiId?true:false">
+        如需修改(接口标识、名称、请求地址),请在服务端修改<code>@RestController</code>标注类中的<code>方法名称</code>和<code>@ApiOperation</code>。
+      </Alert>
       <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="80">
         <FormItem label="所属服务" prop="serviceId">
           <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
             <Option v-for="(item,index) in apiGroup" :value="item.apiId" :key="index">{{ item.apiName }}</Option>
           </Select>
         </FormItem>
-        <FormItem label="接口编码" prop="apiCode">
+        <FormItem label="接口标识" prop="apiCode">
           <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口名称" prop="apiName">
@@ -87,7 +89,7 @@
             {required: true, message: '所属服务不能为空', trigger: 'blur'}
           ],
           apiCode: [
-            {required: true, message: '接口编码不能为空', trigger: 'blur'}
+            {required: true, message: '接口标识不能为空', trigger: 'blur'}
           ],
           apiName: [
             {required: true, message: '接口名称不能为空', trigger: 'blur'}
@@ -110,7 +112,7 @@
             key: 'apiName'
           },
           {
-            title: '接口编码',
+            title: '接口标识',
             key: 'apiCode'
           },
           {
@@ -122,6 +124,10 @@
             key: 'path'
           },
           {
+            title: '描述',
+            key: 'apiDesc'
+          },
+          {
             title: '状态',
             key: 'status',
             slot: 'status'
@@ -131,12 +137,8 @@
             key: 'serviceId'
           },
           {
-            title: '描述',
-            key: 'apiDesc'
-          },
-          {
-            title: '上次更新时间',
-            key: 'updateTime'
+            title: '创建时间',
+            key: 'createTime'
           },
           {
             title: '操作',
