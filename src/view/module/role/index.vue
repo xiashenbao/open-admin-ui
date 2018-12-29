@@ -8,7 +8,7 @@
           </Button>
         </ButtonGroup>
       </div>
-      <Table :columns="columns" :data="data">
+      <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="有效"/>
           <Badge v-else="" status="default" text="无效"/>
@@ -65,6 +65,7 @@
     name: 'SystemRole',
     data () {
       return {
+        loading :false,
         modalVisible: false,
         modalTitle: '',
         pageInfo:{
@@ -72,8 +73,6 @@
           page:1,
           limit:10
         },
-        spinShow:false,
-        confirmModal: false,
         formItemRules: {
           roleCode: [
             {required: true, message: '角色编码不能为空', trigger: 'blur'}
@@ -176,7 +175,9 @@
         })
       },
       handleSearch () {
+        this.loading = true
         getRoles({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+          this.loading = false
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         })

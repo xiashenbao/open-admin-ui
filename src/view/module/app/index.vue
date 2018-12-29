@@ -172,8 +172,6 @@
         ],
         modalVisible: false,
         modalTitle: '',
-        spinShow: false,
-        confirmModal: false,
         imgName: '',
         visible: false,
         uploadList: [],

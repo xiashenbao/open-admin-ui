@@ -11,7 +11,7 @@
 
         </Button>
       </div>
-      <Table :columns="columns" :data="data">
+      <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="有效"/>
           <Badge v-else="" status="default" text="无效"/>
@@ -71,6 +71,7 @@
     name: 'SystemApi',
     data () {
       return {
+        loading:false,
         modalVisible: false,
         modalTitle: '',
         pageInfo: {
@@ -211,10 +212,10 @@
           }
         });
       },
-      rowClick (data) {
-      },
       handleSearch () {
+        this.loading = true
         getApis({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+          this.loading = false
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         })

@@ -5,10 +5,11 @@
         <Button class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;注册新用户
 
+
         </Button>
       </ButtonGroup>
     </div>
-    <Table :columns="columns" :data="data">
+    <Table :columns="columns" :data="data" :loading="loading">
       <template slot="status" slot-scope="{ row }">
         <Badge v-if="row.status===1" status="success" text="正常"/>
         <Badge v-else-if="row.status===2" status="success" text="锁定"/>
@@ -72,6 +73,7 @@
     name: 'SystemUser',
     data () {
       return {
+        loading: false,
         modalVisible: false,
         modalTitle: '',
         pageInfo: {
@@ -79,8 +81,6 @@
           page: 1,
           limit: 10
         },
-        spinShow: false,
-        confirmModal: false,
         formItemRules: {
           userName: [
             {required: true, message: '登录名不能为空', trigger: 'blur'}
@@ -91,17 +91,17 @@
           nickName: [
             {required: true, message: '昵称不能为空', trigger: 'blur'}
           ],
-          email:[
-            { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+          email: [
+            {type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
           ]
         },
         formItem: {
           userId: '',
           userName: '',
           nickName: '',
-          password:'',
+          password: '',
           status: 1,
-          companyId:'',
+          companyId: '',
           email: '',
           mobile: '',
           userType: 'platform',
@@ -170,9 +170,9 @@
           nickName: '',
           status: 1,
           email: '',
-          password:'',
+          password: '',
           mobile: '',
-          companyId:'',
+          companyId: '',
           userType: 'platform',
           userDesc: '',
           avatar: ''
@@ -206,7 +206,9 @@
         })
       },
       handleSearch () {
+        this.loading = true
         getUsers({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+          this.loading = false
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         })
