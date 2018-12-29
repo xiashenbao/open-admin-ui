@@ -116,8 +116,7 @@
           },
           {
             title: '角色',
-            slot: 'action',
-            width: 120
+            slot: 'action'
           }
         ],
         data: []

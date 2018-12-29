@@ -114,8 +114,7 @@
           {
             title: '操作',
             slot: 'action',
-            width: 150,
-            fixed: 'right'
+            width: 150
           }
         ],
         data: []

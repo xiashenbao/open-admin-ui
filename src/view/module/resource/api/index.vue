@@ -139,8 +139,7 @@
             title: '操作',
             key: '',
             slot: 'action',
-            width: 150,
-            fixed: 'right'
+            width: 150
           }
         ],
         data: []
