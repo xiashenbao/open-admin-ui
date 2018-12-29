@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>已授权资源访问列表
+    <Alert show-icon>网关服务：外部访问资源控制,需开启权限验证(opencloud.gateway.enabled-validate-access=true)，否则全部放行。
     </Alert>
     <Card shadow>
     <Table :columns="columns" :data="data" :loading="loading">
