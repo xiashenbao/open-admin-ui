@@ -62,7 +62,7 @@
   import {getRoles, updateRole, addRole, removeRole} from '@/api/role'
 
   export default {
-    name: 'GatewayRoute',
+    name: 'SystemGatewayRoute',
     data () {
       return {
         loading :false,
