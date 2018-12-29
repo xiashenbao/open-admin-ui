@@ -5,6 +5,9 @@
         <ButtonGroup size="small">
           <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新增
+
+
+
           </Button>
         </ButtonGroup>
       </div>
@@ -21,12 +24,16 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
-          <Poptip
-            confirm
-            title="确定删除吗?"
-            @on-ok="handleRemove(row)">
-            <a>删除</a>
-          </Poptip>&nbsp;
+          <Dropdown ref="dropdown" @on-click="handleClick($event,row)">
+            <a href="javascript:void(0)">
+              更多
+              <Icon type="ios-arrow-down"></Icon>
+            </a>
+            <DropdownMenu slot="list">
+              <DropdownItem name="grantApi">功能授权</DropdownItem>
+              <DropdownItem name="remove">删除应用</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>&nbsp;
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
@@ -45,8 +52,8 @@
         <Step title="完善应用信息"></Step>
         <Step title="功能授权"></Step>
       </Steps>
-      <Form ref="stepForm1"  :model="formItem" :rules="formItemRules1" :label-width="135">
-        <FormItem  v-if="current==0" label="开发者类型" prop="userType">
+      <Form ref="stepForm1" :model="formItem" :rules="formItemRules1" :label-width="135">
+        <FormItem v-if="current==0" label="开发者类型" prop="userType">
           <RadioGroup v-model="formItem.userType">
             <Radio label="platform">平台</Radio>
             <Radio label="isp">服务提供商</Radio>
@@ -58,7 +65,7 @@
         </FormItem>
       </Form>
       <Form ref="stepForm2" :model="formItem" :rules="formItemRules2" :label-width="135">
-        <FormItem  v-if="current==1" label="应用图标">
+        <FormItem v-if="current==1" label="应用图标">
           <div class="upload-list" v-for="item in uploadList">
             <template v-if="item.status === 'finished'">
               <img :src="item.url">
@@ -71,31 +78,31 @@
               <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
             </template>
           </div>
-          <Upload  v-if="current==1"
-            ref="upload"
-            :show-upload-list="false"
-            :default-file-list="defaultList"
-            :format="['jpg','jpeg','png']"
-            :max-size="2048"
-            :on-success="handleSuccess"
-            :on-format-error="handleFormatError"
-            :on-exceeded-size="handleMaxSize"
-            :before-upload="handleBeforeUpload"
-            type="drag"
-            action="//jsonplaceholder.typicode.com/posts/"
-            style="display: inline-block;width:58px;">
+          <Upload v-if="current==1"
+                  ref="upload"
+                  :show-upload-list="false"
+                  :default-file-list="defaultList"
+                  :format="['jpg','jpeg','png']"
+                  :max-size="2048"
+                  :on-success="handleSuccess"
+                  :on-format-error="handleFormatError"
+                  :on-exceeded-size="handleMaxSize"
+                  :before-upload="handleBeforeUpload"
+                  type="drag"
+                  action="//jsonplaceholder.typicode.com/posts/"
+                  style="display: inline-block;width:58px;">
             <div style="width: 58px;height:58px;line-height: 58px;">
               <Icon type="ios-camera" size="20"></Icon>
             </div>
           </Upload>
         </FormItem>
-        <FormItem   v-if="current==1" label="应用名称" prop="appName">
+        <FormItem v-if="current==1" label="应用名称" prop="appName">
           <Input v-model="formItem.appName" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem  v-if="current==1" label="英文名称" prop="appNameEn">
+        <FormItem v-if="current==1" label="英文名称" prop="appNameEn">
           <Input v-model="formItem.appNameEn" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem  v-if="current==1" label="应用类型" prop="appType">
+        <FormItem v-if="current==1" label="应用类型" prop="appType">
           <Select v-model="formItem.appType">
             <Option value="server">服务器应用</Option>
             <Option value="app">手机应用</Option>
@@ -115,19 +122,19 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem   v-if="current==1" label="官网" prop="website">
+        <FormItem v-if="current==1" label="官网" prop="website">
           <Input v-model="formItem.website" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem  v-if="current==1" label="第三方授权回掉地址" prop="redirectUrls">
+        <FormItem v-if="current==1" label="第三方授权回掉地址" prop="redirectUrls">
           <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem  v-if="current==1" label="状态">
+        <FormItem v-if="current==1" label="状态">
           <i-switch v-model="formItem.statusSwatch" size="large">
             <span slot="open">有效</span>
             <span slot="close">无效</span>
           </i-switch>
         </FormItem>
-        <FormItem  v-if="current==1" label="描述">
+        <FormItem v-if="current==1" label="描述">
           <Input v-model="formItem.appDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
@@ -136,10 +143,10 @@
       </Form>
 
       <div slot="footer">
-        <Button  v-if="current!==0" type="default"  @click="handleUp" style="float: left">上一步</Button>&nbsp;
-        <Button  v-if="current===2" type="primary">提交</Button>&nbsp;
-        <Button  type="default"  @click="handleReset">取消</Button>
-        <Button  v-if="current!==2" type="primary"  @click="handleNext">下一步</Button>
+        <Button v-if="current!==0" type="default" @click="handleUp" style="float: left">上一步</Button>&nbsp;
+        <Button v-if="current===2" type="primary">提交</Button>&nbsp;
+        <Button type="default" @click="handleReset">取消</Button>
+        <Button v-if="current!==2" type="primary" @click="handleNext">下一步</Button>
       </div>
     </Modal>
   </div>
@@ -153,7 +160,7 @@
     data () {
       return {
         current: 0,
-        loading:false,
+        loading: false,
         forms: [
           'stepForm1',
           'stepForm2',
@@ -324,7 +331,7 @@
           this.$refs[form].resetFields()
         })
         this.current = 0
-        this.modalVisible=false
+        this.modalVisible = false
       },
       handleSubmit () {
         this.$refs['appForm'].validate((valid) => {
@@ -353,53 +360,84 @@
       handleSearch () {
         this.loading = true
         getApps({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
-          this.loading = false
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
+          this.loading = false
         })
       },
       handleRemove (data) {
-        removeApp({appId: data.appId}).then(res => {
-          if (res.code === 0) {
-            this.pageInfo.page=1
-            this.$Message.success('删除成功')
+        this.$Modal.confirm({
+          title: '确定删除吗？',
+          onOk: () => {
+            removeApp({appId: data.appId}).then(res => {
+              if (res.code === 0) {
+                this.pageInfo.page = 1
+                this.$Message.success('删除成功')
+              }
+              this.handleSearch()
+            })
           }
-          this.handleSearch()
-        })
+        });
       },
-      handlePage (current) {
+      handleClick (name, row) {
+        switch (name) {
+          case'grantApi':
+              this.current =2
+              this.modalVisible=true
+              break
+          case 'remove':
+            this.handleRemove(row)
+            break
+        }
+      },
+      handlePage(current)
+      {
         this.pageInfo.page = current
         this.handleSearch()
-      },
-      handlePageSize (size) {
+      }
+      ,
+      handlePageSize(size)
+      {
         this.pageInfo.limit = size
         this.handleSearch()
-      },
-      handleView (name) {
+      }
+      ,
+      handleView(name)
+      {
         this.imgName = name
         this.visible = true
-      },
-      handleRemoveImg (file) {
+      }
+      ,
+      handleRemoveImg(file)
+      {
         const fileList = this.$refs.upload.fileList
         this.$refs.upload.fileList.splice(fileList.indexOf(file), 1)
-      },
-      handleSuccess (res, file) {
+      }
+      ,
+      handleSuccess(res, file)
+      {
         file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
         file.name = '7eb99afb9d5f317c912f08b5212fd69a'
-      },
-      handleFormatError (file) {
+      }
+      ,
+      handleFormatError(file)
+      {
         this.$Notice.warning({
           title: 'The file format is incorrect',
           desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
         })
-      },
-      handleMaxSize (file) {
+      }
+      ,
+      handleMaxSize(file)
+      {
         this.$Notice.warning({
           title: 'Exceeding file size limit',
           desc: 'File  ' + file.name + ' is too large, no more than 2M.'
         })
-      },
-      handleBeforeUpload () {
+      }
+      ,
+      handleBeforeUpload()
+      {
         const check = this.uploadList.length < 1
         if (!check) {
           this.$Notice.warning({

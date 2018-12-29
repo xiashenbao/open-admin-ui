@@ -2,7 +2,6 @@
   <div>
     <Alert show-icon>服务器启动后(仅限资源服务器@EnableResourceServer),自动扫描@RestController标注的类,并自动添加或覆盖已有API接口(名称、编码、路径、备注)
       方法上含有:@GetMapping、@PostMapping、@RequestMapping、@PutMapping、@DeleteMapping,结合Swagger注解@ApiOperation可设置接口名称
-
     </Alert>
     <Card shadow>
       <div class="search-con search-con-top">
@@ -126,6 +125,10 @@
             title: '状态',
             key: 'status',
             slot: 'status'
+          },
+          {
+            title: '资源服务器',
+            key: 'serviceId'
           },
           {
             title: '描述',

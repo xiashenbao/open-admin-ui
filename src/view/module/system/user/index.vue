@@ -1,28 +1,30 @@
 <template>
   <div>
-    <div class="search-con search-con-top">
-      <ButtonGroup size="small">
-        <Button class="search-btn" type="primary" @click="handleModal()">
-          <Icon type="search"/>&nbsp;&nbsp;注册新用户
+    <Card shadow>
+      <div class="search-con search-con-top">
+        <ButtonGroup size="small">
+          <Button class="search-btn" type="primary" @click="handleModal()">
+            <Icon type="search"/>&nbsp;&nbsp;注册新用户
 
 
         </Button>
-      </ButtonGroup>
-    </div>
-    <Table :columns="columns" :data="data" :loading="loading">
-      <template slot="status" slot-scope="{ row }">
-        <Badge v-if="row.status===1" status="success" text="正常"/>
-        <Badge v-else-if="row.status===2" status="success" text="锁定"/>
-        <Badge v-else="" status="default" text="禁用"/>
-      </template>
-      <template slot="action" slot-scope="{ row }">
-        <a @click="handleModal(row)">
-          编辑</a>&nbsp;
-      </template>
-    </Table>
-    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
-          show-total
-          @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
+        </ButtonGroup>
+      </div>
+      <Table :columns="columns" :data="data" :loading="loading">
+        <template slot="status" slot-scope="{ row }">
+          <Badge v-if="row.status===1" status="success" text="正常"/>
+          <Badge v-else-if="row.status===2" status="success" text="锁定"/>
+          <Badge v-else="" status="default" text="禁用"/>
+        </template>
+        <template slot="action" slot-scope="{ row }">
+          <a @click="handleModal(row)">
+            编辑</a>&nbsp;
+        </template>
+      </Table>
+      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+            show-total
+            @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
+    </Card>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
@@ -207,9 +209,9 @@
       handleSearch () {
         this.loading = true
         getUsers({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
-          this.loading = false
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
+          this.loading = false
         })
       },
       handlePage(current){

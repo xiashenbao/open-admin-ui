@@ -62,7 +62,7 @@
   import {getRoles, updateRole, addRole, removeRole} from '@/api/role'
 
   export default {
-    name: 'SystemRole',
+    name: 'GatewayRoute',
     data () {
       return {
         loading :false,
@@ -176,9 +176,9 @@
       handleSearch () {
         this.loading = true
         getRoles({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
-          this.loading = false
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
+          this.loading = false
         })
       },
       handlePage(current){
