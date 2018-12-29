@@ -51,7 +51,7 @@
             key: 'authority'
           },
           {
-            title: '访问类型',
+            title: '访问对象',
             key: 'authorityPrefix',
             slot: 'authorityPrefix'
           },
