@@ -435,7 +435,7 @@ export const filterRouter = (array, access, routers) => {
           access: access,
           hideInMenu: false,
           title: item.resource.menuName,
-          notCache: false,
+          notCache: true,
           icon: item.resource.icon||'md-document',
           hideInBread: false,
         },
