@@ -37,6 +37,17 @@ export const removeApp = ({appId}) => {
   })
 }
 
+export const restApp = ({appId}) => {
+  const data= {
+    appId:appId
+  }
+  return request({
+    url: 'base/app/reset',
+    data,
+    method: 'post'
+  })
+}
+
 export const getAppInfo = ({appId}) => {
   return request({
     url: `base/app/${appId}`,

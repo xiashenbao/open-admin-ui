@@ -43,7 +43,7 @@
            @on-cancel="handleReset"
            width="780">
       <Alert v-if="formItem.appId?true:false" show-icon>
-        重要信息,请妥善保管：AppId：<code>{{formItem.appId}}</code>AppSecret：<code>{{formItem.appSecret}}</code> <a>重置密钥</a>
+        重要信息,请妥善保管：AppId：<code>{{formItem.appId}}</code>AppSecret：<code>{{formItem.appSecret}}</code>&nbsp;&nbsp;<a @click="handleResetSecret(formItem)">重置密钥</a>
       </Alert>
       <Steps :current="current" size="small">
         <Step title="填写开发者"></Step>
@@ -137,12 +137,12 @@
         </FormItem>
       </Form>
       <Form ref="stepForm3" :model="formItem" :rules="formItemRules3" :label-width="135">
-        <FormItem v-if="current==2" label="授权类型" prop="scope">
+        <FormItem v-if="current==2" label="授权类型" prop="grantTypes">
           <CheckboxGroup v-model="formItem.grantTypes">
             <Checkbox v-for="item in selectGrantTypes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
           </CheckboxGroup>
         </FormItem>
-        <FormItem v-if="current==2" label="用户授权范围" prop="scope">
+        <FormItem v-if="current==2" label="用户授权范围" prop="scopes">
           <CheckboxGroup v-model="formItem.scopes">
             <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
           </CheckboxGroup>
@@ -157,7 +157,7 @@
 
       <div slot="footer">
         <Button v-if="current!==0" type="default" @click="handleUp" style="float: left">上一步</Button>&nbsp;
-        <Button v-if="current===2" type="primary">提交</Button>&nbsp;
+        <Button v-if="current===2" type="primary" @click="handleSubmit">提交</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
         <Button v-if="current!==2" type="primary" @click="handleNext">下一步</Button>
       </div>
@@ -166,8 +166,9 @@
 </template>
 
 <script>
-  import {getApps, updateApp, addApp, removeApp, getAppDevInfo} from '@/api/app'
+  import {getApps, updateApp, addApp, removeApp, getAppDevInfo,restApp} from '@/api/app'
   import {getAllApi} from '@/api/apis'
+  import {startWith} from '@/libs/util'
 
   export default {
     name: 'SystemApp',
@@ -235,11 +236,14 @@
           ]
         },
         formItemRules3: {
-          scope: [
-            {required: true, message: '用户授权范围不能为空', trigger: 'blur'}
+          grantTypes: [
+            {required: true, type: 'array', min: 1, message: '授权类型不能为空', trigger: 'blur'}
+          ],
+          scopes: [
+            {required: true, type: 'array', min: 1, message: '用户授权范围不能为空', trigger: 'blur'}
           ],
           authorities: [
-            {required: true, message: '接口权限不能为空', trigger: 'blur'}
+            {required: true, type: 'array', min: 1, message: '接口权限不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -339,8 +343,14 @@
           getAppDevInfo({appId: data.appId}).then(res => {
             if (res.code === 0) {
               this.formItem.scopes = res.data.scope
-              this.formItem.authorities = res.data.authorities
               this.formItem.grantTypes = res.data.authorized_grant_types
+              if (res.data.authorities && res.data.authorities.length > 0) {
+                this.formItem.authorities = res.data.authorities.map(item => {
+                    // 替换掉前缀
+                    return item.replace('APP_', '')
+                  }
+                )
+              }
             }
           })
           this.modalTitle = '编辑应用'
@@ -381,9 +391,12 @@
         this.modalVisible = false
       },
       handleSubmit () {
-        this.$refs['appForm'].validate((valid) => {
+        this.$refs[this.forms[this.current]].validate((valid) => {
           if (valid) {
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
+            this.formItem.scopes = this.formItem.scopes.join(',')
+            this.formItem.grantTypes = this.formItem.grantTypes.join(',')
+            this.formItem.authorities = this.formItem.authorities.join(',')
             if (this.formItem.appId) {
               updateApp(this.formItem).then(res => {
                 if (res.code === 0) {
@@ -414,7 +427,7 @@
       },
       handleRemove (data) {
         this.$Modal.confirm({
-          title: '确定删除吗？',
+          title: '删除后将无法恢复,确定删除吗？',
           onOk: () => {
             removeApp({appId: data.appId}).then(res => {
               if (res.code === 0) {
@@ -424,7 +437,22 @@
               this.handleSearch()
             })
           }
-        });
+        })
+      },
+      handleResetSecret (data) {
+        this.$Modal.confirm({
+          title: '重置后将无法恢复并且相关应用将无法访问API,确定继续吗？',
+          onOk: () => {
+            restApp({appId: data.appId}).then(res => {
+              if (res.code === 0) {
+                this.pageInfo.page = 1
+                this.formItem.appSecret = res.data
+                this.$Message.success('重置成功,请妥善保管.并及时更新到相关应用')
+              }
+              this.handleSearch()
+            })
+          }
+        })
       },
       handleClick (name, row) {
         switch (name) {
@@ -435,56 +463,51 @@
           case 'remove':
             this.handleRemove(row)
             break
+          case 'resetSecret':
+            this.handleResetSecret(row)
+            break
         }
       },
-      handlePage(current)
-      {
+      handlePage (current) {
         this.pageInfo.page = current
         this.handleSearch()
       }
       ,
-      handlePageSize(size)
-      {
+      handlePageSize (size) {
         this.pageInfo.limit = size
         this.handleSearch()
       }
       ,
-      handleView(name)
-      {
+      handleView (name) {
         this.imgName = name
         this.visible = true
       }
       ,
-      handleRemoveImg(file)
-      {
+      handleRemoveImg (file) {
         const fileList = this.$refs.upload.fileList
         this.$refs.upload.fileList.splice(fileList.indexOf(file), 1)
       }
       ,
-      handleSuccess(res, file)
-      {
+      handleSuccess (res, file) {
         file.url = 'https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar'
         file.name = '7eb99afb9d5f317c912f08b5212fd69a'
       }
       ,
-      handleFormatError(file)
-      {
+      handleFormatError (file) {
         this.$Notice.warning({
           title: 'The file format is incorrect',
           desc: 'File format of ' + file.name + ' is incorrect, please select jpg or png.'
         })
       }
       ,
-      handleMaxSize(file)
-      {
+      handleMaxSize (file) {
         this.$Notice.warning({
           title: 'Exceeding file size limit',
           desc: 'File  ' + file.name + ' is too large, no more than 2M.'
         })
       }
       ,
-      handleBeforeUpload()
-      {
+      handleBeforeUpload () {
         const check = this.uploadList.length < 1
         if (!check) {
           this.$Notice.warning({
@@ -493,7 +516,7 @@
         }
         return check
       },
-      handleLoadApis(){
+      handleLoadApis () {
         getAllApi().then(res => {
           if (res.code === 0) {
             this.selectApis = res.data.list

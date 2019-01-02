@@ -36,9 +36,7 @@
       </Alert>
       <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="所属服务" prop="serviceId">
-          <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
-            <Option v-for="(item,index) in selectService" :value="item.value" :key="index">{{ item.label }}</Option>
-          </Select>
+          <Input :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口分类" prop="apiCategory">
           <Select v-model="formItem.apiCategory">
@@ -87,13 +85,9 @@
         loading: false,
         modalVisible: false,
         modalTitle: '',
-        selectService: [
-          {value: 'opencloud-base-producer', label: '基础服务'},
-          {value: 'opencloud-auth-producer', label: '认证服务'}
-        ],
         selectCategory: [
             {value: 'default', label:'默认分类'},
-            {value: 'userGrantScope', label:'用户授权接口'},
+            {value: 'userGrantScope', label:'平台用户授权'},
         ],
         pageInfo: {
           total: 0,

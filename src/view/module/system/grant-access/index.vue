@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>网关服务：外部访问资源控制,需开启权限验证(opencloud.gateway.enabled-validate-access=true)，否则全部放行。
+    <Alert show-icon>网关服务：外部访问资源控制,需开启权限验证(opencloud.gateway.enabled-validate-access=true)，否则全部放行。<a>一键刷新网关</a>
     </Alert>
     <Card shadow>
     <Table :columns="columns" :data="data" :loading="loading">
@@ -13,12 +13,14 @@
         <span v-else-if="row.resourceType==='menu'">菜单</span>
         <span v-else-if="row.resourceType==='action'">操作</span>
         <span v-else="">{{row.resourceType}}</span>
+        <span>/{{row.resourceId}}</span>
       </template>
       <template slot="authorityPrefix" slot-scope="{ row }">
         <span v-if="row.authorityPrefix==='USER_'">用户</span>
         <span v-else-if="row.authorityPrefix==='ROLE_'">角色</span>
         <span v-else-if="row.authorityPrefix==='APP_'">应用</span>
         <span v-else="">{{row.authorityPrefix}}</span>
+        <span>/{{row.authorityOwner}}</span>
       </template>
     </Table>
     <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
@@ -51,16 +53,12 @@
             key: 'authority'
           },
           {
-            title: '访问对象',
+            title: '访问对象/ID',
             key: 'authorityPrefix',
             slot: 'authorityPrefix'
           },
           {
-            title: '资源ID',
-            key: 'resourceId'
-          },
-          {
-            title: '资源类型',
+            title: '资源类型/ID',
             key: 'resourceType',
             slot: 'resourceType'
           },
