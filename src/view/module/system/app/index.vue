@@ -189,7 +189,7 @@
           {label: 'implicit', title: '简化模式'},
         ],
         selectScopes: [
-          {label: 'userProfile', title: '用户基本信息'},
+          {label: 'userProfile', title: '平台登录信息'},
           {label: 'api1', title: '用户授权测试1'},
           {label: 'api2', title: '用户授权测试2'},
         ],
