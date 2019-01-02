@@ -5,9 +5,6 @@
         <ButtonGroup size="small">
           <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新增
-
-
-
           </Button>
         </ButtonGroup>
       </div>
@@ -140,7 +137,22 @@
         </FormItem>
       </Form>
       <Form ref="stepForm3" :model="formItem" :rules="formItemRules3" :label-width="135">
-
+        <FormItem v-if="current==2" label="授权类型" prop="scope">
+          <CheckboxGroup v-model="formItem.grantTypes">
+            <Checkbox v-for="item in selectGrantTypes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+        <FormItem v-if="current==2" label="用户授权范围" prop="scope">
+          <CheckboxGroup v-model="formItem.scopes">
+            <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+        <FormItem v-if="current==2" label="功能接口授权" prop="authorities">
+          <CheckboxGroup v-model="formItem.authorities">
+            <Checkbox v-for="item in selectApis" :title="item.apiDesc?item.apiDesc:item.apiName" :label="item.apiCode">
+              <span>{{ item.apiName }}</span></Checkbox>
+          </CheckboxGroup>
+        </FormItem>
       </Form>
 
       <div slot="footer">
@@ -154,7 +166,8 @@
 </template>
 
 <script>
-  import {getApps, updateApp, addApp, removeApp} from '@/api/app'
+  import {getApps, updateApp, addApp, removeApp, getAppDevInfo} from '@/api/app'
+  import {getAllApi} from '@/api/apis'
 
   export default {
     name: 'SystemApp',
@@ -166,6 +179,19 @@
           'stepForm1',
           'stepForm2',
           'stepForm3'
+        ],
+        selectApis: [],
+        selectGrantTypes: [
+          {label: 'authorization_code', title: '授权码模式'},
+          {label: 'client_credentials', title: '客户端模式'},
+          {label: 'refresh_token', title: '刷新令牌'},
+          {label: 'password', title: '密码模式'},
+          {label: 'implicit', title: '简化模式'},
+        ],
+        selectScopes: [
+          {label: 'userProfile', title: '用户基本信息'},
+          {label: 'api1', title: '用户授权测试1'},
+          {label: 'api2', title: '用户授权测试2'},
         ],
         pageInfo: {
           total: 0,
@@ -208,7 +234,14 @@
             {required: true, message: '英文不能为空', trigger: 'blur'}
           ]
         },
-        formItemRules3: {},
+        formItemRules3: {
+          scope: [
+            {required: true, message: '用户授权范围不能为空', trigger: 'blur'}
+          ],
+          authorities: [
+            {required: true, message: '接口权限不能为空', trigger: 'blur'}
+          ]
+        },
         formItem: {
           appId: '',
           appSecret: '',
@@ -225,7 +258,10 @@
           redirectUrls: '',
           statusSwatch: true,
           userId: '0',
-          userType: 'platform'
+          userType: 'platform',
+          scopes: [],
+          authorities: [],
+          grantTypes: []
         },
         columns: [
           {
@@ -300,6 +336,13 @@
       },
       handleModal (data) {
         if (data) {
+          getAppDevInfo({appId: data.appId}).then(res => {
+            if (res.code === 0) {
+              this.formItem.scopes = res.data.scope
+              this.formItem.authorities = res.data.authorities
+              this.formItem.grantTypes = res.data.authorized_grant_types
+            }
+          })
           this.modalTitle = '编辑应用'
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.userType = this.formItem.userType + ''
@@ -325,7 +368,10 @@
           status: 1,
           statusSwatch: true,
           userId: '0',
-          userType: 'platform'
+          userType: 'platform',
+          scopes: [],
+          authorities: [],
+          grantTypes: []
         }
         this.formItem = newData
         this.forms.map(form => {
@@ -383,9 +429,9 @@
       handleClick (name, row) {
         switch (name) {
           case'grantApi':
-              this.current =2
-              this.modalVisible=true
-              break
+            this.current = 2
+            this.handleModal(row)
+            break
           case 'remove':
             this.handleRemove(row)
             break
@@ -446,10 +492,18 @@
           })
         }
         return check
+      },
+      handleLoadApis(){
+        getAllApi().then(res => {
+          if (res.code === 0) {
+            this.selectApis = res.data.list
+          }
+        })
       }
     },
     mounted: function () {
       this.handleSearch()
+      this.handleLoadApis()
     }
   }
 </script>

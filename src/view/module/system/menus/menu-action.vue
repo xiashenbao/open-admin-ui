@@ -25,9 +25,8 @@
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Form ref="actionForm" :model="formItem" :rules="formItemRules" :label-width="80">
+      <Form ref="actionForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="所属菜单" >
           <Input disabled v-model="value.menuName" ></Input>
         </FormItem>
@@ -53,6 +52,10 @@
           <Input v-model="formItem.actionDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button type="default" @click="handleReset">取消</Button>&nbsp;
+        <Button type="primary" @click="handleSubmit">提交</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -147,6 +150,7 @@
         this.formItem = newData
         //重置验证
         this.$refs['actionForm'].resetFields()
+        this.modalVisible = false
       },
       handleSubmit () {
         this.$refs['actionForm'].validate((valid) => {

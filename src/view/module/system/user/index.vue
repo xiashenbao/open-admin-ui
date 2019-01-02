@@ -67,6 +67,11 @@
           <Input v-model="formItem.userDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
+
+      <div slot="footer">
+        <Button type="default" @click="handleReset">取消</Button>&nbsp;
+        <Button type="primary" @click="handleSubmit">提交</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -213,6 +218,7 @@
         this.formItem = newData
         //重置验证
         this.$refs['userForm'].resetFields()
+        this.modalVisible = false
       },
       handleSubmit () {
         this.$refs['userForm'].validate((valid) => {

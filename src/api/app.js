@@ -36,3 +36,17 @@ export const removeApp = ({appId}) => {
     method: 'post'
   })
 }
+
+export const getAppInfo = ({appId}) => {
+  return request({
+    url: `base/app/${appId}`,
+    method: 'get'
+  })
+}
+
+export const getAppDevInfo = ({appId}) => {
+  return request({
+    url: `base/app/dev/${appId}`,
+    method: 'get'
+  })
+}

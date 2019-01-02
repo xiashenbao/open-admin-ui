@@ -37,7 +37,7 @@
            width="680"
            @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="80">
+      <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="角色标识" prop="roleCode">
           <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
         </FormItem>

@@ -35,9 +35,8 @@
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="80">
+      <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="角色标识" prop="roleCode">
           <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
         </FormItem>
@@ -54,6 +53,10 @@
           <Input v-model="formItem.roleDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button type="default" @click="handleReset">取消</Button>&nbsp;
+        <Button type="primary" @click="handleSubmit">提交</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -148,6 +151,7 @@
         this.formItem = newData
         //重置验证
         this.$refs['roleForm'].resetFields()
+        this.modalVisible = false
       },
       handleSubmit () {
         this.$refs['roleForm'].validate((valid) => {

@@ -9,10 +9,10 @@ export const getApis = ({page,limit}) => {
   })
 }
 
-export const getAllApps = () => {
+export const getAllApi = () => {
   const data = {}
   return request({
-    url: 'base/app/list',
+    url: 'base/api/list',
     data,
     method: 'post'
   })

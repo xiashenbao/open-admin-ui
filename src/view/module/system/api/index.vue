@@ -1,11 +1,13 @@
 <template>
   <div>
     <Alert show-icon>服务器启动后,自动添加和更新API列表(需开启<code>@EnableResourceServer</code>)
+
     </Alert>
     <Card shadow>
       <div class="search-con search-con-top">
         <Button class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;添加
+
 
         </Button>
       </div>
@@ -27,15 +29,20 @@
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Alert show-icon  v-if="formItem.apiId?true:false">
+      <Alert show-icon v-if="formItem.apiId?true:false">
         如需修改(接口标识、名称、请求地址),请在服务端修改<code>@RestController</code>标注类中的<code>方法名称</code>和<code>@ApiOperation</code>。
+
       </Alert>
-      <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="80">
+      <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="所属服务" prop="serviceId">
           <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId">
-            <Option v-for="(item,index) in apiGroup" :value="item.apiId" :key="index">{{ item.apiName }}</Option>
+            <Option v-for="(item,index) in selectService" :value="item.value" :key="index">{{ item.label }}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="接口分类" prop="apiCategory">
+          <Select v-model="formItem.apiCategory">
+            <Option v-for="item in selectCategory" :value="item.value">{{item.label}}</Option>
           </Select>
         </FormItem>
         <FormItem label="接口标识" prop="apiCode">
@@ -60,6 +67,11 @@
           <Input v-model="formItem.apiDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
+
+      <div slot="footer">
+        <Button type="default" @click="handleReset">取消</Button>&nbsp;
+        <Button type="primary" @click="handleSubmit">提交</Button>
+      </div>
     </Modal>
   </div>
 </template>
@@ -72,21 +84,28 @@
     name: 'SystemApi',
     data () {
       return {
-        loading:false,
+        loading: false,
         modalVisible: false,
         modalTitle: '',
+        selectService: [
+          {value: 'opencloud-base-producer', label: '基础服务'},
+          {value: 'opencloud-auth-producer', label: '认证服务'}
+        ],
+        selectCategory: [
+            {value: 'default', label:'默认分类'},
+            {value: 'userGrantScope', label:'用户授权接口'},
+        ],
         pageInfo: {
           total: 0,
           page: 1,
           limit: 10
         },
-        apiGroup: [
-          {apiId: 'opencloud-base-producer', apiName: '基础服务', apiCode: 'opencloud-base-producer', serviceId: '0'},
-          {apiId: 'opencloud-auth-producer', apiName: '认证服务', apiCode: 'opencloud-auth-producer', serviceId: '0'}
-        ],
         formItemRules: {
           serviceId: [
             {required: true, message: '所属服务不能为空', trigger: 'blur'}
+          ],
+          apiCategory: [
+            {required: true, message: '接口分类不能为空', trigger: 'blur'}
           ],
           apiCode: [
             {required: true, message: '接口标识不能为空', trigger: 'blur'}
@@ -99,6 +118,7 @@
           apiId: '',
           apiCode: '',
           apiName: '',
+          apiCategory: 'default',
           path: '',
           status: 1,
           statusSwatch: true,
@@ -116,7 +136,7 @@
             key: 'apiCode'
           },
           {
-            title: '分类',
+            title: '接口分类',
             key: 'apiCategory'
           },
           {
@@ -167,6 +187,7 @@
           apiId: '',
           apiCode: '',
           apiName: '',
+          apiCategory: 'default',
           path: '',
           status: 1,
           statusSwatch: true,
@@ -177,6 +198,7 @@
         this.formItem = newData
         //重置验证
         this.$refs['apiForm'].resetFields()
+        this.modalVisible = false
       },
       handleSubmit () {
         this.$refs['apiForm'].validate((valid) => {
@@ -208,7 +230,7 @@
           onOk: () => {
             removeApi({apiId: data.apiId}).then(res => {
               if (res.code === 0) {
-                this.pageInfo.page=1
+                this.pageInfo.page = 1
                 this.$Message.success('删除成功')
               }
               this.handleSearch()

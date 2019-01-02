@@ -36,7 +36,7 @@
 
             </Modal>
           </div>
-          <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
+          <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="100">
             <FormItem label="父级菜单" >
               <treeselect :disabled="disabled"
                           v-model="formItem.parentId"
