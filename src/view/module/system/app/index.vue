@@ -41,7 +41,7 @@
     <Modal v-model="modalVisible"
            :title="modalTitle"
            @on-cancel="handleReset"
-           width="680">
+           width="780">
       <Alert v-if="formItem.appId?true:false" show-icon>
         重要信息,请妥善保管：AppId：<code>{{formItem.appId}}</code>AppSecret：<code>{{formItem.appSecret}}</code> <a>重置密钥</a>
       </Alert>
