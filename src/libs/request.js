@@ -5,12 +5,17 @@ import {getToken} from '@/libs/util'
 import {Message} from 'iview'
 
 const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
-/** **** 创建axios实例 ******/
+/**
+ * 创建axios实例
+ * @type {AxiosInstance}
+ */
 const service = axios.create({
   baseURL: baseUrl, // api的base_url
   timeout: 5000 // 请求超时时间
 })
-/** **** request拦截器==>对请求参数做处理 ******/
+/**
+ * 请求参数处理
+ */
 service.interceptors.request.use((config) => {
     config.method === 'post'
       ? config.data = qs.stringify({...config.data})
@@ -22,7 +27,9 @@ service.interceptors.request.use((config) => {
     return config
   }
 )
-
+/**
+ * 响应结果处理
+ */
 service.interceptors.response.use(
   (response) => {
     if (response.data.code === 0) {

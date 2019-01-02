@@ -30,22 +30,25 @@
            width="680"
            @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Form ref="userForm" :model="formItem" :rules="formItemRules" :label-width="80">
-        <FormItem label="用户类型">
-          <Select v-model="formItem.userType">
-            <Option value="platform">平台用户</Option>
-            <Option value="isp">服务提供商</Option>
-            <Option value="dev">自研开发者</Option>
-          </Select>
+      <Form ref="userForm" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem  label="用户类型" prop="userType">
+          <RadioGroup v-model="formItem.userType">
+            <Radio label="platform">平台</Radio>
+            <Radio label="isp">服务提供商</Radio>
+            <Radio label="dev">自研开发者</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="昵称" prop="nickName">
+          <Input v-model="formItem.nickName" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="登录名" prop="userName">
           <Input :disabled="formItem.userId?true:false" v-model="formItem.userName" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem v-if="!formItem.userId?true:false" label="登录密码" prop="password">
-          <Input v-model="formItem.password" type="password" placeholder="请输入内容"></Input>
+        <FormItem v-if="formItem.userId?false:true"  label="登录密码" prop="password">
+          <Input type="password" v-model="formItem.password"  placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="昵称" prop="nickName">
-          <Input v-model="formItem.nickName" placeholder="请输入内容"></Input>
+        <FormItem v-if="formItem.userId?false:true"   label="再次确认密码" prop="passwordConfirm">
+          <Input type="password" v-model="formItem.passwordConfirm" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="邮箱" prop="email">
           <Input v-model="formItem.email" placeholder="请输入内容"></Input>
@@ -74,6 +77,23 @@
   export default {
     name: 'SystemUser',
     data () {
+      const validatePassConfirm= (rule, value, callback) => {
+        if (value === '') {
+          callback(new Error('请再次输入密码'));
+        } else if (value !== this.formItem.passwd) {
+          callback(new Error('两次输入密码不一致'));
+        } else {
+          callback();
+        }
+      };
+      const validateMobile= (rule, value, callback) => {
+        var reg = /^1\d{10}$/
+        if (value !=='' && !reg.test(value)) {
+          callback(new Error('手机号码格式不正确'));
+        } else {
+          callback();
+        }
+      };
       return {
         loading: false,
         modalVisible: false,
@@ -84,11 +104,17 @@
           limit: 10
         },
         formItemRules: {
+          userType: [
+            {required: true, message: '用户类型不能为空', trigger: 'blur'}
+          ],
           userName: [
             {required: true, message: '登录名不能为空', trigger: 'blur'}
           ],
           password: [
             {required: true, message: '登录密码不能为空', trigger: 'blur'}
+          ],
+          passwordConfirm: [
+            {validator: validatePassConfirm, trigger: 'blur'}
           ],
           nickName: [
             {required: true, message: '昵称不能为空', trigger: 'blur'}
@@ -96,12 +122,17 @@
           email: [
             {type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
           ]
+          ,
+          mobile: [
+            {validator:validateMobile, trigger: 'blur'}
+          ]
         },
         formItem: {
           userId: '',
           userName: '',
           nickName: '',
           password: '',
+          passwordConfirm:'',
           status: 1,
           companyId: '',
           email: '',
@@ -172,6 +203,7 @@
           status: 1,
           email: '',
           password: '',
+          passwordConfirm:'',
           mobile: '',
           companyId: '',
           userType: 'platform',
