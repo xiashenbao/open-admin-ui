@@ -39,9 +39,7 @@
           <Input :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口分类" prop="apiCategory">
-          <Select v-model="formItem.apiCategory">
-            <Option v-for="item in selectCategory" :value="item.value">{{item.label}}</Option>
-          </Select>
+          <Input  v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口标识" prop="apiCode">
           <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
@@ -85,10 +83,6 @@
         loading: false,
         modalVisible: false,
         modalTitle: '',
-        selectCategory: [
-            {value: 'default', label:'默认分类'},
-            {value: 'userGrantScope', label:'平台用户授权'},
-        ],
         pageInfo: {
           total: 0,
           page: 1,
