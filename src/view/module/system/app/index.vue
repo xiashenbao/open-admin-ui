@@ -442,7 +442,7 @@
       },
       handleResetSecret (data) {
         this.$Modal.confirm({
-          title: '重置后将无法恢复并且相关应用将无法访问API,确定继续吗？',
+          title: '重置后将无法恢复,确定继续吗？',
           onOk: () => {
             restApp({appId: data.appId}).then(res => {
               if (res.code === 0) {
