@@ -143,19 +143,21 @@
           </CheckboxGroup>
         </FormItem>
         <FormItem v-if="current==2" label="用户授权范围" prop="scopes">
-          <CheckboxGroup v-model="formItem.scopes">
+          <CheckboxGroup v-model="formItem.scopes"  @on-change="handleOnChange">
             <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
           </CheckboxGroup>
         </FormItem>
-        <FormItem v-if="current==2" label="功能接口授权" prop="authorities">
-            <CheckboxGroup v-for="item in selectApis"  v-model="formItem.authorities">
-              <span>{{item.apiCategory}}：</span>
-              <Checkbox v-for="cate in item.children" :title="cate.apiDesc?cate.apiDesc:cate.apiName" :label="cate.apiCode">
-                <span>{{ cate.apiName }}</span></Checkbox>
-            </CheckboxGroup>
+        <FormItem v-if="current==2"  label="功能授权" prop="authorities">
+          <template v-for="(item,index) in selectApis">
+            <span>{{index +1}}.{{item.apiCategory}}</span>
+           <CheckboxGroup  v-model="formItem.authorities">
+            <Checkbox v-for="cate in item.children" :title="cate.apiDesc?cate.apiDesc:cate.apiName" :label="cate.apiCode">
+              <span>{{ cate.apiName }}</span>
+            </Checkbox>
+          </CheckboxGroup>
+          </template>
         </FormItem>
       </Form>
-
       <div slot="footer">
         <Button v-if="current!==0" type="default" @click="handleUp" style="float: left">上一步</Button>&nbsp;
         <Button v-if="current===2" type="primary" @click="handleSubmit">提交</Button>&nbsp;
@@ -170,7 +172,7 @@
   import {getApps, updateApp, addApp, removeApp, getAppDevInfo,restApp} from '@/api/app'
   import {getAllApi} from '@/api/apis'
   import {startWith,listConvertGroup} from '@/libs/util'
-
+  import {getIntersection,getUnion} from '@/libs/tools'
   export default {
     name: 'SystemApp',
     data () {
@@ -469,6 +471,9 @@
             this.handleResetSecret(row)
             break
         }
+      },
+      handleOnChange(data){
+        this.formItem.authorities = getUnion(data,this.formItem.authorities);
       },
       handlePage (current) {
         this.pageInfo.page = current
