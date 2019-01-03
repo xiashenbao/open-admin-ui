@@ -1,5 +1,5 @@
-import { login, logout, getUserInfo, getUserMenus } from '@/api/user'
-import { setToken, getToken} from '@/libs/util'
+import {login, logout, getUserInfo, getUserMenus} from '@/api/user'
+import {setToken, getToken} from '@/libs/util'
 
 export default {
   state: {
@@ -10,6 +10,8 @@ export default {
     token: getToken(),
     access: '',
     hasGetInfo: false,
+    mobile: '',
+    email: '',
     menus: []
   },
   mutations: {
@@ -37,11 +39,17 @@ export default {
     },
     setUserMenus (state, menus) {
       state.menus = menus
+    },
+    setMobile (state, mobile) {
+      state.mobile = mobile
+    },
+    setEmail (state, email) {
+      state.email = email
     }
   },
   actions: {
     // 登录
-    handleLogin ({ commit }, { username, password }) {
+    handleLogin ({commit}, {username, password}) {
       username = username.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -60,7 +68,7 @@ export default {
       })
     },
     // 退出登录
-    handleLogout ({ state, commit }) {
+    handleLogout ({state, commit}) {
       return new Promise((resolve, reject) => {
         logout().then(res => {
           commit('setToken', '')
@@ -77,7 +85,7 @@ export default {
       })
     },
     // 获取用户相关信息
-    getUserInfo ({ state, commit }) {
+    getUserInfo ({state, commit}) {
       return new Promise((resolve, reject) => {
         getUserInfo().then(res => {
           if (res.code === 0) {
@@ -85,6 +93,8 @@ export default {
             commit('setUserName', res.data.userName)
             commit('setNickName', res.data.nickName)
             commit('setUserId', res.data.userId)
+            commit('setEmail', res.data.email)
+            commit('setMobile', res.data.mobile)
             // 转换权限
             commit('setAccess', res.data.authorities)
             commit('setHasGetInfo', true)

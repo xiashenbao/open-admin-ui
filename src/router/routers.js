@@ -49,22 +49,23 @@ export default [
     ]
   },
   {
-    path: '/message',
-    name: 'message',
+    path: '/account',
+    name: 'account',
     component: Main,
     meta: {
+      notCache: true,
       hideInBread: true,
       hideInMenu: true
     },
     children: [
       {
-        path: 'message_page',
-        name: 'message_page',
+        path: 'setting',
+        name: 'setting',
         meta: {
           icon: 'md-notifications',
-          title: '消息中心'
+          title: '个人设置'
         },
-        component: () => import('@/view/message/index.vue')
+        component: () => import('@/view/account/setting.vue')
       }
     ]
   },

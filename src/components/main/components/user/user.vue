@@ -5,7 +5,7 @@
       <label class="user-name">{{userName}} </label>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
-        <DropdownItem name="info"><Icon size="16" type="md-person" /> 个人信息</DropdownItem>
+        <DropdownItem name="setting"><Icon size="16" type="md-person" /> 个人设置</DropdownItem>
         <DropdownItem divided name="logout"><Icon size="16" type="md-power" /> 退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
@@ -34,6 +34,11 @@
       ]),
       handleClick (name) {
         switch (name) {
+          case 'setting':
+            this.$router.push({
+              name: 'setting'
+            })
+              break
           case 'logout':
             this.handleLogout().then(() => {
               // 地址栏重新刷新
