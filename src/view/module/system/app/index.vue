@@ -148,10 +148,11 @@
           </CheckboxGroup>
         </FormItem>
         <FormItem v-if="current==2" label="功能接口授权" prop="authorities">
-          <CheckboxGroup v-model="formItem.authorities">
-            <Checkbox v-for="item in selectApis" :title="item.apiDesc?item.apiDesc:item.apiName" :label="item.apiCode">
-              <span>{{ item.apiName }}</span></Checkbox>
-          </CheckboxGroup>
+            <CheckboxGroup v-for="item in selectApis"  v-model="formItem.authorities">
+              <span>{{item.apiCategory}}：</span>
+              <Checkbox v-for="cate in item.children" :title="cate.apiDesc?cate.apiDesc:cate.apiName" :label="cate.apiCode">
+                <span>{{ cate.apiName }}</span></Checkbox>
+            </CheckboxGroup>
         </FormItem>
       </Form>
 
@@ -168,7 +169,7 @@
 <script>
   import {getApps, updateApp, addApp, removeApp, getAppDevInfo,restApp} from '@/api/app'
   import {getAllApi} from '@/api/apis'
-  import {startWith} from '@/libs/util'
+  import {startWith,listConvertGroup} from '@/libs/util'
 
   export default {
     name: 'SystemApp',
@@ -520,7 +521,7 @@
       handleLoadApis () {
         getAllApi().then(res => {
           if (res.code === 0) {
-            this.selectApis = res.data.list
+            this.selectApis = listConvertGroup(res.data.list, "apiCategory")
           }
         })
       }

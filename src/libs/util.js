@@ -481,6 +481,30 @@ export const listConvertTree = (array, opt) => {
   return listToTree(array, obj.startPid, obj.currentDept, obj)
 }
 
+export const listConvertGroup = (array, groupKey) => {
+  var map = {},
+    dest = [];
+  for(var i = 0; i < array.length; i++){
+    var ai = array[i];
+    if(!map[ai[groupKey]]){
+      const obj = {}
+      obj[groupKey] = ai[groupKey]
+      obj['children'] = [ai]
+      dest.push(obj);
+      map[ai[groupKey]] = ai;
+    }else{
+      for(var j = 0; j < dest.length; j++){
+        var dj = dest[j];
+        if(dj[groupKey] == ai[groupKey]){
+          dj['children'].push(ai);
+          break;
+        }
+      }
+    }
+  }
+  return dest
+}
+
 export const updateTreeNode = (nodes,primaryKey,value, data) => {
   const update = (list) => {
     return list.some(item => {
