@@ -4,7 +4,7 @@
       <div class="account-setting-con setting-left-con">
         <Menu width="auto" active-name="profile" @on-select="handleSelect">
           <MenuItem name="profile">
-            <span>个人信息</span>
+            <span>基本信息</span>
           </MenuItem>
           <MenuItem name="security">
             <span>安全设置</span>
@@ -12,7 +12,10 @@
         </Menu>
       </div>
       <div class="account-setting-con setting-view-con">
-        <Form v-if="currentSelect==='profile'" ref="userForm" :model="profile"   :label-width="80">
+        <Form v-if="currentSelect==='profile'" ref="userForm" :model="profile">
+          <h3>
+            <span>基本信息</span>
+          </h3>
           <Row>
             <Col span="8">
             <FormItem label="昵称" prop="nickName">
