@@ -19,7 +19,7 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
-          <a @click="handleRemove(row)">删除</a>
+          <a  @click="handleRemove(row)">删除</a>
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer

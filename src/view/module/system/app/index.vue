@@ -19,7 +19,7 @@
           <Badge v-else="" status="default" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">
+          <a @click="handleModal(row,1)">
             编辑</a>&nbsp;
           <Dropdown ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
@@ -101,14 +101,14 @@
           <Input v-model="formItem.appNameEn" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem v-if="current==1" label="应用类型" prop="appType">
-          <Select v-model="formItem.appType">
+          <Select v-model="formItem.appType" @on-change="handleOnAppTypeChange">
             <Option value="server">服务器应用</Option>
             <Option value="app">手机应用</Option>
             <Option value="pc">PC网页应用</Option>
             <Option value="wap">手机网页应用</Option>
           </Select>
         </FormItem>
-        <FormItem v-if="current==1 && formItem.appType === 'app'" label="操作系统">
+        <FormItem v-if="current==1 && formItem.appType === 'app'" prop="appOs" label="操作系统">
           <RadioGroup v-model="formItem.appOs">
             <Radio label="ios">
               <Icon type="logo-apple"></Icon>
@@ -143,7 +143,7 @@
           </CheckboxGroup>
         </FormItem>
         <FormItem v-if="current==2" label="用户授权范围" prop="scopes">
-          <CheckboxGroup v-model="formItem.scopes"  @on-change="handleOnChange">
+          <CheckboxGroup v-model="formItem.scopes"  @on-change="handleOnScopesChange">
             <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
           </CheckboxGroup>
         </FormItem>
@@ -227,6 +227,9 @@
           ],
           appType: [
             {required: true, message: '应用类型不能为空', trigger: 'blur'}
+          ],
+          appOs: [
+            {required: true, message: '操作系统不能为空', trigger: 'blur'}
           ],
           redirectUrls: [
             {required: true, message: '授权重定向地址不能为空', trigger: 'blur'}
@@ -341,8 +344,14 @@
           this.current -= 1
         }
       },
-      handleModal (data) {
+      handleModal (data,step) {
+        if(!step){
+          step =  0
+        }
+        this.current = step
+
         if (data) {
+
           getAppDevInfo({appId: data.appId}).then(res => {
             if (res.code === 0) {
               this.formItem.scopes = res.data.scope
@@ -461,8 +470,7 @@
       handleClick (name, row) {
         switch (name) {
           case'grantApi':
-            this.current = 2
-            this.handleModal(row)
+            this.handleModal(row,2)
             break
           case 'remove':
             this.handleRemove(row)
@@ -472,8 +480,17 @@
             break
         }
       },
-      handleOnChange(data){
+      handleOnScopesChange(data){
         this.formItem.authorities = getUnion(data,this.formItem.authorities);
+      },
+      handleOnAppTypeChange(data){
+        if(data!=='app'){
+          this.formItem.appOs = ''
+        }else{
+          if(!this.formItem.appOs){
+            this.formItem.appOs = 'ios'
+          }
+        }
       },
       handlePage (current) {
         this.pageInfo.page = current
