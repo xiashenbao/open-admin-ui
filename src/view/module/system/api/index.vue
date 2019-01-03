@@ -5,11 +5,11 @@
     </Alert>
     <Card shadow>
       <div class="search-con search-con-top">
-        <Button class="search-btn" type="primary" @click="handleModal()">
-          <Icon type="search"/>&nbsp;&nbsp;添加
-
-
-        </Button>
+        <ButtonGroup size="small">
+          <Button  class="search-btn" type="primary" @click="handleModal()">
+            <Icon type="search"/>&nbsp;&nbsp;新增接口
+          </Button>
+        </ButtonGroup>
       </div>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">

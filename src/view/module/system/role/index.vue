@@ -4,7 +4,7 @@
       <div class="search-con search-con-top">
         <ButtonGroup size="small">
           <Button  class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;新增
+            <Icon type="search"/>&nbsp;&nbsp;新增角色
           </Button>
         </ButtonGroup>
       </div>

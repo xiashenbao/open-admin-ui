@@ -4,7 +4,7 @@
       <div class="search-con search-con-top">
         <ButtonGroup size="small">
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;新增
+            <Icon type="search"/>&nbsp;&nbsp;新增应用
           </Button>
         </ButtonGroup>
       </div>
@@ -393,12 +393,13 @@
       handleSubmit () {
         this.$refs[this.forms[this.current]].validate((valid) => {
           if (valid) {
-            this.formItem.status = this.formItem.statusSwatch ? 1 : 0
-            this.formItem.scopes = this.formItem.scopes.join(',')
-            this.formItem.grantTypes = this.formItem.grantTypes.join(',')
-            this.formItem.authorities = this.formItem.authorities.join(',')
-            if (this.formItem.appId) {
-              updateApp(this.formItem).then(res => {
+            const data = Object.assign({},this.formItem)
+            data.status = this.formItem.statusSwatch ? 1 : 0
+            data.scopes = this.formItem.scopes.join(',')
+            data.grantTypes = this.formItem.grantTypes.join(',')
+            data.authorities = this.formItem.authorities.join(',')
+            if (data.appId) {
+              updateApp(data).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
@@ -406,7 +407,7 @@
                 this.handleSearch()
               })
             } else {
-              addApp(this.formItem).then(res => {
+              addApp(data).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
