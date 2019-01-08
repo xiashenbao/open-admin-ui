@@ -16,10 +16,18 @@
           <Badge v-if="row.status===1" status="success" text="有效"/>
           <Badge v-else="" status="default" text="无效"/>
         </template>
-        <template slot="action" slot-scope="{ row }">
+        <template slot="action"  slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
-          <a  @click="handleRemove(row)">删除</a>
+          <Dropdown  transfer ref="dropdown" @on-click="handleClick($event,row)">
+            <a href="javascript:void(0)">
+              更多
+              <Icon type="ios-arrow-down"></Icon>
+            </a>
+            <DropdownMenu  slot="list">
+              <DropdownItem name="remove">删除接口</DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
@@ -152,7 +160,8 @@
             title: '操作',
             key: '',
             slot: 'action',
-            width: 150
+            width: 125,
+            fixed:'right'
           }
         ],
         data: []
@@ -241,6 +250,13 @@
       handlePageSize(size){
         this.pageInfo.limit = size
         this.handleSearch()
+      },
+      handleClick (name, row) {
+        switch (name) {
+          case 'remove':
+            this.handleRemove(row)
+            break
+        }
       }
     },
     mounted: function () {

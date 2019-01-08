@@ -414,14 +414,15 @@ export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
       let url = item.resource.prefix + (item.path ? item.path : item.resource.menuCode)
       let router = {
-        name: item.resource.menuCode,
+        //使用菜单id不使用menuCode防止修改后,刷新后缓存的页面无法找到
+        name: `router${item.resource.menuId}`,
         path: url,
         meta: {
           access: access,
           hideInMenu: false,
           title: item.resource.menuName,
           notCache: true,
-          icon: item.resource.icon||'md-document',
+          icon: item.resource.icon || 'md-document',
           hideInBread: false,
         },
         children: []
@@ -484,18 +485,18 @@ export const listConvertTree = (array, opt) => {
 export const listConvertGroup = (array, groupKey) => {
   var map = {},
     dest = [];
-  for(var i = 0; i < array.length; i++){
+  for (var i = 0; i < array.length; i++) {
     var ai = array[i];
-    if(!map[ai[groupKey]]){
+    if (!map[ai[groupKey]]) {
       const obj = {}
       obj[groupKey] = ai[groupKey]
       obj['children'] = [ai]
       dest.push(obj);
       map[ai[groupKey]] = ai;
-    }else{
-      for(var j = 0; j < dest.length; j++){
+    } else {
+      for (var j = 0; j < dest.length; j++) {
         var dj = dest[j];
-        if(dj[groupKey] == ai[groupKey]){
+        if (dj[groupKey] == ai[groupKey]) {
           dj['children'].push(ai);
           break;
         }
@@ -505,15 +506,15 @@ export const listConvertGroup = (array, groupKey) => {
   return dest
 }
 
-export const updateTreeNode = (nodes,primaryKey,value, data) => {
+export const updateTreeNode = (nodes, primaryKey, value, data) => {
   const update = (list) => {
     return list.some(item => {
-       if (item[primaryKey] && item[primaryKey] === value) {
-         Object.assign(item,data)
-         return true
-      }else if (item.children && item.children.length>0) {
+      if (item[primaryKey] && item[primaryKey] === value) {
+        Object.assign(item, data)
+        return true
+      } else if (item.children && item.children.length > 0) {
         return update(item.children)
-      }else{
+      } else {
         return false
       }
     })

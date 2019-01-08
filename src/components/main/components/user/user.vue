@@ -1,8 +1,8 @@
 <template>
   <div class="user-avatar-dropdown">
     <Dropdown @on-click="handleClick">
-      <Avatar :src="userAvatar"/>
-      <label class="user-name">{{userName}} </label>
+      <Avatar size="12" :src="userAvatar"/>
+      <label class="user-name">{{userName}}</label>
       <Icon :size="18" type="md-arrow-dropdown"></Icon>
       <DropdownMenu slot="list">
         <DropdownItem name="setting"><Icon size="16" type="md-person" /> 个人设置</DropdownItem>

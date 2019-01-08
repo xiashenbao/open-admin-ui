@@ -18,7 +18,7 @@
               </template>
             </tree-table>
         </Col>
-        <div style="display: block;position: absolute;top: 0;bottom: 0;left: 25%;border: 1px dashed #eee;"></div>
+        <div style="display: block;position: absolute;top: 0;bottom: 0;left: 25%;border-left: 1px solid #eee;"></div>
         <Col span="18">
         <Row>
           <Col span="24">

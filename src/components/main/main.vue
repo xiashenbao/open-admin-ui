@@ -97,7 +97,7 @@ export default {
       return this.$store.state.user.avatarImgPath
     },
     userName () {
-      return this.$store.state.user.userName
+      return this.$store.state.user.nickName
     },
     cacheList () {
       return this.tagNavList.length ? this.tagNavList.filter(item => !(item.meta && item.meta.notCache)).map(item => item.name) : []

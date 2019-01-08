@@ -21,7 +21,7 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row,1)">
             编辑</a>&nbsp;
-          <Dropdown ref="dropdown" @on-click="handleClick($event,row)">
+          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
               <Icon type="ios-arrow-down"></Icon>
@@ -31,7 +31,7 @@
               <DropdownItem name="resetSecret">重置密钥</DropdownItem>
               <DropdownItem name="remove">删除应用</DropdownItem>
             </DropdownMenu>
-          </Dropdown>&nbsp;
+          </Dropdown>
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
@@ -143,19 +143,18 @@
           </CheckboxGroup>
         </FormItem>
         <FormItem v-if="current==2" label="用户授权范围" prop="scopes">
-          <CheckboxGroup v-model="formItem.scopes"  @on-change="handleOnScopesChange">
+          <CheckboxGroup v-model="formItem.scopes">
             <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
           </CheckboxGroup>
         </FormItem>
         <FormItem v-if="current==2"  label="功能授权" prop="authorities">
-          <template v-for="(item,index) in selectApis">
-            <span>{{index +1}}.{{item.apiCategory}}</span>
-           <CheckboxGroup  v-model="formItem.authorities">
-            <Checkbox v-for="cate in item.children" :title="cate.apiDesc?cate.apiDesc:cate.apiName" :label="cate.apiCode">
-              <span>{{ cate.apiName }}</span>
-            </Checkbox>
-          </CheckboxGroup>
-          </template>
+          <Select v-model="formItem.authorities" multiple filterable  @on-change="handleOnSelectAuths" >
+            <OptionGroup  v-for="(item,index) in selectApis" :label="item.apiCategory">
+             <Option :disabled="cate.apiCode!=='all' && formItem.authorities.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiCode" :label="cate.apiName">
+               <span>{{ cate.apiName }}</span>
+               <span style="float:right;color:#ccc;">{{ cate.apiDesc }}</span></Option>
+            </OptionGroup>
+          </Select>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -172,7 +171,6 @@
   import {getApps, updateApp, addApp, removeApp, getAppDevInfo,restApp} from '@/api/app'
   import {getAllApi} from '@/api/apis'
   import {startWith,listConvertGroup} from '@/libs/util'
-  import {getIntersection,getUnion} from '@/libs/tools'
   export default {
     name: 'SystemApp',
     data () {
@@ -323,7 +321,8 @@
           {
             title: '操作',
             slot: 'action',
-            width: 150
+            width: 125,
+            fixed:'right'
           }
         ],
         data: []
@@ -480,9 +479,6 @@
             break
         }
       },
-      handleOnScopesChange(data){
-        this.formItem.authorities = getUnion(data,this.formItem.authorities);
-      },
       handleOnAppTypeChange(data){
         if(data!=='app'){
           this.formItem.appOs = ''
@@ -491,6 +487,12 @@
             this.formItem.appOs = 'ios'
           }
         }
+      },
+      handleOnSelectAuths(data){
+          // 全部,其他的不用选了
+          if(data.indexOf('all') !== -1){
+              this.formItem.authorities = ['all']
+          }
       },
       handlePage (current) {
         this.pageInfo.page = current

@@ -65,7 +65,7 @@ export default [
           icon: 'md-notifications',
           title: '个人设置'
         },
-        component: () => import('@/view/account/setting.vue')
+        component: () => import('@/view/module/account/setting.vue')
       }
     ]
   },

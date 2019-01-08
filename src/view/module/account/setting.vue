@@ -1,8 +1,8 @@
 <template>
   <Card shadow>
     <div>
-      <div class="account-setting-con setting-left-con">
-        <Menu width="auto" active-name="profile" @on-select="handleSelect">
+      <div  class="account-setting-con left-con">
+        <Menu  active-name="profile" @on-select="handleSelect">
           <MenuItem name="profile">
             <span>基本信息</span>
           </MenuItem>
@@ -11,7 +11,7 @@
           </MenuItem>
         </Menu>
       </div>
-      <div class="account-setting-con setting-view-con">
+      <div class="account-setting-con view-con">
         <Form v-if="currentSelect==='profile'" ref="userForm" :model="profile">
           <h3>
             <span>基本信息</span>
@@ -41,8 +41,8 @@
             <span>安全设置</span>
           </h3>
           <Divider />
-          <p>密码强度</p>
-          <p style="color: #9ea7b4">当前密码强度：弱&nbsp;&nbsp;<a>修改</a></p>
+          <p>登陆名</p>
+          <p style="color: #9ea7b4">当前登录名:{{profile.userName}}</p>
           <Divider />
           <p>绑定手机</p>
           <p style="color: #9ea7b4">
@@ -95,11 +95,10 @@
       display: inline-block;
       vertical-align: top;
       position: relative;
-      &.setting-left-con{
+      &.left-con{
         border-right: 1px solid #e6e6e6;
-        width: 224px;
       }
-      &.setting-view-con{
+      &.view-con{
         position: absolute;
         left: 264px;
         top: 16px;

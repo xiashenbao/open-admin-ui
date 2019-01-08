@@ -17,8 +17,8 @@ const router = new Router({
 const LOGIN_PAGE_NAME = 'login'
 const turnTo = (to, access, next) => {
   if(!to.name){
-    // 防止地址栏刷新跳转到401或404,强制跳转到home
-    next({ replace: true, name: 'home' })
+    // 防止地址栏刷新动态路由跳转到401或404,先跳转到homeName
+    next({ replace: true, name: homeName })
   }else if (canTurnTo(to.name, access, routes)) {
     // 有权限，可访问
     next()

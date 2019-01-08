@@ -14,7 +14,7 @@
           <Badge v-else-if="row.status===2" status="success" text="锁定"/>
           <Badge v-else="" status="default" text="禁用"/>
         </template>
-        <template slot="action" slot-scope="{ row }">
+        <template  slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
         </template>
@@ -181,7 +181,8 @@
           {
             title: '操作',
             slot: 'action',
-            width: 150
+            width: 125,
+            fixed:'right'
           }
         ],
         data: []

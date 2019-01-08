@@ -16,12 +16,12 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
-          <Dropdown ref="dropdown" @on-click="handleClick($event,row)">
+          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
-            <DropdownMenu slot="list">
+            <DropdownMenu  slot="list">
               <DropdownItem name="grantMenu">菜单授权</DropdownItem>
               <DropdownItem name="grantApi">接口授权</DropdownItem>
               <DropdownItem name="remove">删除角色</DropdownItem>
@@ -119,7 +119,9 @@
           },
           {
             title: '角色',
-            slot: 'action'
+            slot: 'action',
+            width: 125,
+            fixed:'right'
           }
         ],
         data: []
