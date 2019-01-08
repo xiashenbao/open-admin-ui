@@ -11,7 +11,7 @@
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="有效"/>
-          <Badge v-else="" status="default" text="无效"/>
+          <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
@@ -161,19 +161,19 @@
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.roleId) {
               updateRole(this.formItem).then(res => {
+                this.handleReset()
+                this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.handleReset()
-                this.handleSearch()
               })
             } else {
               addRole(this.formItem).then(res => {
+                this.handleReset()
+                this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.handleReset()
-                this.handleSearch()
               })
             }
           }
@@ -200,11 +200,11 @@
           title: '确定删除吗？',
           onOk: () => {
             removeRole({roleId: data.roleId}).then(res => {
+              this.handleSearch()
               if (res.code === 0) {
                 this.pageInfo.page=1
                 this.$Message.success('删除成功')
               }
-              this.handleSearch()
             })
           }
         });

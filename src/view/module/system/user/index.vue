@@ -12,7 +12,7 @@
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="正常"/>
           <Badge v-else-if="row.status===2" status="success" text="锁定"/>
-          <Badge v-else="" status="default" text="禁用"/>
+          <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template  slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">

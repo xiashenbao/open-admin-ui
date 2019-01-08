@@ -14,7 +14,7 @@
                         :data="data">
               <template slot="status" slot-scope="scope">
                 <Badge v-if="scope.row.status===1" status="success" text="有效"/>
-                <Badge v-else="" status="default" text="无效"/>
+                <Badge v-else="" status="error" text="无效"/>
               </template>
             </tree-table>
         </Col>
@@ -219,12 +219,12 @@
       },
       handleRemove() {
         removeMenu({menuId: this.formItem.menuId}).then(res => {
+          this.handleReset()
+          this.handleSearch()
           if (res.code === 0) {
             this.$Message.success('删除成功')
           }
-          this.handleReset()
-          this.handleSearch()
-        })()
+        })
       },
       handleSearch () {
         getMenus().then(res => {

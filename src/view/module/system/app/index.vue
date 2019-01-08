@@ -16,7 +16,7 @@
         </template>
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="有效"/>
-          <Badge v-else="" status="default" text="无效"/>
+          <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row,1)">
@@ -411,19 +411,19 @@
             data.authorities = this.formItem.authorities.join(',')
             if (data.appId) {
               updateApp(data).then(res => {
+                this.handleReset()
+                this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.handleReset()
-                this.handleSearch()
               })
             } else {
               addApp(data).then(res => {
+                this.handleReset()
+                this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-                this.handleReset()
-                this.handleSearch()
               })
             }
           }
@@ -442,11 +442,11 @@
           title: '删除后将无法恢复,确定删除吗？',
           onOk: () => {
             removeApp({appId: data.appId}).then(res => {
+              this.handleSearch()
               if (res.code === 0) {
                 this.pageInfo.page = 1
                 this.$Message.success('删除成功')
               }
-              this.handleSearch()
             })
           }
         })

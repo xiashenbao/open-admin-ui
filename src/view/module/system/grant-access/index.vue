@@ -6,7 +6,7 @@
     <Table :columns="columns" :data="data" :loading="loading">
       <template slot="status" slot-scope="{ row }">
         <Badge v-if="row.status===1" status="success" text="有效"/>
-        <Badge v-else="" status="default" text="无效"/>
+        <Badge v-else="" status="error" text="无效"/>
       </template>
       <template slot="resourceType" slot-scope="{ row }">
         <span v-if="row.resourceType==='api'">接口</span>
