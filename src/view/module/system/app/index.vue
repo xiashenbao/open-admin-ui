@@ -269,7 +269,7 @@
           userType: 'platform',
           scopes: [],
           authorities: [],
-          grantTypes: []
+          grantTypes: ['authorization_code','client_credentials','refresh_token']
         },
         columns: [
           {
@@ -392,7 +392,7 @@
           userType: 'platform',
           scopes: [],
           authorities: [],
-          grantTypes: []
+          grantTypes: ['authorization_code','client_credentials','refresh_token']
         }
         this.formItem = newData
         this.forms.map(form => {
