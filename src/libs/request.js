@@ -20,7 +20,6 @@ service.interceptors.request.use((config) => {
     config.method === 'post'
       ? config.data = qs.stringify({...config.data})
       : config.params = {...config.params}
-    config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
     if (getToken()) {
       config.headers['Authorization'] = 'Bearer ' + getToken()
     }

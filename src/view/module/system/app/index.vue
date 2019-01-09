@@ -151,8 +151,8 @@
           <Select v-model="formItem.authorities" multiple filterable  @on-change="handleOnSelectAuths" >
             <OptionGroup  v-for="(item,index) in selectApis" :label="item.apiCategory">
              <Option :disabled="cate.apiCode!=='all' && formItem.authorities.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiCode" :label="cate.apiName">
-               <span>{{ cate.apiName }}</span>
-               <span style="float:right;color:#ccc;">{{ cate.apiDesc }}</span></Option>
+               <span :title="cate.apiDesc">{{ cate.apiName }}</span>
+               <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
             </OptionGroup>
           </Select>
         </FormItem>
@@ -358,7 +358,7 @@
               if (res.data.authorities && res.data.authorities.length > 0) {
                 this.formItem.authorities = res.data.authorities.map(item => {
                     // 替换掉前缀
-                    return item.replace('APP_', '')
+                    return item.replace('APP_', '').replace('API_','')
                   }
                 )
               }

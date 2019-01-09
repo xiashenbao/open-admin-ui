@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>网关服务：外部访问资源控制,需开启权限验证(opencloud.gateway.enabled-validate-access=true)，否则全部放行。<a>一键刷新网关</a>
+    <Alert show-icon>网关服务：外部访问资源控制,需开启权限验证(opencloud.gateway.enabled-validate-access=true)，否则全部放行。<a @click="handleRefreshGateway">一键刷新网关</a>
     </Alert>
     <Card shadow>
     <Table :columns="columns" :data="data" :loading="loading">
@@ -32,7 +32,7 @@
 
 <script>
   import {getGrantAccess} from '@/api/grant-access'
-
+  import {refreshGateway} from '@/api/gateway'
   export default {
     name: 'SystemGrantAccess',
     data () {
@@ -91,6 +91,18 @@
       handlePageSize(size){
         this.pageInfo.limit = size
         this.handleSearch()
+      },
+      handleRefreshGateway(){
+        this.$Modal.confirm({
+          title: '确定刷新网关吗？',
+          onOk: () => {
+            refreshGateway().then(res => {
+              if (res.code === 0) {
+                this.$Message.success('刷新成功')
+              }
+            })
+          }
+        })
       }
     },
     mounted: function () {
