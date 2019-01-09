@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>网关服务：外部访问资源控制,需开启权限验证(opencloud.gateway.enabled-validate-access=true)，否则全部放行。<a @click="handleRefreshGateway">一键刷新网关</a>
+    <Alert show-icon>网关服务：动态访问权限控制,需开启动态权限验证(opencloud.gateway.enabled-validate-access=true)。<a @click="handleRefreshGateway">一键刷新网关</a>
     </Alert>
     <Card shadow>
     <Table :columns="columns" :data="data" :loading="loading">
