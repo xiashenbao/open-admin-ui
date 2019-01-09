@@ -149,7 +149,7 @@
             slot: 'status'
           },
           {
-            title: '资源服务器',
+            title: '资源所属服务',
             key: 'serviceId'
           },
           {

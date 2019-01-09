@@ -2,7 +2,7 @@
   <Layout style="height: 100%" class="main">
     <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider" :style="{overflow: 'hidden'}">
        <div class="logo-con" >
-         <p v-show="!collapsed" class="logo-text" style="font-size: 20px">开放平台运维系统</p>
+         <p v-show="!collapsed" class="logo-text" style="font-size: 20px">开放平台运营系统</p>
          <p v-show="collapsed" class="logo-text"  style="font-size:12px">开放平台</p>
        <!--  <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
          <img v-show="collapsed" :src="minLogo" key="min-logo" />-->

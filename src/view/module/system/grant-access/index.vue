@@ -1,6 +1,8 @@
 <template>
   <div>
-    <Alert show-icon>网关服务：动态访问权限控制,需开启动态权限验证(opencloud.gateway.enabled-validate-access=true)。<a @click="handleRefreshGateway">一键刷新网关</a>
+    <Alert show-icon>网关服务：动态访问权限控制,需开启动态权限验证(opencloud.gateway.enabled-validate-access=true)。角色或应用授权资源后需要手动刷新网关。否则不生效！&nbsp;&nbsp;<a @click="handleRefreshGateway">一键刷新网关</a>
+      <br>
+    <code>开放API接口安全。使用标准Oauth2进行身份认证、接口调用鉴权、参数签名验证.</code>
     </Alert>
     <Card shadow>
     <Table :columns="columns" :data="data" :loading="loading">
@@ -13,14 +15,14 @@
         <span v-else-if="row.resourceType==='menu'">菜单</span>
         <span v-else-if="row.resourceType==='action'">操作</span>
         <span v-else="">{{row.resourceType}}</span>
-        <span>/{{row.resourceId}}</span>
+        <span>&nbsp;/&nbsp;{{row.resourceId}}</span>
       </template>
       <template slot="authorityPrefix" slot-scope="{ row }">
         <span v-if="row.authorityPrefix==='USER_'">用户</span>
         <span v-else-if="row.authorityPrefix==='ROLE_'">角色</span>
         <span v-else-if="row.authorityPrefix==='APP_'">应用</span>
         <span v-else="">{{row.authorityPrefix}}</span>
-        <span>/{{row.authorityOwner}}</span>
+        <span>&nbsp;/&nbsp;{{row.authorityOwner}}</span>
       </template>
     </Table>
     <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
@@ -53,17 +55,17 @@
             key: 'authority'
           },
           {
-            title: '访问对象/ID',
+            title: '访问对象 / ID',
             key: 'authorityPrefix',
             slot: 'authorityPrefix'
           },
           {
-            title: '资源类型/ID',
+            title: '授权资源 / ID',
             key: 'resourceType',
             slot: 'resourceType'
           },
           {
-            title: '资源服务器',
+            title: '资源所属服务',
             key: 'serviceId'
           },
           {

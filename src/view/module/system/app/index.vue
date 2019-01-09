@@ -147,11 +147,11 @@
             <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
           </CheckboxGroup>
         </FormItem>
-        <FormItem v-if="current==2"  label="功能授权" prop="authorities">
+        <FormItem v-if="current==2"  label="功能接口授权" prop="authorities">
           <Select v-model="formItem.authorities" multiple filterable  @on-change="handleOnSelectAuths" >
             <OptionGroup  v-for="(item,index) in selectApis" :label="item.apiCategory">
-             <Option :disabled="cate.apiCode!=='all' && formItem.authorities.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiCode" :label="cate.apiName">
-               <span :title="cate.apiDesc">{{ cate.apiName }}</span>
+             <Option :title="cate.apiDesc" :disabled="cate.apiCode!=='all' && formItem.authorities.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiCode" :label="cate.apiName">
+               <span>{{ cate.apiName }}</span>
                <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
             </OptionGroup>
           </Select>
@@ -192,8 +192,8 @@
         ],
         selectScopes: [
           {label: 'userProfile', title: '平台登录信息'},
-          {label: 'api1', title: '用户授权测试1'},
-          {label: 'api2', title: '用户授权测试2'},
+          // 这是测试数据,根据实际情况自定义添加
+          {label: 'api1', title: '每种用户授权需对应下方的某一个功能接口'},
         ],
         pageInfo: {
           total: 0,
