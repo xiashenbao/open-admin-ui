@@ -74,3 +74,26 @@ export const roleGrantAction = ({roleId,actionIds}) => {
     method: 'post'
   })
 }
+
+
+export const getRoleGrantedMenu = (roleId) => {
+  const data= {
+    roleId:roleId
+  }
+  return request({
+    url: 'base/role/granted/menu',
+    data,
+    method: 'post'
+  })
+}
+
+export const getRoleGrantedAction = (roleId) => {
+  const data= {
+    roleId:roleId
+  }
+  return request({
+    url: 'base/role/granted/action',
+    data,
+    method: 'post'
+  })
+}

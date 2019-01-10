@@ -33,6 +33,13 @@ export const getUserMenus = () => {
   })
 }
 
+export const getUserActions = () => {
+  return request({
+    url: 'base/user/grant/actions',
+    method: 'get'
+  })
+}
+
 export const logout = () => {
   return request({
     url: 'logout',

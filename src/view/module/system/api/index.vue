@@ -25,6 +25,7 @@
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu  slot="list">
+              <DropdownItem name="rateLimit">接口限流</DropdownItem>
               <DropdownItem name="remove">删除接口</DropdownItem>
             </DropdownMenu>
           </Dropdown>

@@ -5,7 +5,6 @@
         <Col span="6" >
             <tree-table height="900"
                         expand-key="menuName"
-                        @radio-click="rowClick"
                         :expand-type="false"
                         :is-fold="false"
                         :tree-type="true"
@@ -166,14 +165,6 @@
           this.handleReset()
         }
         this.disabled = false
-      },
-      rowClick (data) {
-        this.disabled = true
-        this.handleReset()
-        if (data) {
-          this.formItem = Object.assign({}, data.row)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-        }
       },
       handleReset () {
         const newData = {

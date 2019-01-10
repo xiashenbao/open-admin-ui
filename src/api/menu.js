@@ -9,6 +9,14 @@ export const getMenus = () => {
   })
 }
 
+export const getMenuActions = () => {
+  const data = {}
+  return request({
+    url: 'base/menu/action/list',
+    data,
+    method: 'post'
+  })
+}
 
 export const updateMenu = (data) => {
   return request({
