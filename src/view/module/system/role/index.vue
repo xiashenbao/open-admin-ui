@@ -2,9 +2,9 @@
   <div>
     <Card shadow>
       <div class="search-con search-con-top">
-        <ButtonGroup size="small">
+        <ButtonGroup>
           <Button  class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;新增角色
+            <Icon type="search"/>&nbsp;&nbsp;新建角色
           </Button>
         </ButtonGroup>
       </div>

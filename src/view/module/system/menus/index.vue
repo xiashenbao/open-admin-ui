@@ -23,8 +23,8 @@
         <Row>
           <Col span="24">
           <div class="search-con search-con-top">
-            <ButtonGroup size="small">
-              <Button type="primary" @click="setEnabled(true)">新增</Button>
+            <ButtonGroup>
+              <Button type="primary" @click="setEnabled(true)">新建</Button>
               <Button type="primary" :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
               <Button type="primary" :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
             </ButtonGroup>

@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="search-con search-con-top">
-      <ButtonGroup size="small">
+      <ButtonGroup>
         <Button :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="handleModal()">
-          <Icon type="search"/>&nbsp;&nbsp;新增操作
+          <Icon type="search"/>&nbsp;&nbsp;新建操作
         </Button>
       </ButtonGroup>
     </div>
