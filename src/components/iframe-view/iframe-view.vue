@@ -19,12 +19,11 @@
       'screenHeight' (val) {
         val = parseInt(val) - 150
         this.setFrameHeight(val)
+      },
+      '$route'(val){
+        this.getRouterData()
       }
     },
-    created() {
-      this.getRouterData()
-    }
-    ,
     methods: {
       getRouterData: function () {//获取 iframe src 路径
        const params = getParams(window.location.href);
@@ -35,6 +34,7 @@
       },
     },
     mounted(){
+      this.getRouterData()
       const that = this
       // 高度适应
       that.screenHeight = document.body.clientHeight

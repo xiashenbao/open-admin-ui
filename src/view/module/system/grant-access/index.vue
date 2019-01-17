@@ -47,6 +47,11 @@
         },
         columns: [
           {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
+          {
             title: '访问路径',
             key: 'path'
           },

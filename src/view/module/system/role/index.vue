@@ -139,7 +139,7 @@
             {required: true, type: 'array', min: 1, message: '菜单资源不能为空', trigger: 'blur'}
           ],
           grantApis: [
-            {required: true, type: 'array', min: 1, message: '接口资源不能为空', trigger: 'blur'}
+            {required: false, type: 'array',  message: '接口资源不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -157,6 +157,11 @@
           grantApis:[]
         },
         columns: [
+          {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
           {
             title: '角色名称',
             key: 'roleName'
@@ -323,7 +328,6 @@
       },
       handleLoadRoleGranted(roleId){
         getRoleGrantedMenu(roleId).then(res => {
-            console.log(JSON.stringify(res))
            if(res.code ===0){
              let  result = []
               res.data.list.map( item =>{

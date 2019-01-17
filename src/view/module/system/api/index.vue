@@ -125,6 +125,11 @@
         },
         columns: [
           {
+            type: 'selection',
+            width: 60,
+            align: 'center'
+          },
+          {
             title: '接口名称',
             key: 'apiName'
           },

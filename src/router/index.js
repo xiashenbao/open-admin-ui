@@ -11,16 +11,15 @@ Vue.use(Router)
 // 存放加载的动态路由
 let dyncRouters = []
 const router = new Router({
-  routes: routes.concat(...dyncRouters),
+  routes: routes,
   mode: 'history'
 })
 const LOGIN_PAGE_NAME = 'login'
 const turnTo = (to, access, next) => {
   if(!to.name){
     // 防止地址栏刷新动态路由跳转到401或404,先跳转到homeName
-    next({ replace: true, name: homeName })
+    router.replace(to)
   }else if (canTurnTo(to.name, access, routes)) {
-    // 有权限，可访问
     next()
   } else {
     // 无权限，重定向到401页面
@@ -55,8 +54,10 @@ router.beforeEach((to, from, next) => {
           router.addRoutes(dyncRouters)
           routes.push(...dyncRouters)
         }
+        console.log(to)
         turnTo(to, store.state.user.access, next)
       }).catch(err => {
+        console.error(err)
         setToken('')
         next({
           name: 'login'

@@ -188,6 +188,7 @@ export const canTurnTo = (name, access, routes) => {
       if (item.children && item.children.length) {
         return routePermissionJudge(item.children)
       } else if (item.name === name) {
+        console.log(item.name)
         return hasAccess(access, item)
       }
     })

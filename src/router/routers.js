@@ -183,6 +183,22 @@ export default [
     ]
   },
   {
+    path: '/iframe',
+    name: 'iframe',
+    meta: {
+      hideInBread: true,
+      hideInMenu: true
+    },
+    component: Main,
+    children: [
+      {
+        path: '/iframe/:routerPath',
+        name: 'iframe',
+        component: () => import('_c/iframe-view')
+      }
+    ]
+  },
+  {
     path: '/401',
     name: 'error_401',
     meta: {
