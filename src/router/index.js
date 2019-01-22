@@ -10,7 +10,14 @@ const { homeName } = config
 Vue.use(Router)
 // 存放加载的动态路由
 let dyncRouters = []
+
+// 基础路由地址
+const BASE_URL = process.env.NODE_ENV === 'production'
+  ? '/admin'
+  : '/'
+
 const router = new Router({
+  base:BASE_URL,
   routes: routes,
   mode: 'history'
 })
