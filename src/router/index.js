@@ -11,7 +11,7 @@ Vue.use(Router)
 // 存放加载的动态路由
 let dyncRouters = []
 
-// 基础路由地址
+// 基础路由地址 和vue.config.js 中的baseUrl保持一致
 const BASE_URL = process.env.NODE_ENV === 'production'
   ? '/admin'
   : '/'
