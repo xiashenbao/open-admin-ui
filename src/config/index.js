@@ -14,7 +14,7 @@ export default {
    */
   baseUrl: {
     dev: 'http://localhost:8888',
-    pro: 'http://localhost:8888'
+    pro: 'http://39.106.187.125:8888'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
