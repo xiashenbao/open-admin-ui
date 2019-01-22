@@ -54,7 +54,6 @@ router.beforeEach((to, from, next) => {
           router.addRoutes(dyncRouters)
           routes.push(...dyncRouters)
         }
-        console.log(to)
         turnTo(to, store.state.user.access, next)
       }).catch(err => {
         console.error(err)
