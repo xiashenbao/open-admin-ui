@@ -36,25 +36,10 @@ export const removeRole = ({roleId}) => {
   })
 }
 
-
-
-export const roleGrantApi = ({roleId,apiIds}) => {
+export const roleGrantMenu = ({roleId,grantMenus}) => {
   const data= {
     roleId:roleId,
-    apiIds:apiIds
-  }
-  return request({
-    url: 'base/role/grant/api',
-    data,
-    method: 'post'
-  })
-}
-
-
-export const roleGrantMenu = ({roleId,menuIds}) => {
-  const data= {
-    roleId:roleId,
-    menuIds:menuIds
+    menuIds:grantMenus.join(",")
   }
   return request({
     url: 'base/role/grant/menu',
@@ -63,10 +48,10 @@ export const roleGrantMenu = ({roleId,menuIds}) => {
   })
 }
 
-export const roleGrantAction = ({roleId,actionIds}) => {
+export const roleGrantAction = ({roleId,grantActions}) => {
   const data= {
     roleId:roleId,
-    actionIds:actionIds
+    actionIds:grantActions.join(",")
   }
   return request({
     url: 'base/role/grant/action',
@@ -75,6 +60,17 @@ export const roleGrantAction = ({roleId,actionIds}) => {
   })
 }
 
+export const roleGrantApi = ({roleId,grantApis}) => {
+  const data= {
+    roleId:roleId,
+    apiIds:grantApis.join(",")
+  }
+  return request({
+    url: 'base/role/grant/api',
+    data,
+    method: 'post'
+  })
+}
 
 export const getRoleGrantedMenu = (roleId) => {
   const data= {
@@ -93,6 +89,17 @@ export const getRoleGrantedAction = (roleId) => {
   }
   return request({
     url: 'base/role/granted/action',
+    data,
+    method: 'post'
+  })
+}
+
+export const getRoleGrantedApi = (roleId) => {
+  const data= {
+    roleId:roleId
+  }
+  return request({
+    url: 'base/role/granted/api',
     data,
     method: 'post'
   })

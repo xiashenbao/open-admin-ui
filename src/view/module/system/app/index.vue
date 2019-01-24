@@ -19,10 +19,10 @@
           <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row,1)">
+          <a @click="handleModal(row,1)" :disabled="row.appId === 'gateway' ?true:false">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">
+            <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">
               更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
@@ -316,9 +316,7 @@
           },
           {
             title: '操作',
-            slot: 'action',
-            width: 125,
-            fixed:'right'
+            slot: 'action'
           }
         ],
         data: []
@@ -340,11 +338,6 @@
         }
       },
       handleModal (data,step) {
-        if(!step){
-          step =  0
-        }
-        this.current = step
-
         if (data) {
           getAppDevInfo({appId: data.appId}).then(res => {
             if (res.code === 0) {
@@ -366,6 +359,10 @@
         } else {
           this.modalTitle = '添加应用'
         }
+        if(!step){
+          step =  0
+        }
+        this.current = step
         this.modalVisible = true
       },
       handleReset () {

@@ -185,9 +185,7 @@
           },
           {
             title: '操作',
-            slot: 'action',
-            width: 125,
-            fixed:'right'
+            slot: 'action'
           }
         ],
         data: []

@@ -14,10 +14,10 @@
           <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">
+          <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">
+            <a href="javascript:void(0)"  :disabled="row.roleCode === 'all' ?true:false">
               更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
@@ -85,7 +85,7 @@
         <FormItem label="接口资源" prop="grantApis" >
           <Select v-model="formItem.grantApis" multiple filterable  @on-change="handleOnSelectApis">
             <OptionGroup  v-for="(item,index) in selectApis" :label="item.apiCategory">
-              <Option :title="cate.apiDesc" :disabled="cate.apiCode!=='all' && formItem.grantApis.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiCode" :label="cate.apiName">
+              <Option :title="cate.apiDesc" :disabled="cate.apiCode!=='all' && formItem.grantApis.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiId" :label="cate.apiName">
                 <span>{{ cate.apiName }}</span>
                 <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
             </OptionGroup>
@@ -103,7 +103,7 @@
 </template>
 
 <script>
-  import {getRoles, updateRole, addRole, removeRole,getRoleGrantedMenu,getRoleGrantedAction} from '@/api/role'
+  import {getRoles, updateRole, addRole, removeRole,getRoleGrantedMenu,getRoleGrantedAction,getRoleGrantedApi,roleGrantMenu,roleGrantAction,roleGrantApi} from '@/api/role'
   import {getMenuActions} from '@/api/menu'
   import {getAllApi} from '@/api/apis'
   import {startWith,listConvertGroup,listConvertTree} from '@/libs/util'
@@ -185,9 +185,7 @@
           },
           {
             title: '角色',
-            slot: 'action',
-            width: 125,
-            fixed:'right'
+            slot: 'action'
           }
         ],
         columns2: [
@@ -228,10 +226,6 @@
         }
       },
       handleModal (data,step) {
-        if(!step){
-          step =  0
-        }
-        this.current = step
         if (data) {
           this.modalTitle = '编辑角色'
           this.formItem = Object.assign({},  this.formItem, data)
@@ -240,6 +234,10 @@
         } else {
           this.modalTitle = '添加角色'
         }
+        if(!step){
+          step =  0
+        }
+        this.current = step
         this.modalVisible = true
       },
       handleReset () {
@@ -264,6 +262,8 @@
         })
         this.current = 0
         this.modalVisible = false
+        this.formItem.grantMenus = []
+        this.formItem.grantActions = []
       },
       handleSubmit () {
         this.$refs[this.forms[this.current]].validate((valid) => {
@@ -271,11 +271,17 @@
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.roleId) {
               updateRole(this.formItem).then(res => {
-                this.handleReset()
-                this.handleSearch()
-                if (res.code === 0) {
-                  this.$Message.success('保存成功')
-                }
+                roleGrantMenu(this.formItem).then(res =>{
+                   roleGrantAction(this.formItem).then(res=>{
+                     roleGrantApi(this.formItem).then(res=>{
+                       this.handleReset()
+                       this.handleSearch()
+                       if (res.code === 0) {
+                         this.$Message.success('保存成功')
+                       }
+                     })
+                   })
+                })
               })
             } else {
               addRole(this.formItem).then(res => {
@@ -334,6 +340,7 @@
                 result.push(item.resourceId)
               })
              this.formItem.grantMenus = result
+             this.handleLoadMenus()
            }
         })
         getRoleGrantedAction(roleId).then(res => {
@@ -345,6 +352,15 @@
             this.formItem.grantActions = result
           }
         })
+        getRoleGrantedApi(roleId).then(res => {
+          if(res.code ===0){
+            let  result = []
+            res.data.list.map( item =>{
+              result.push(item.resourceId)
+            })
+            this.formItem.grantApis = result
+          }
+        })
       },
       handleLoadMenus () {
         getMenuActions().then(res => {
@@ -352,6 +368,13 @@
             primaryKey: 'menuId',
             parentKey: 'parentId',
             startPid: '0'
+          }
+          if(this.formItem.grantMenus && res.data.list){
+            res.data.list.map(item =>{
+                if(this.formItem.grantMenus.indexOf(item.menuId)!==-1){
+                  item._isChecked = true
+                }
+             })
           }
           this.selectMenus = listConvertTree(res.data.list, opt)
         })
@@ -364,6 +387,12 @@
       },
       handleClick (name,row) {
         switch (name) {
+          case'grantMenu':
+            this.handleModal(row,1)
+            break
+          case'grantApi':
+            this.handleModal(row,2)
+            break
           case 'remove':
             this.handleRemove(row)
             break
@@ -372,7 +401,6 @@
     },
     mounted: function () {
       this.handleSearch()
-      this.handleLoadMenus()
       this.handleLoadApis()
     }
   }
