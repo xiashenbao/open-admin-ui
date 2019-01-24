@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>网关服务：动态访问权限控制,需开启动态权限验证(opencloud.gateway.enabled-validate-access=true)。角色或应用授权资源后需要手动刷新网关。否则不生效！&nbsp;&nbsp;<a @click="handleRefreshGateway">一键刷新网关</a>
+    <Alert show-icon>网关服务：动态访问权限控制,需开启动态权限验证(opencloud.gateway.enabled-validate-access=true)。<a @click="handleRefreshGateway">一键刷新网关</a>
       <br>
     <code>开放API接口安全。使用标准Oauth2进行身份认证、接口调用鉴权、参数签名验证.</code>
     </Alert>
@@ -101,7 +101,8 @@
       },
       handleRefreshGateway(){
         this.$Modal.confirm({
-          title: '确定刷新网关吗？',
+          title: '提示',
+          content:'将刷新所有网关实例（访问权限、限流、路由缓存），是否继续？',
           onOk: () => {
             refreshGateway().then(res => {
               if (res.code === 0) {
