@@ -5,8 +5,12 @@ import {forEach, hasOneOf, objEqual} from '@/libs/tools'
 
 export const TOKEN_KEY = 'token'
 
-export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, {expires: config.cookieExpires || 1})
+export const setToken = (token,auto) => {
+  if(auto){
+    Cookies.set(TOKEN_KEY, token, {expires: config.cookieExpires || 1})
+  }else {
+    Cookies.set(TOKEN_KEY, token)
+  }
 }
 
 export const getToken = () => {

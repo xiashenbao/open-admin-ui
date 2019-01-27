@@ -21,10 +21,18 @@
         </span>
             </FormItem>
             <FormItem>
+              <Checkbox v-model="form.auto">自动登录</Checkbox>
+              <a href="#" style="float: right">忘记密码</a>
+            </FormItem>
+            <FormItem>
               <Button @click="handleSubmit" type="primary" long>登录</Button>
             </FormItem>
           </Form>
-          <p class="login-tip">输入任意用户名和密码即可</p>
+          <p class="login-tip">其他登录方式
+            <Icon custom="icon iconfont icon-QQ-circle-fill" color="#0099ff" size="22" />
+            <Icon custom="icon iconfont icon-wechat-fill" color="#00cc33" size="22" />
+            <Icon custom="icon iconfont icon-alipay-circle-fill" color="#0099ff" size="22" />
+            <a href="#" style="float: right">注册账号</a></p>
         </div>
       </Card>
     </div>
@@ -58,7 +66,8 @@ export default {
     return {
       form: {
         username: 'admin',
-        password: '123456'
+        password: '123456',
+        auto:true,
       }
     }
   },
@@ -78,9 +87,10 @@ export default {
     handleSubmit () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          const username = this.form.username
-          const password = this.form.password
-          this.handleLogin({ username, password }).then(res => {
+          let username = this.form.username
+          let password = this.form.password
+          let auto = this.form.auto
+          this.handleLogin({ username, password,auto}).then(res => {
             this.$router.push({
               name: this.$config.homeName
             })

@@ -30,9 +30,9 @@ export default {
     setAccess (state, access) {
       state.access = access
     },
-    setToken (state, token) {
+    setToken (state, {token , auto}) {
       state.token = token
-      setToken(token)
+      setToken(token,auto)
     },
     setHasGetInfo (state, status) {
       state.hasGetInfo = status
@@ -49,7 +49,7 @@ export default {
   },
   actions: {
     // 登录
-    handleLogin ({commit}, {username, password}) {
+    handleLogin ({commit}, {username, password,auto}) {
       username = username.trim()
       return new Promise((resolve, reject) => {
         login({
@@ -58,7 +58,8 @@ export default {
         }).then(res => {
           if (res) {
             if (res.code === 0) {
-              commit('setToken', res.data.access_token)
+              let  token = res.data.access_token
+              commit('setToken',{token,auto})
               resolve()
             }
           }
@@ -78,10 +79,6 @@ export default {
         }).catch(err => {
           reject(err)
         })
-        // 如果你的退出登录无需请求接口，则可以直接使用下面三行代码而无需使用logout调用接口
-        // commit('setToken', '')
-        // commit('setAccess', [])
-        // resolve()
       })
     },
     // 获取用户相关信息
