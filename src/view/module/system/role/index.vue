@@ -195,13 +195,13 @@
           {
             title: '菜单资源',
             key: 'menuName',
-            minWidth: '100px'
+            minWidth: '250px'
           },
           {
             title: '操作资源',
             type: 'template',
             template: 'status',
-            minWidth: '300px'
+            minWidth: '200px'
           },
         ],
         data: []
