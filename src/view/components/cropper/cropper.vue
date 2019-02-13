@@ -6,7 +6,7 @@
           <div class="cropper-example cropper-first">
             <cropper
               :src="exampleImageSrc"
-              crop-button-text="确认提交"
+              crop-button-text="确认保存"
               @on-crop="handleCroped"
             ></cropper>
           </div>

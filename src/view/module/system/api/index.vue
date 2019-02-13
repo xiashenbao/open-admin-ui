@@ -75,7 +75,7 @@
 
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
-        <Button type="primary" @click="handleSubmit">提交</Button>
+        <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
       </div>
     </Modal>
   </div>
@@ -92,6 +92,7 @@
         loading: false,
         modalVisible: false,
         modalTitle: '',
+        saving:false,
         pageInfo: {
           total: 0,
           page: 1,
@@ -204,9 +205,11 @@
       handleSubmit () {
         this.$refs['apiForm'].validate((valid) => {
           if (valid) {
+            this.saving = true
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.apiId) {
               updateApi(this.formItem).then(res => {
+                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
@@ -215,6 +218,7 @@
               })
             } else {
               addApi(this.formItem).then(res => {
+                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {

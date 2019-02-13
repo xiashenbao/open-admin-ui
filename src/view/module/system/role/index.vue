@@ -36,67 +36,69 @@
            :title="modalTitle"
            width="680"
            @on-cancel="handleReset">
-      <Steps :current="current" size="small">
-        <Step title="角色信息"></Step>
-        <Step title="授权菜单和操作"></Step>
-        <Step title="授权接口"></Step>
-      </Steps>
-      <Form  ref="form1" v-show="current===0"  :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="角色标识" prop="roleCode">
-          <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="角色名称" prop="roleName">
-          <Input  v-model="formItem.roleName" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="状态">
-          <i-switch v-model="formItem.statusSwatch" size="large">
-            <span slot="open">有效</span>
-            <span slot="close">无效</span>
-          </i-switch>
-        </FormItem>
-        <FormItem label="描述">
-          <Input v-model="formItem.roleDesc" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-      </Form>
-      <Form  ref="form2" v-show="current===1"  :model="formItem"  :rules="formItemRules" :label-width="100">
-        <FormItem label="菜单/操作资源" prop="grantMenus">
-          <tree-table
-                      ref="tree"
-                      max-height="400"
-                      expand-key="menuName"
-                      @checkbox-click="checkboxClick"
-                      :expand-type="false"
-                      :is-fold="false"
-                      :tree-type="true"
-                      :selectable="true"
-                      :columns="columns2"
-                      :data="selectMenus">
-            <template slot="status" slot-scope="scope">
-              <CheckboxGroup v-model="formItem.grantActions">
-                  <Checkbox v-for="item in scope.row.actionList" :label="item.actionId">
-                    <span>{{item.actionName}}</span>
-                  </Checkbox>
-              </CheckboxGroup>
-            </template>
-          </tree-table>
-        </FormItem>
-      </Form>
-      <Form  ref="form3" v-show="current===2"  :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="接口资源" prop="grantApis" >
-          <Select v-model="formItem.grantApis" multiple filterable  @on-change="handleOnSelectApis">
-            <OptionGroup  v-for="(item,index) in selectApis" :label="item.apiCategory">
-              <Option :title="cate.apiDesc" :disabled="cate.apiCode!=='all' && formItem.grantApis.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiId" :label="cate.apiName">
-                <span>{{ cate.apiName }}</span>
-                <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
-            </OptionGroup>
-          </Select>
-        </FormItem>
-      </Form>
+      <Tabs v-model="current">
+        <TabPane label="角色信息" name="form1">
+          <Form  ref="form1"  :model="formItem" :rules="formItemRules" :label-width="100">
+            <FormItem label="角色标识" prop="roleCode">
+              <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="角色名称" prop="roleName">
+              <Input  v-model="formItem.roleName" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="状态">
+              <i-switch v-model="formItem.statusSwatch" size="large">
+                <span slot="open">有效</span>
+                <span slot="close">无效</span>
+              </i-switch>
+            </FormItem>
+            <FormItem label="描述">
+              <Input v-model="formItem.roleDesc" type="textarea" placeholder="请输入内容"></Input>
+            </FormItem>
+          </Form>
+        </TabPane>
+        <TabPane label="菜单授权" :disabled="formItem.roleId?false:true" name="form2">
+          <Form  ref="form2"   :model="formItem"  :rules="formItemRules" :label-width="100">
+            <FormItem label="菜单/操作资源" prop="grantMenus">
+              <tree-table
+                ref="tree"
+                max-height="400"
+                expand-key="menuName"
+                @checkbox-click="checkboxClick"
+                :expand-type="false"
+                :is-fold="false"
+                :tree-type="true"
+                :selectable="true"
+                :columns="columns2"
+                :data="selectMenus">
+                <template slot="status" slot-scope="scope">
+                  <CheckboxGroup v-model="formItem.grantActions">
+                    <Checkbox v-for="item in scope.row.actionList" :label="item.actionId">
+                      <span>{{item.actionName}}</span>
+                    </Checkbox>
+                  </CheckboxGroup>
+                </template>
+              </tree-table>
+            </FormItem>
+          </Form>
+        </TabPane>
+        <TabPane label="接口授权" :disabled="formItem.roleId?false:true"  name="form3">
+          <Form  ref="form3"   :model="formItem" :rules="formItemRules" :label-width="100">
+            <FormItem label="接口资源" prop="grantApis" >
+              <Select v-model="formItem.grantApis" multiple filterable  @on-change="handleOnSelectApis">
+                <OptionGroup  v-for="(item,index) in selectApis" :label="item.apiCategory">
+                  <Option :title="cate.apiDesc" :disabled="cate.apiCode!=='all' && formItem.grantApis.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiId" :label="cate.apiName">
+                    <span>{{ cate.apiName }}</span>
+                    <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
+                </OptionGroup>
+              </Select>
+            </FormItem>
+          </Form>
+        </TabPane>
+      </Tabs>
+
       <div slot="footer">
-        <Button v-if="current!==0" type="default" @click="handleUp" style="float: left">上一步</Button>&nbsp;
-        <Button v-if="current===2" type="primary" @click="handleSubmit">提交</Button>&nbsp;
+        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
-        <Button v-if="current!==2" type="primary" @click="handleNext">下一步</Button>
       </div>
     </Modal>
   </div>
@@ -115,7 +117,8 @@
         loading :false,
         modalVisible: false,
         modalTitle: '',
-        current: 0,
+        saving:false,
+        current: 'form1',
         forms: [
           'form1',
           'form2',
@@ -139,7 +142,7 @@
             {required: true, type: 'array', min: 1, message: '菜单资源不能为空', trigger: 'blur'}
           ],
           grantApis: [
-            {required: false, type: 'array',  message: '接口资源不能为空', trigger: 'blur'}
+            {required: true, type: 'array', min: 1,  message: '接口资源不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -205,20 +208,6 @@
       }
     },
     methods: {
-      handleNext () {
-        this.$refs[this.forms[this.current]].validate((valid) => {
-          if (valid) {
-            if (this.current < 2) {
-              this.current += 1
-            }
-          }
-        })
-      },
-      handleUp () {
-        if (this.current > 0 && this.current < 3) {
-          this.current -= 1
-        }
-      },
       checkboxClick (row, rowIndex, $event) {
         this.formItem.grantMenus = this.$refs['tree'].getCheckedProp('menuId')
         if(this.formItem.grantMenus && this.formItem.grantMenus.length===0){
@@ -235,7 +224,7 @@
           this.modalTitle = '添加角色'
         }
         if(!step){
-          step =  0
+          step =  this.forms[0]
         }
         this.current = step
         this.modalVisible = true
@@ -260,40 +249,75 @@
         this.forms.map(form => {
           this.$refs[form].resetFields()
         })
-        this.current = 0
+        this.current = this.forms[0]
         this.modalVisible = false
         this.formItem.grantMenus = []
         this.formItem.grantActions = []
       },
       handleSubmit () {
-        this.$refs[this.forms[this.current]].validate((valid) => {
-          if (valid) {
-            this.formItem.status = this.formItem.statusSwatch ? 1 : 0
-            if (this.formItem.roleId) {
-              updateRole(this.formItem).then(res => {
-                roleGrantMenu(this.formItem).then(res =>{
-                   roleGrantAction(this.formItem).then(res=>{
-                     roleGrantApi(this.formItem).then(res=>{
-                       this.handleReset()
-                       this.handleSearch()
-                       if (res.code === 0) {
-                         this.$Message.success('保存成功')
-                       }
-                     })
-                   })
+        if(this.current === this.forms[0]){
+          console.log(this.current)
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              this.formItem.status = this.formItem.statusSwatch ? 1 : 0
+              if (this.formItem.roleId) {
+                updateRole(this.formItem).then(res => {
+                  this.saving = false
+                  this.handleSearch()
+                  if (res.code === 0) {
+                    this.$Message.success('保存成功')
+                  }
                 })
-              })
-            } else {
-              addRole(this.formItem).then(res => {
-                this.handleReset()
-                this.handleSearch()
-                if (res.code === 0) {
-                  this.$Message.success('保存成功')
-                }
-              })
+              } else {
+                addRole(this.formItem).then(res => {
+                  this.saving = false
+                  this.handleReset()
+                  this.handleSearch()
+                  if (res.code === 0) {
+                    this.$Message.success('保存成功')
+                  }
+                })
+              }
             }
-          }
-        })
+          })
+        }
+
+        if(this.current === this.forms[1]){
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              if (this.formItem.roleId) {
+                roleGrantMenu(this.formItem).then(res =>{
+                  roleGrantAction(this.formItem).then(res=>{
+                    this.saving = false
+                    this.handleSearch()
+                    if (res.code === 0) {
+                      this.$Message.success('授权成功')
+                    }
+                  })
+                })
+              }
+            }
+          })
+        }
+
+        if(this.current === this.forms[2]){
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              if (this.formItem.roleId) {
+                roleGrantApi(this.formItem).then(res=>{
+                  this.saving = false
+                  this.handleSearch()
+                  if (res.code === 0) {
+                    this.$Message.success('授权成功')
+                  }
+                })
+              }
+            }
+          })
+        }
       },
       handleSearch () {
         this.loading = true
@@ -388,10 +412,10 @@
       handleClick (name,row) {
         switch (name) {
           case'grantMenu':
-            this.handleModal(row,1)
+            this.handleModal(row,this.forms[1])
             break
           case'grantApi':
-            this.handleModal(row,2)
+            this.handleModal(row,this.forms[2])
             break
           case 'remove':
             this.handleRemove(row)

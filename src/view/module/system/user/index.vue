@@ -68,7 +68,7 @@
 
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
-        <Button type="primary" @click="handleSubmit">提交</Button>
+        <Button type="primary" @click="handleSubmit">保存</Button>
       </div>
     </Modal>
   </div>

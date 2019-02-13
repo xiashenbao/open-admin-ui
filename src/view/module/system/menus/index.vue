@@ -79,7 +79,7 @@
               <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem>
-              <Button :disabled="disabled" @click="handleSubmit" type="primary">保存</Button>
+              <Button :disabled="disabled" @click="handleSubmit" :loading="saving" type="primary">保存</Button>
               <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
             </FormItem>
           </Form>
@@ -107,6 +107,7 @@
       return {
         confirmModal: false,
         disabled: true,
+        saving:false,
         selectTreeData: [],
         formItemRules: {
           menuCode: [
@@ -196,9 +197,11 @@
       handleSubmit () {
         this.$refs['menuForm'].validate((valid) => {
           if (valid) {
+            this.saving = true
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.menuId) {
               updateMenu(this.formItem).then(res => {
+                this.saving = false
                 if (res.code === 0) {
                   this.disabled=true
                   this.$Message.success('保存成功')
@@ -207,6 +210,7 @@
               })
             } else {
               addMenu(this.formItem).then(res => {
+                this.saving = false
                 if (res.code === 0) {
                   this.disabled=true
                   this.$Message.success('保存成功')

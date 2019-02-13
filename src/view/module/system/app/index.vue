@@ -159,7 +159,7 @@
       </Form>
       <div slot="footer">
         <Button v-if="current!==0" type="default" @click="handleUp" style="float: left">上一步</Button>&nbsp;
-        <Button v-if="current===2" type="primary" @click="handleSubmit">提交</Button>&nbsp;
+        <Button v-if="current===2" type="primary"  :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
         <Button v-if="current!==2" type="primary" @click="handleNext">下一步</Button>
       </div>
@@ -177,6 +177,7 @@
       return {
         current: 0,
         loading: false,
+        saving:false,
         forms: [
           'stepForm1',
           'stepForm2',
@@ -396,6 +397,7 @@
       handleSubmit () {
         this.$refs[this.forms[this.current]].validate((valid) => {
           if (valid) {
+            this.saving = true
             const data = Object.assign({},this.formItem)
             data.status = this.formItem.statusSwatch ? 1 : 0
             data.scopes = this.formItem.scopes.join(',')
@@ -403,6 +405,7 @@
             data.authorities = this.formItem.authorities.join(',')
             if (data.appId) {
               updateApp(data).then(res => {
+                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
@@ -411,6 +414,7 @@
               })
             } else {
               addApp(data).then(res => {
+                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {

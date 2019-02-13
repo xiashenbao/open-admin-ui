@@ -54,7 +54,7 @@
       </Form>
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
-        <Button type="primary" @click="handleSubmit">提交</Button>
+        <Button type="primary" @click="handleSubmit" :loading="saving" >保存</Button>
       </div>
     </Modal>
   </div>
@@ -71,6 +71,7 @@
     data () {
       return {
         modalVisible: false,
+        saving:false,
         modalTitle: '',
         confirmModal: false,
         formItemRules: {
@@ -155,9 +156,11 @@
       handleSubmit () {
         this.$refs['actionForm'].validate((valid) => {
           if (valid) {
+            this.saving = true
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.actionId) {
               updateAction(this.formItem).then(res => {
+                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
@@ -166,6 +169,7 @@
               })
             } else {
               addAction(this.formItem).then(res => {
+                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
