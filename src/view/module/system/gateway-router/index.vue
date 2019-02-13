@@ -3,7 +3,7 @@
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button  class="search-btn" type="primary" @click="handleModal()">
+          <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新建
           </Button>
         </ButtonGroup>
@@ -29,7 +29,8 @@
           </Dropdown>&nbsp;
         </template>
       </Table>
-      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
+      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+            show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
     <Modal v-model="modalVisible"
@@ -39,10 +40,10 @@
            @on-cancel="handleReset">
       <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="角色标识" prop="roleCode">
-          <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.roleCode" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="角色名称" prop="roleName">
-          <Input  v-model="formItem.roleName" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.roleName" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="状态">
           <i-switch v-model="formItem.statusSwatch" size="large">
@@ -65,13 +66,13 @@
     name: 'SystemGatewayRoute',
     data () {
       return {
-        loading :false,
+        loading: false,
         modalVisible: false,
         modalTitle: '',
-        pageInfo:{
-          total:0,
-          page:1,
-          limit:10
+        pageInfo: {
+          total: 0,
+          page: 1,
+          limit: 10
         },
         formItemRules: {
           roleCode: [
@@ -126,7 +127,7 @@
       handleModal (data) {
         if (data) {
           this.modalTitle = '编辑角色'
-          this.formItem = Object.assign({},  this.formItem, data)
+          this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         } else {
           this.modalTitle = '添加角色'
@@ -181,11 +182,11 @@
           this.loading = false
         })
       },
-      handlePage(current){
-        this.pageInfo.page = current;
+      handlePage (current) {
+        this.pageInfo.page = current
         this.handleSearch()
       },
-      handlePageSize(size){
+      handlePageSize (size) {
         this.pageInfo.limit = size
         this.handleSearch()
       },
@@ -195,15 +196,15 @@
           onOk: () => {
             removeRole({roleId: data.roleId}).then(res => {
               if (res.code === 0) {
-                this.pageInfo.page=1
+                this.pageInfo.page = 1
                 this.$Message.success('删除成功')
               }
               this.handleSearch()
             })
           }
-        });
+        })
       },
-      handleClick (name,row) {
+      handleClick (name, row) {
         switch (name) {
           case 'remove':
             this.handleRemove(row)

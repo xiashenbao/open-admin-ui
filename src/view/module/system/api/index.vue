@@ -6,7 +6,7 @@
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button  class="search-btn" type="primary" @click="handleModal()">
+          <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新建接口
           </Button>
         </ButtonGroup>
@@ -16,15 +16,15 @@
           <Badge v-if="row.status===1" status="success" text="有效"/>
           <Badge v-else="" status="error" text="无效"/>
         </template>
-        <template slot="action"  slot-scope="{ row }">
+        <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
-          <Dropdown  transfer ref="dropdown" @on-click="handleClick($event,row)">
+          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
-            <DropdownMenu  slot="list">
+            <DropdownMenu slot="list">
               <DropdownItem name="rateLimit">接口限流</DropdownItem>
               <DropdownItem name="remove">删除接口</DropdownItem>
             </DropdownMenu>
@@ -48,7 +48,7 @@
           <Input :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口分类" prop="apiCategory">
-          <Input  v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口标识" prop="apiCode">
           <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
@@ -92,7 +92,7 @@
         loading: false,
         modalVisible: false,
         modalTitle: '',
-        saving:false,
+        saving: false,
         pageInfo: {
           total: 0,
           page: 1,
@@ -201,6 +201,7 @@
         //重置验证
         this.$refs['apiForm'].resetFields()
         this.modalVisible = false
+        this.saving = false
       },
       handleSubmit () {
         this.$refs['apiForm'].validate((valid) => {
@@ -241,7 +242,7 @@
               }
             })
           }
-        });
+        })
       },
       handleSearch () {
         this.loading = true
@@ -251,11 +252,11 @@
           this.pageInfo.total = parseInt(res.data.total)
         })
       },
-      handlePage(current){
-        this.pageInfo.page = current;
+      handlePage (current) {
+        this.pageInfo.page = current
         this.handleSearch()
       },
-      handlePageSize(size){
+      handlePageSize (size) {
         this.pageInfo.limit = size
         this.handleSearch()
       },

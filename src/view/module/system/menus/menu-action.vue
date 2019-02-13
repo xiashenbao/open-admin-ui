@@ -7,37 +7,37 @@
         </Button>
       </ButtonGroup>
     </div>
-      <Table :columns="columns" :data="data">
-        <template slot="status" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success" text="有效"/>
-          <Badge v-else="" status="error" text="无效"/>
-        </template>
-        <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">编辑</a> &nbsp;
-          <Poptip
-            confirm
-            title="确定删除吗?"
-            @on-ok="handleRemove(row)">
-            <a>删除</a>
-          </Poptip>
-        </template>
-      </Table>
+    <Table :columns="columns" :data="data">
+      <template slot="status" slot-scope="{ row }">
+        <Badge v-if="row.status===1" status="success" text="有效"/>
+        <Badge v-else="" status="error" text="无效"/>
+      </template>
+      <template slot="action" slot-scope="{ row }">
+        <a @click="handleModal(row)">编辑</a> &nbsp;
+        <Poptip
+          confirm
+          title="确定删除吗?"
+          @on-ok="handleRemove(row)">
+          <a>删除</a>
+        </Poptip>
+      </template>
+    </Table>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
            @on-cancel="handleReset">
       <Form ref="actionForm" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="所属菜单" >
-          <Input disabled v-model="value.menuName" ></Input>
+        <FormItem label="所属菜单">
+          <Input disabled v-model="value.menuName"></Input>
         </FormItem>
         <FormItem label="操作标识" prop="actionCode">
-          <Input  v-model="formItem.actionCode" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.actionCode" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="操作名称" prop="actionName">
-          <Input  v-model="formItem.actionName" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.actionName" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="请求地址" prop="path">
-          <Input  v-model="formItem.path" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.path" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="优先级">
           <InputNumber v-model="formItem.priority"></InputNumber>
@@ -54,7 +54,7 @@
       </Form>
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
-        <Button type="primary" @click="handleSubmit" :loading="saving" >保存</Button>
+        <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
       </div>
     </Modal>
   </div>
@@ -71,7 +71,7 @@
     data () {
       return {
         modalVisible: false,
-        saving:false,
+        saving: false,
         modalTitle: '',
         confirmModal: false,
         formItemRules: {
@@ -133,7 +133,7 @@
         } else {
           this.modalTitle = '添加操作'
         }
-        this.formItem.menuId= this.value.menuId
+        this.formItem.menuId = this.value.menuId
         this.modalVisible = true
       },
       handleReset () {
@@ -152,6 +152,7 @@
         //重置验证
         this.$refs['actionForm'].resetFields()
         this.modalVisible = false
+        this.saving = false
       },
       handleSubmit () {
         this.$refs['actionForm'].validate((valid) => {
@@ -193,7 +194,7 @@
         removeAction({actionId: data.actionId}).then(res => {
           this.handleSearch()
           if (res.code === 0) {
-            this.pageInfo.page=1
+            this.pageInfo.page = 1
             this.$Message.success('删除成功')
           }
         })

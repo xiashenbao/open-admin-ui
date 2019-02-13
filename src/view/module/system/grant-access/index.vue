@@ -1,33 +1,34 @@
 <template>
   <div>
-    <Alert show-icon>网关服务：动态访问权限控制,需开启动态权限验证(opencloud.gateway.enabled-validate-access=true)。<a @click="handleRefreshGateway">一键刷新网关</a>
+    <Alert show-icon>网关服务：动态访问权限控制,需开启动态权限验证(opencloud.gateway.enabled-validate-access=true)。<a
+      @click="handleRefreshGateway">一键刷新网关</a>
       <br>
-    <code>开放API接口安全。使用标准Oauth2进行身份认证、接口调用鉴权、参数签名验证.</code>
+      <code>开放API接口安全。使用标准Oauth2进行身份认证、接口调用鉴权、参数签名验证.</code>
     </Alert>
     <Card shadow>
-    <Table :columns="columns" :data="data" :loading="loading">
-      <template slot="status" slot-scope="{ row }">
-        <Badge v-if="row.status===1" status="success" text="有效"/>
-        <Badge v-else="" status="error" text="无效"/>
-      </template>
-      <template slot="resourceType" slot-scope="{ row }">
-        <span v-if="row.resourceType==='api'">接口</span>
-        <span v-else-if="row.resourceType==='menu'">菜单</span>
-        <span v-else-if="row.resourceType==='action'">操作</span>
-        <span v-else="">{{row.resourceType}}</span>
-        <span>&nbsp;/&nbsp;{{row.resourceId}}</span>
-      </template>
-      <template slot="authorityPrefix" slot-scope="{ row }">
-        <span v-if="row.authorityPrefix==='USER_'">用户</span>
-        <span v-else-if="row.authorityPrefix==='ROLE_'">角色</span>
-        <span v-else-if="row.authorityPrefix==='APP_'">应用</span>
-        <span v-else="">{{row.authorityPrefix}}</span>
-        <span>&nbsp;/&nbsp;{{row.authorityOwner}}</span>
-      </template>
-    </Table>
-    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
-          show-total
-          @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
+      <Table :columns="columns" :data="data" :loading="loading">
+        <template slot="status" slot-scope="{ row }">
+          <Badge v-if="row.status===1" status="success" text="有效"/>
+          <Badge v-else="" status="error" text="无效"/>
+        </template>
+        <template slot="resourceType" slot-scope="{ row }">
+          <span v-if="row.resourceType==='api'">接口</span>
+          <span v-else-if="row.resourceType==='menu'">菜单</span>
+          <span v-else-if="row.resourceType==='action'">操作</span>
+          <span v-else="">{{row.resourceType}}</span>
+          <span>&nbsp;/&nbsp;{{row.resourceId}}</span>
+        </template>
+        <template slot="authorityPrefix" slot-scope="{ row }">
+          <span v-if="row.authorityPrefix==='USER_'">用户</span>
+          <span v-else-if="row.authorityPrefix==='ROLE_'">角色</span>
+          <span v-else-if="row.authorityPrefix==='APP_'">应用</span>
+          <span v-else="">{{row.authorityPrefix}}</span>
+          <span>&nbsp;/&nbsp;{{row.authorityOwner}}</span>
+        </template>
+      </Table>
+      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+            show-total
+            @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
   </div>
 </template>
@@ -35,6 +36,7 @@
 <script>
   import {getGrantAccess} from '@/api/grant-access'
   import {refreshGateway} from '@/api/gateway'
+
   export default {
     name: 'SystemGrantAccess',
     data () {
@@ -91,18 +93,18 @@
           this.loading = false
         })
       },
-      handlePage(current){
-        this.pageInfo.page = current;
+      handlePage (current) {
+        this.pageInfo.page = current
         this.handleSearch()
       },
-      handlePageSize(size){
+      handlePageSize (size) {
         this.pageInfo.limit = size
         this.handleSearch()
       },
-      handleRefreshGateway(){
+      handleRefreshGateway () {
         this.$Modal.confirm({
           title: '提示',
-          content:'将刷新所有网关实例（访问权限、限流、路由缓存），是否继续？',
+          content: '将刷新所有网关实例（访问权限、限流、路由缓存），是否继续？',
           onOk: () => {
             refreshGateway().then(res => {
               if (res.code === 0) {

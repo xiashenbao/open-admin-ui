@@ -3,7 +3,7 @@
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button  class="search-btn" type="primary" @click="handleModal()">
+          <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新建角色
           </Button>
         </ButtonGroup>
@@ -17,11 +17,11 @@
           <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)"  :disabled="row.roleCode === 'all' ?true:false">
+            <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">
               更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
-            <DropdownMenu  slot="list">
+            <DropdownMenu slot="list">
               <DropdownItem name="grantMenu">菜单授权</DropdownItem>
               <DropdownItem name="grantApi">接口授权</DropdownItem>
               <DropdownItem name="remove">删除角色</DropdownItem>
@@ -29,7 +29,8 @@
           </Dropdown>&nbsp;
         </template>
       </Table>
-      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer show-total
+      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+            show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
     <Modal v-model="modalVisible"
@@ -38,12 +39,12 @@
            @on-cancel="handleReset">
       <Tabs v-model="current">
         <TabPane label="角色信息" name="form1">
-          <Form  ref="form1"  :model="formItem" :rules="formItemRules" :label-width="100">
+          <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
             <FormItem label="角色标识" prop="roleCode">
-              <Input  v-model="formItem.roleCode" placeholder="请输入内容"></Input>
+              <Input v-model="formItem.roleCode" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem label="角色名称" prop="roleName">
-              <Input  v-model="formItem.roleName" placeholder="请输入内容"></Input>
+              <Input v-model="formItem.roleName" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem label="状态">
               <i-switch v-model="formItem.statusSwatch" size="large">
@@ -57,7 +58,7 @@
           </Form>
         </TabPane>
         <TabPane label="菜单授权" :disabled="formItem.roleId?false:true" name="form2">
-          <Form  ref="form2"   :model="formItem"  :rules="formItemRules" :label-width="100">
+          <Form ref="form2" :model="formItem" :rules="formItemRules" :label-width="100">
             <FormItem label="菜单/操作资源" prop="grantMenus">
               <tree-table
                 ref="tree"
@@ -81,12 +82,14 @@
             </FormItem>
           </Form>
         </TabPane>
-        <TabPane label="接口授权" :disabled="formItem.roleId?false:true"  name="form3">
-          <Form  ref="form3"   :model="formItem" :rules="formItemRules" :label-width="100">
-            <FormItem label="接口资源" prop="grantApis" >
-              <Select v-model="formItem.grantApis" multiple filterable  @on-change="handleOnSelectApis">
-                <OptionGroup  v-for="(item,index) in selectApis" :label="item.apiCategory">
-                  <Option :title="cate.apiDesc" :disabled="cate.apiCode!=='all' && formItem.grantApis.indexOf('all')!=-1?true:false" v-for="cate in item.children" :value="cate.apiId" :label="cate.apiName">
+        <TabPane label="接口授权" :disabled="formItem.roleId?false:true" name="form3">
+          <Form ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
+            <FormItem label="接口资源" prop="grantApis">
+              <Select v-model="formItem.grantApis" multiple filterable @on-change="handleOnSelectApis">
+                <OptionGroup v-for="(item,index) in selectApis" :label="item.apiCategory">
+                  <Option :title="cate.apiDesc"
+                          :disabled="cate.apiCode!=='all' && formItem.grantApis.indexOf('all')!=-1?true:false"
+                          v-for="cate in item.children" :value="cate.apiId" :label="cate.apiName">
                     <span>{{ cate.apiName }}</span>
                     <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
                 </OptionGroup>
@@ -105,19 +108,27 @@
 </template>
 
 <script>
-  import {getRoles, updateRole, addRole, removeRole,getRoleGrantedMenu,getRoleGrantedAction,getRoleGrantedApi,roleGrantMenu,roleGrantAction,roleGrantApi} from '@/api/role'
+  import {getRoles, updateRole, addRole, removeRole} from '@/api/role'
+  import {
+    getGrantedRoleMenu,
+    getGrantedRoleAction,
+    getGrantedRoleApi,
+    grantRoleMenu,
+    grantRoleAction,
+    grantRoleApi
+  } from '@/api/grant-access'
   import {getMenuActions} from '@/api/menu'
   import {getAllApi} from '@/api/apis'
-  import {startWith,listConvertGroup,listConvertTree} from '@/libs/util'
+  import {startWith, listConvertGroup, listConvertTree} from '@/libs/util'
 
   export default {
     name: 'SystemRole',
     data () {
       return {
-        loading :false,
+        loading: false,
         modalVisible: false,
         modalTitle: '',
-        saving:false,
+        saving: false,
         current: 'form1',
         forms: [
           'form1',
@@ -125,11 +136,11 @@
           'form3'
         ],
         selectApis: [],
-        selectMenus:[],
-        pageInfo:{
-          total:0,
-          page:1,
-          limit:10
+        selectMenus: [],
+        pageInfo: {
+          total: 0,
+          page: 1,
+          limit: 10
         },
         formItemRules: {
           roleCode: [
@@ -142,7 +153,7 @@
             {required: true, type: 'array', min: 1, message: '菜单资源不能为空', trigger: 'blur'}
           ],
           grantApis: [
-            {required: true, type: 'array', min: 1,  message: '接口资源不能为空', trigger: 'blur'}
+            {required: true, type: 'array', min: 1, message: '接口资源不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -155,9 +166,9 @@
           menuId: '',
           priority: 0,
           roleDesc: '',
-          grantMenus:[],
-          grantActions:[],
-          grantApis:[]
+          grantMenus: [],
+          grantActions: [],
+          grantApis: []
         },
         columns: [
           {
@@ -210,21 +221,21 @@
     methods: {
       checkboxClick (row, rowIndex, $event) {
         this.formItem.grantMenus = this.$refs['tree'].getCheckedProp('menuId')
-        if(this.formItem.grantMenus && this.formItem.grantMenus.length===0){
-          this.formItem.grantActions=[]
+        if (this.formItem.grantMenus && this.formItem.grantMenus.length === 0) {
+          this.formItem.grantActions = []
         }
       },
-      handleModal (data,step) {
+      handleModal (data, step) {
         if (data) {
           this.modalTitle = '编辑角色'
-          this.formItem = Object.assign({},  this.formItem, data)
+          this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
           this.handleLoadRoleGranted(this.formItem.roleId)
         } else {
           this.modalTitle = '添加角色'
         }
-        if(!step){
-          step =  this.forms[0]
+        if (!step) {
+          step = this.forms[0]
         }
         this.current = step
         this.modalVisible = true
@@ -240,9 +251,9 @@
           menuId: '',
           priority: 0,
           roleDesc: '',
-          grantMenus:[],
-          grantActions:[],
-          grantApis:[]
+          grantMenus: [],
+          grantActions: [],
+          grantApis: []
         }
         this.formItem = newData
         //重置验证
@@ -250,13 +261,13 @@
           this.$refs[form].resetFields()
         })
         this.current = this.forms[0]
-        this.modalVisible = false
         this.formItem.grantMenus = []
         this.formItem.grantActions = []
+        this.modalVisible = false
+        this.saving = false
       },
       handleSubmit () {
-        if(this.current === this.forms[0]){
-          console.log(this.current)
+        if (this.current === this.forms[0]) {
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
@@ -283,13 +294,13 @@
           })
         }
 
-        if(this.current === this.forms[1]){
+        if (this.current === this.forms[1]) {
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
               if (this.formItem.roleId) {
-                roleGrantMenu(this.formItem).then(res =>{
-                  roleGrantAction(this.formItem).then(res=>{
+                grantRoleMenu(this.formItem).then(res => {
+                  grantRoleAction(this.formItem).then(res => {
                     this.saving = false
                     this.handleSearch()
                     if (res.code === 0) {
@@ -302,12 +313,12 @@
           })
         }
 
-        if(this.current === this.forms[2]){
+        if (this.current === this.forms[2]) {
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
               if (this.formItem.roleId) {
-                roleGrantApi(this.formItem).then(res=>{
+                grantRoleApi(this.formItem).then(res => {
                   this.saving = false
                   this.handleSearch()
                   if (res.code === 0) {
@@ -327,11 +338,11 @@
           this.loading = false
         })
       },
-      handlePage(current){
-        this.pageInfo.page = current;
+      handlePage (current) {
+        this.pageInfo.page = current
         this.handleSearch()
       },
-      handlePageSize(size){
+      handlePageSize (size) {
         this.pageInfo.limit = size
         this.handleSearch()
       },
@@ -342,44 +353,44 @@
             removeRole({roleId: data.roleId}).then(res => {
               this.handleSearch()
               if (res.code === 0) {
-                this.pageInfo.page=1
+                this.pageInfo.page = 1
                 this.$Message.success('删除成功')
               }
             })
           }
-        });
+        })
       },
       handleLoadApis () {
         getAllApi().then(res => {
           if (res.code === 0) {
-            this.selectApis = listConvertGroup(res.data.list, "apiCategory")
+            this.selectApis = listConvertGroup(res.data.list, 'apiCategory')
           }
         })
       },
-      handleLoadRoleGranted(roleId){
-        getRoleGrantedMenu(roleId).then(res => {
-           if(res.code ===0){
-             let  result = []
-              res.data.list.map( item =>{
-                result.push(item.resourceId)
-              })
-             this.formItem.grantMenus = result
-             this.handleLoadMenus()
-           }
+      handleLoadRoleGranted (roleId) {
+        getGrantedRoleMenu(roleId).then(res => {
+          if (res.code === 0) {
+            let result = []
+            res.data.list.map(item => {
+              result.push(item.resourceId)
+            })
+            this.formItem.grantMenus = result
+            this.handleLoadMenus()
+          }
         })
-        getRoleGrantedAction(roleId).then(res => {
-          if(res.code ===0){
-            let  result = []
-            res.data.list.map( item =>{
+        getGrantedRoleAction(roleId).then(res => {
+          if (res.code === 0) {
+            let result = []
+            res.data.list.map(item => {
               result.push(item.resourceId)
             })
             this.formItem.grantActions = result
           }
         })
-        getRoleGrantedApi(roleId).then(res => {
-          if(res.code ===0){
-            let  result = []
-            res.data.list.map( item =>{
+        getGrantedRoleApi(roleId).then(res => {
+          if (res.code === 0) {
+            let result = []
+            res.data.list.map(item => {
               result.push(item.resourceId)
             })
             this.formItem.grantApis = result
@@ -393,29 +404,29 @@
             parentKey: 'parentId',
             startPid: '0'
           }
-          if(this.formItem.grantMenus && res.data.list){
-            res.data.list.map(item =>{
-                if(this.formItem.grantMenus.indexOf(item.menuId)!==-1){
-                  item._isChecked = true
-                }
-             })
+          if (this.formItem.grantMenus && res.data.list) {
+            res.data.list.map(item => {
+              if (this.formItem.grantMenus.indexOf(item.menuId) !== -1) {
+                item._isChecked = true
+              }
+            })
           }
           this.selectMenus = listConvertTree(res.data.list, opt)
         })
       },
-      handleOnSelectApis(data){
+      handleOnSelectApis (data) {
         // 全部,其他的不用选了
-        if(data.indexOf('all') !== -1){
+        if (data.indexOf('all') !== -1) {
           this.formItem.grantApis = ['all']
         }
       },
-      handleClick (name,row) {
+      handleClick (name, row) {
         switch (name) {
           case'grantMenu':
-            this.handleModal(row,this.forms[1])
+            this.handleModal(row, this.forms[1])
             break
           case'grantApi':
-            this.handleModal(row,this.forms[2])
+            this.handleModal(row, this.forms[2])
             break
           case 'remove':
             this.handleRemove(row)
