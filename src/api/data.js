@@ -36,3 +36,11 @@ export const uploadImg = formData => {
     data: formData
   })
 }
+
+
+export const loginConfig = () => {
+  return request({
+    url: 'auth/login/config',
+    method: 'get'
+  })
+}
