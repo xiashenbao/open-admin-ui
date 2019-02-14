@@ -47,8 +47,13 @@ service.interceptors.response.use(
         case 401:
           message = '未授权，请重新登录'
           location.reload()
+          break;
+        case 403:
+          message = error.response.data.path + ',' +error.response.data.message;
+          break;
         default:
           message = error.response.data.message ? error.response.data.message : "服务器错误"
+          break;
       }
       Message.error({content: message})
       // 请求错误处理
