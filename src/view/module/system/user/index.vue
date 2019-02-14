@@ -251,16 +251,16 @@
             key: 'userName'
           },
           {
+            title: '昵称',
+            key: 'nickName'
+          },
+          {
             title: '邮箱',
             key: 'email'
           },
           {
             title: '手机号',
             key: 'mobile'
-          },
-          {
-            title: '昵称',
-            key: 'nickName'
           },
           {
             title: '状态',
