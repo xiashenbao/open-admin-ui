@@ -29,10 +29,9 @@
             </FormItem>
           </Form>
           <p class="login-tip">其他登录方式
-            <Icon custom="icon iconfont icon-QQ-circle-fill" @click="handleClick('qq')" color="#0099ff" size="22"/>
-            <Icon custom="icon iconfont icon-wechat-fill" @click="handleClick('wechat')" color="#00cc33" size="22"/>
-            <Icon custom="icon iconfont icon-github-fill" @click="handleClick('gitee')" color="#000000"
-                  size="22"/>
+            <Icon custom="icon iconfont icon-QQ-circle-fill" @click="handleClick('qq')" color="#0099ff" size="20"/>
+            <Icon custom="icon iconfont icon-wechat-fill" @click="handleClick('wechat')" color="#339900" size="20"/>
+            <Icon custom="icon iconfont icon-gitee" @click="handleClick('gitee')" color="#cc0000" size="20"/>
             <a href="#" style="float: right">注册账号</a></p>
         </div>
       </Card>
