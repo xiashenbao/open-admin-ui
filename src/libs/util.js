@@ -204,12 +204,14 @@ export const canTurnTo = (name, access, routes) => {
  * @description 从URL中解析参数
  */
 export const getParams = url => {
-  const keyValueArr = url.split('?')[1].split('&')
   let paramObj = {}
-  keyValueArr.forEach(item => {
-    const keyValue = item.split('=')
-    paramObj[keyValue[0]] = keyValue[1]
-  })
+  if (url.indexOf("?") != -1) {
+    const keyValueArr = url.split('?')[1].split('&')
+    keyValueArr.forEach(item => {
+      const keyValue = item.split('=')
+      paramObj[keyValue[0]] = keyValue[1]
+    })
+  }
   return paramObj
 }
 
