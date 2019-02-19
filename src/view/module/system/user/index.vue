@@ -360,19 +360,21 @@
               this.formItem.roleIds = this.formItem.grantRoles.join(',')
               if (this.formItem.userId) {
                 updateUser(this.formItem).then(res => {
-                  this.saving = false
                   this.handleSearch()
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
+                }).finally(() =>{
+                  this.saving = false
                 })
               } else {
                 addUser(this.formItem).then(res => {
-                  this.saving = false
                   this.handleSearch()
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
+                }).finally(() =>{
+                  this.saving = false
                 })
               }
             }
@@ -386,11 +388,12 @@
               if (this.formItem.userId) {
                 grantUserMenu(this.formItem).then(res => {
                   grantUserAction(this.formItem).then(res => {
-                    this.saving = false
                     this.handleSearch()
                     if (res.code === 0) {
                       this.$Message.success('授权成功')
                     }
+                  }).finally(() =>{
+                    this.saving = false
                   })
                 })
               }
@@ -404,11 +407,12 @@
               this.saving = true
               if (this.formItem.userId) {
                 grantUserApi(this.formItem).then(res => {
-                  this.saving = false
                   this.handleSearch()
                   if (res.code === 0) {
                     this.$Message.success('授权成功')
                   }
+                }).finally(() =>{
+                  this.saving = false
                 })
               }
             }

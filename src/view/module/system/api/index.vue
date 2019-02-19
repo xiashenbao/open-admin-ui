@@ -210,21 +210,23 @@
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.apiId) {
               updateApi(this.formItem).then(res => {
-                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+              }).finally(() =>{
+                this.saving = false
               })
             } else {
               addApi(this.formItem).then(res => {
-                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+              }).finally(() =>{
+                this.saving = false
               })
             }
           }

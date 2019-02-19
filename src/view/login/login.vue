@@ -25,7 +25,7 @@
               <a href="#" style="float: right">忘记密码</a>
             </FormItem>
             <FormItem>
-              <Button @click="handleSubmit" type="primary" long>登录</Button>
+              <Button @click="handleSubmit" :loading="loading" type="success" long>登录</Button>
             </FormItem>
           </Form>
           <p class="login-tip">其他登录方式
@@ -65,6 +65,7 @@
     },
     data () {
       return {
+        loading:false,
         form: {
           username: 'admin',
           password: '123456',
@@ -101,6 +102,7 @@
       handleSubmit () {
         this.$refs.loginForm.validate((valid) => {
           if (valid) {
+            this.loading = true
             let username = this.form.username
             let password = this.form.password
             let auto = this.form.auto
@@ -108,6 +110,8 @@
               this.$router.push({
                 name: this.$config.homeName
               })
+            }).finally(() =>{
+              this.loading = false
             })
           }
         })

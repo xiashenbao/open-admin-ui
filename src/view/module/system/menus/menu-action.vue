@@ -161,21 +161,23 @@
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.actionId) {
               updateAction(this.formItem).then(res => {
-                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+              }).finally(() =>{
+                this.saving = false
               })
             } else {
               addAction(this.formItem).then(res => {
-                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+              }).finally(() =>{
+                this.saving = false
               })
             }
           }

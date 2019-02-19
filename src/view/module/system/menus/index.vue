@@ -203,21 +203,23 @@
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.menuId) {
               updateMenu(this.formItem).then(res => {
-                this.saving = false
                 if (res.code === 0) {
                   this.disabled = true
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()
+              }).finally(() =>{
+                this.saving = false
               })
             } else {
               addMenu(this.formItem).then(res => {
-                this.saving = false
                 if (res.code === 0) {
                   this.disabled = true
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()
+              }).finally(() =>{
+                this.saving = false
               })
             }
           }

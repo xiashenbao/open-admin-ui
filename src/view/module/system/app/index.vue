@@ -410,21 +410,23 @@
             data.authorities = this.formItem.authorities.join(',')
             if (data.appId) {
               updateApp(data).then(res => {
-                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+              }).finally(() =>{
+                this.saving = false
               })
             } else {
               addApp(data).then(res => {
-                this.saving = false
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+              }).finally(() =>{
+                this.saving = false
               })
             }
           }

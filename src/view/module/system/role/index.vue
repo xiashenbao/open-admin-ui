@@ -274,20 +274,22 @@
               this.formItem.status = this.formItem.statusSwatch ? 1 : 0
               if (this.formItem.roleId) {
                 updateRole(this.formItem).then(res => {
-                  this.saving = false
                   this.handleSearch()
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
+                }).finally(() =>{
+                  this.saving = false
                 })
               } else {
                 addRole(this.formItem).then(res => {
-                  this.saving = false
                   this.handleReset()
                   this.handleSearch()
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
+                }).finally(() =>{
+                  this.saving = false
                 })
               }
             }
