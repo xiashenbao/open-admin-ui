@@ -11,14 +11,15 @@ export default {
   name: 'Fullscreen',
   computed: {
     showFullScreenBtn () {
-      return window.navigator.userAgent.indexOf('MSIE') < 0
+      return window.navigator.userAgent.indexOf('MSIE') < 0 && this.screenWidth > 768
     }
   },
   props: {
     value: {
       type: Boolean,
       default: false
-    }
+    },
+    screenWidth: 0
   },
   methods: {
     handleFullscreen () {

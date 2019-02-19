@@ -20,7 +20,7 @@
           <user :user-avatar="userAvatar" :user-name="userName" />
           <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
           <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
-          <fullscreen v-model="isFullscreen" style="margin-right: 10px;"/>
+          <fullscreen  :screenWidth="screenWidth" v-model="isFullscreen" style="margin-right: 10px;"/>
         </header-bar>
       </Header>
       <Content :class="mainClass">
