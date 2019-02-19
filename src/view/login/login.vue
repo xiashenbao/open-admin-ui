@@ -5,7 +5,7 @@
 <template>
   <div class="login">
     <div class="login-con">
-      <Card icon="log-in" title="欢迎登录" :bordered="false">
+      <Card icon="log-in" title="微服务开放平台 - 欢迎登录" :bordered="false">
         <div class="form-con">
           <Form ref="loginForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
             <FormItem prop="userName">
