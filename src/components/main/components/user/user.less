@@ -5,6 +5,7 @@
     .ivu-badge-dot {
       top: 16px;
     }
+
   }
 
   &-name {
@@ -13,11 +14,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  .ivu-dropdown-rel > * {
     display: inline-block;
-    float: left;
+    position: relative;
+    vertical-align: middle;
   }
 
 }
+
+.user-avatar-dropdown .ivu-select-dropdown{
+  z-index: 999 ;
+}
+
