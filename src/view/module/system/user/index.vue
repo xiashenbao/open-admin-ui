@@ -91,7 +91,7 @@
             <FormItem label="菜单/操作资源" prop="grantMenus">
               <tree-table
                 ref="tree"
-                max-height="580"
+                max-height="500"
                 expand-key="menuName"
                 @checkbox-click="checkboxClick"
                 :expand-type="false"
@@ -185,7 +185,7 @@
         titles:["选择接口","已选择接口"],
         listStyle: {
           width: '240px',
-          height: '580px'
+          height: '500px'
         },
         loading: false,
         saving: false,
