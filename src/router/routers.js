@@ -79,6 +79,15 @@ export default [
     component: Main,
     children: [
       {
+        path: '/home2',
+        name: 'home2',
+        meta: {
+          title: '首页2',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/home/home2.vue')
+      },
+      {
         path: 'count_to_page',
         name: 'count_to_page',
         meta: {
