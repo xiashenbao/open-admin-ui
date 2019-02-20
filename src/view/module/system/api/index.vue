@@ -88,6 +88,16 @@
   export default {
     name: 'SystemApi',
     data () {
+      const validateEn = (rule, value, callback) => {
+        let reg = /^[_a-zA-Z0-9]+$/
+        if (value === '') {
+          callback(new Error('接口标识不能为空'))
+        } else if (value !== '' && !reg.test(value)) {
+          callback(new Error('只允许字母、数字、下划线'))
+        }  else {
+          callback()
+        }
+      }
       return {
         loading: false,
         modalVisible: false,
@@ -106,7 +116,7 @@
             {required: true, message: '接口分类不能为空', trigger: 'blur'}
           ],
           apiCode: [
-            {required: true, message: '接口标识不能为空', trigger: 'blur'}
+            {validator: validateEn, trigger: 'blur'}
           ],
           apiName: [
             {required: true, message: '接口名称不能为空', trigger: 'blur'}

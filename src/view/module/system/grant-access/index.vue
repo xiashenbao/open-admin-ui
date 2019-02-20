@@ -12,18 +12,18 @@
           <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="resourceType" slot-scope="{ row }">
-          <span v-if="row.resourceType==='api'">接口</span>
-          <span v-else-if="row.resourceType==='menu'">菜单</span>
-          <span v-else-if="row.resourceType==='action'">操作</span>
-          <span v-else="">{{row.resourceType}}</span>
-          <span>&nbsp;/&nbsp;{{row.resourceId}}</span>
+          <Tag color="red" v-if="row.resourceType==='API'">接口</Tag>
+          <Tag color="red" v-else-if="row.resourceType==='MENU'">菜单</Tag>
+          <Tag color="red" v-else-if="row.resourceType==='ACTION'">操作</Tag>
+          <Tag color="red" v-else="">{{row.resourceType}}</Tag>
+          <span>{{row.resourceId}}</span>
         </template>
         <template slot="authorityPrefix" slot-scope="{ row }">
-          <span v-if="row.authorityPrefix==='USER_'">用户</span>
-          <span v-else-if="row.authorityPrefix==='ROLE_'">角色</span>
-          <span v-else-if="row.authorityPrefix==='APP_'">应用</span>
-          <span v-else="">{{row.authorityPrefix}}</span>
-          <span>&nbsp;/&nbsp;{{row.authorityOwner}}</span>
+          <Tag color="blue" v-if="row.authorityPrefix==='USER_'">用户</Tag>
+          <Tag color="blue" v-else-if="row.authorityPrefix==='ROLE_'">角色</Tag>
+          <Tag color="blue" v-else-if="row.authorityPrefix==='APP_'">应用</Tag>
+          <Tag color="blue" v-else="">{{row.authorityPrefix}}</Tag>
+          <span>{{row.authorityOwner}}</span>
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
@@ -62,14 +62,14 @@
             key: 'authority'
           },
           {
-            title: '访问对象 / ID',
-            key: 'authorityPrefix',
-            slot: 'authorityPrefix'
-          },
-          {
             title: '授权资源 / ID',
             key: 'resourceType',
             slot: 'resourceType'
+          },
+          {
+            title: '访问对象 / ID',
+            key: 'authorityPrefix',
+            slot: 'authorityPrefix'
           },
           {
             title: '资源所属服务',

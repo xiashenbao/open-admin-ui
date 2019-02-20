@@ -105,6 +105,16 @@
       MenuAction
     },
     data () {
+      const validateEn = (rule, value, callback) => {
+        let reg = /^[_a-zA-Z0-9]+$/
+        if (value === '') {
+          callback(new Error('菜单标识不能为空'))
+        } else if (value !== '' && !reg.test(value)) {
+          callback(new Error('只允许字母、数字、下划线'))
+        }  else {
+          callback()
+        }
+      }
       return {
         confirmModal: false,
         disabled: true,
@@ -112,7 +122,7 @@
         selectTreeData: [],
         formItemRules: {
           menuCode: [
-            {required: true, message: '菜单标识不能为空', trigger: 'blur'}
+            {validator: validateEn, trigger: 'blur'}
           ],
           menuName: [
             {required: true, message: '菜单名称不能为空', trigger: 'blur'}

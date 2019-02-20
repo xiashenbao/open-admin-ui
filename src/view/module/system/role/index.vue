@@ -125,6 +125,16 @@
   export default {
     name: 'SystemRole',
     data () {
+      const validateEn = (rule, value, callback) => {
+        let reg = /^[_a-zA-Z0-9]+$/
+        if (value === '') {
+          callback(new Error('角色标识不能为空'))
+        } else if (value !== '' && !reg.test(value)) {
+          callback(new Error('只允许字母、数字、下划线'))
+        }  else {
+          callback()
+        }
+      }
       return {
         titles:["选择接口","已选择接口"],
         listStyle: {
@@ -150,7 +160,7 @@
         },
         formItemRules: {
           roleCode: [
-            {required: true, message: '角色标识不能为空', trigger: 'blur'}
+            {validator: validateEn, trigger: 'blur'}
           ],
           roleName: [
             {required: true, message: '角色名称不能为空', trigger: 'blur'}

@@ -154,6 +154,16 @@
   export default {
     name: 'SystemUser',
     data () {
+      const validateEn = (rule, value, callback) => {
+        let reg = /^[_a-zA-Z0-9]+$/
+        if (value === '') {
+          callback(new Error('登录名不能为空'))
+        } else if (value !== '' && !reg.test(value)) {
+          callback(new Error('只允许字母、数字、下划线'))
+        }  else {
+          callback()
+        }
+      }
       const validatePassConfirm = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请再次输入密码'))
@@ -200,7 +210,7 @@
             {required: true, message: '用户类型不能为空', trigger: 'blur'}
           ],
           userName: [
-            {required: true, message: '登录名不能为空', trigger: 'blur'}
+            {validator: validateEn, trigger: 'blur'}
           ],
           password: [
             {required: true, message: '登录密码不能为空', trigger: 'blur'}

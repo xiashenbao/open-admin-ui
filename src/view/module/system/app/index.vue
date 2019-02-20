@@ -190,6 +190,16 @@
   export default {
     name: 'SystemApp',
     data () {
+      const validateEn = (rule, value, callback) => {
+        let reg = /^[_a-zA-Z0-9]+$/
+        if (value === '') {
+          callback(new Error('英文不能为空'))
+        } else if (value !== '' && !reg.test(value)) {
+          callback(new Error('只允许字母、数字、下划线'))
+        }  else {
+          callback()
+        }
+      }
       return {
         titles:["选择接口","已选择接口"],
         listStyle: {
@@ -257,7 +267,7 @@
             {required: true, message: '应用名称不能为空', trigger: 'blur'}
           ],
           appNameEn: [
-            {required: true, message: '英文不能为空', trigger: 'blur'}
+            {validator: validateEn, trigger: 'blur'}
           ],
           grantTypes: [
             {required: true, type: 'array', min: 1, message: '授权类型不能为空', trigger: 'blur'}
