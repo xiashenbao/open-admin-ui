@@ -383,7 +383,7 @@
               }
             }
           })
-          this.modalTitle = '编辑应用'
+          this.modalTitle = '编辑应用 - '+ data.appName
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.userType = this.formItem.userType + ''
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false

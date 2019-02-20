@@ -316,7 +316,7 @@
       },
       handleModal (data, step) {
         if (data) {
-          this.modalTitle = '编辑用户'
+          this.modalTitle = '编辑用户 - '+ data.userName
           this.formItem = Object.assign({}, this.formItem, data)
           this.handleLoadUserGranted(this.formItem.userId)
         } else {

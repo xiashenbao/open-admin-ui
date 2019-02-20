@@ -137,7 +137,7 @@
     methods: {
       handleModal (data) {
         if (data) {
-          this.modalTitle = '编辑操作'
+          this.modalTitle = '编辑操作 - '+data.actionName
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         } else {

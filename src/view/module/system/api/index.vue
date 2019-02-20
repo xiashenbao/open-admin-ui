@@ -186,7 +186,7 @@
     methods: {
       handleModal (data) {
         if (data) {
-          this.modalTitle = '编辑接口'
+          this.modalTitle = '编辑接口 - '+data.apiName
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         } else {

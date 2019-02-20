@@ -237,7 +237,7 @@
       },
       handleModal (data, step) {
         if (data) {
-          this.modalTitle = '编辑角色'
+          this.modalTitle = '编辑角色 - '+ data.roleName
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
           this.handleLoadRoleGranted(this.formItem.roleId)
