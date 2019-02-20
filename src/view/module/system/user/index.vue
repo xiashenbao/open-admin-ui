@@ -91,7 +91,7 @@
             <FormItem label="菜单/操作资源" prop="grantMenus">
               <tree-table
                 ref="tree"
-                max-height="400"
+                max-height="580"
                 expand-key="menuName"
                 @checkbox-click="checkboxClick"
                 :expand-type="false"
@@ -114,15 +114,16 @@
         <TabPane label="私有接口授权"  :disabled="formItem.userId?false:true" name="form3">
           <Form ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
             <FormItem label="接口资源" prop="grantApis">
-              <Select v-model="formItem.grantApis" multiple filterable @on-change="handleOnSelectApis">
-                <OptionGroup v-for="(item,index) in selectApis" :label="item.apiCategory">
-                  <Option :title="cate.apiDesc"
-                          :disabled="cate.apiCode!=='all' && formItem.grantApis.indexOf('all')!=-1?true:false"
-                          v-for="cate in item.children" :value="cate.apiId" :label="cate.apiName">
-                    <span>{{ cate.apiName }}</span>
-                    <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
-                </OptionGroup>
-              </Select>
+              <Transfer
+                :data="selectApis"
+                :list-style="listStyle"
+                :titles="titles"
+                :render-format="transferRender"
+                :target-keys="formItem.grantApis"
+                @on-change="handleTransferChange"
+                filterable
+               >
+              </Transfer>
             </FormItem>
           </Form>
         </TabPane>
@@ -148,7 +149,7 @@
   import {getMenuActions} from '@/api/menu'
   import {getAllApi} from '@/api/apis'
   import {getAllRoles} from '@/api/role'
-  import {startWith, listConvertGroup, listConvertTree} from '@/libs/util'
+  import {startWith,  listConvertTree} from '@/libs/util'
 
   export default {
     name: 'SystemUser',
@@ -171,6 +172,11 @@
         }
       }
       return {
+        titles:["选择接口","已选择接口"],
+        listStyle: {
+          width: '240px',
+          height: '580px'
+        },
         loading: false,
         saving: false,
         modalVisible: false,
@@ -206,20 +212,11 @@
             {required: true, message: '昵称不能为空', trigger: 'blur'}
           ],
           email: [
-            {required: true, type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
+            {required: false,type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
           ]
           ,
           mobile: [
             {validator: validateMobile, trigger: 'blur'}
-          ],
-          grantRoles: [
-            {required: true, type: 'array', min: 1, message: '用户角色不能为空', trigger: 'blur'}
-          ],
-          grantMenus: [
-            {required: true, type: 'array', min: 1, message: '菜单资源不能为空', trigger: 'blur'}
-          ],
-          grantApis: [
-            {required: true, type: 'array', min: 1, message: '接口资源不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -320,6 +317,8 @@
           step = this.forms[0]
         }
         this.current = step
+        this.handleLoadApis()
+        this.handleLoadRoles()
         this.modalVisible = true
       },
       handleReset () {
@@ -470,9 +469,27 @@
       handleLoadApis () {
         getAllApi().then(res => {
           if (res.code === 0) {
-            this.selectApis = listConvertGroup(res.data.list, 'apiCategory')
+            let result = []
+            res.data.list.map(item => {
+              result.push({
+                key: item.apiId,
+                label: item.path,
+                description: item.apiName
+              })
+            })
+            this.selectApis = result
           }
         })
+      },
+      transferRender (item) {
+        return item.label + ' - ' + item.description;
+      },
+      handleTransferChange(newTargetKeys, direction, moveKeys) {
+        if (newTargetKeys.indexOf('1') !== -1) {
+          this.formItem.grantApis = ['1']
+        }else{
+          this.formItem.grantApis = newTargetKeys;
+        }
       },
       handleLoadRoles () {
         getAllRoles().then(res => {
@@ -506,12 +523,6 @@
         this.pageInfo.limit = size
         this.handleSearch()
       },
-      handleOnSelectApis (data) {
-        // 全部,其他的不用选了
-        if (data.indexOf('all') !== -1) {
-          this.formItem.grantApis = ['all']
-        }
-      },
       handleClick (name, row) {
         switch (name) {
           case'grantMenu':
@@ -528,8 +539,6 @@
     },
     mounted: function () {
       this.handleSearch()
-      this.handleLoadApis()
-      this.handleLoadRoles()
     }
   }
 </script>

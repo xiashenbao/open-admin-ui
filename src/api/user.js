@@ -33,6 +33,15 @@ export const getUserMenus = () => {
   })
 }
 
+export const getAllUsers = () => {
+  const data = {keyword:''}
+  return request({
+    url: 'base/user/list',
+    data,
+    method: 'post'
+  })
+}
+
 export const getUserActions = () => {
   return request({
     url: 'base/grant/login/actions',

@@ -19,7 +19,7 @@
           <Badge v-else="" status="error" text="无效"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row,1)" :disabled="row.appId === 'gateway' ?true:false">
+          <a @click="handleModal(row)" :disabled="row.appId === 'gateway' ?true:false">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">
@@ -47,20 +47,30 @@
         @click="handleResetSecret(formItem)">重置密钥</a>
       </Alert>
       <Steps :current="current" size="small">
-        <Step title="填写开发者"></Step>
+        <Step title="选择开发者"></Step>
         <Step title="完善应用信息"></Step>
         <Step title="功能授权"></Step>
       </Steps>
       <Form ref="stepForm1" v-show="current==0" :model="formItem" :rules="formItemRules" :label-width="135">
-        <FormItem label="开发者类型" prop="userType">
-          <RadioGroup v-model="formItem.userType">
-            <Radio label="platform">平台</Radio>
-            <Radio label="isp">服务提供商</Radio>
-            <Radio label="dev">自研开发者</Radio>
-          </RadioGroup>
-        </FormItem>
         <FormItem label="开发者" prop="userId">
-          <Input v-model="formItem.userId" placeholder="请输入内容"></Input>
+          <Select v-model="formItem.userId"  filterable >
+            <Option :title="item.userName" v-for="item in selectUsers" @click.native="handleOnSelectUser(item)" :value="item.userId" :label="item.userName">
+              <span>{{ item.userName }}</span>
+              <span style="float: right">
+                  <Tag color="red" >{{item.nickName}}</Tag>
+                  <Tag color="blue" v-if="item.userType==='isp'">服务提供商</Tag>
+                  <Tag color="blue" v-else-if="item.userType==='dev'">自研开发者</Tag>
+                  <Tag color="blue" v-else="">平台</Tag>
+                </span>
+            </Option>
+          </Select>
+        </FormItem>
+        <FormItem label="开发者类型" prop="userType">
+          <RadioGroup  v-model="formItem.userType">
+            <Radio disabled label="platform">平台</Radio>
+            <Radio disabled label="isp">服务提供商</Radio>
+            <Radio disabled label="dev">自研开发者</Radio>
+          </RadioGroup>
         </FormItem>
       </Form>
       <Form ref="stepForm2" v-show="current==1" :model="formItem" :rules="formItemRules" :label-width="135">
@@ -145,20 +155,21 @@
         </FormItem>
         <FormItem label="用户授权范围" prop="scopes">
           <CheckboxGroup v-model="formItem.scopes">
-            <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
+            <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.label }} - {{ item.title }}</span></Checkbox>
           </CheckboxGroup>
         </FormItem>
-        <FormItem label="功能接口授权" prop="authorities">
-          <Select v-model="formItem.authorities" multiple filterable @on-change="handleOnSelectAuths">
-            <OptionGroup v-for="(item,index) in selectApis" :label="item.apiCategory">
-              <Option :title="cate.apiDesc"
-                      :disabled="cate.apiCode!=='all' && formItem.authorities.indexOf('all')!=-1?true:false"
-                      v-for="cate in item.children" :value="cate.apiCode" :label="cate.apiName">
-                <span>{{ cate.apiName }}</span>
-                <span style="float:right;color:#ccc;">{{ cate.path }}</span></Option>
-            </OptionGroup>
-          </Select>
-        </FormItem>
+        <FormItem label="功能授权" prop="authorities">
+            <Transfer
+              :data="selectApis"
+              :list-style="listStyle"
+              :titles="titles"
+              :render-format="transferRender"
+              :target-keys="formItem.authorities"
+              @on-change="handleTransferChange"
+              filterable
+            >
+            </Transfer>
+          </FormItem>
       </Form>
       <div slot="footer">
         <Button v-if="current!==0" type="default" @click="handleUp" style="float: left">上一步</Button>&nbsp;
@@ -173,12 +184,18 @@
 <script>
   import {getApps, updateApp, addApp, removeApp, getAppDevInfo, restApp} from '@/api/app'
   import {getAllApi} from '@/api/apis'
+  import {getAllUsers} from '@/api/user'
   import {startWith, listConvertGroup} from '@/libs/util'
 
   export default {
     name: 'SystemApp',
     data () {
       return {
+        titles:["选择接口","已选择接口"],
+        listStyle: {
+          width: '240px',
+          height: '400px'
+        },
         current: 0,
         loading: false,
         saving: false,
@@ -188,6 +205,7 @@
           'stepForm3'
         ],
         selectApis: [],
+        selectUsers: [],
         selectGrantTypes: [
           {label: 'authorization_code', title: '授权码模式'},
           {label: 'client_credentials', title: '客户端模式'},
@@ -197,8 +215,8 @@
         ],
         selectScopes: [
           {label: 'userProfile', title: '平台登录信息'},
-          // 这是测试数据,根据实际情况自定义添加
-          {label: 'api1', title: '每种用户授权需对应下方的某一个功能接口'},
+          // 这是测试数据,自定义对应接口权限标识
+          {label: 'api1', title: '自定义对应接口权限标识'},
         ],
         pageInfo: {
           total: 0,
@@ -246,9 +264,6 @@
           ],
           scopes: [
             {required: true, type: 'array', min: 1, message: '用户授权范围不能为空', trigger: 'blur'}
-          ],
-          authorities: [
-            {required: true, type: 'array', min: 1, message: '接口权限不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -343,6 +358,7 @@
         }
       },
       handleModal (data, step) {
+
         if (data) {
           getAppDevInfo({appId: data.appId}).then(res => {
             if (res.code === 0) {
@@ -368,6 +384,8 @@
           step = 0
         }
         this.current = step
+        this.handleLoadApis()
+        this.handleLoadUsers()
         this.modalVisible = true
       },
       handleReset () {
@@ -492,11 +510,9 @@
           }
         }
       },
-      handleOnSelectAuths (data) {
-        // 全部,其他的不用选了
-        if (data.indexOf('all') !== -1) {
-          this.formItem.authorities = ['all']
-        }
+      handleOnSelectUser(data){
+        this.formItem.userId = data.userId;
+        this.formItem.userType = data.userType;
       },
       handlePage (current) {
         this.pageInfo.page = current
@@ -549,14 +565,38 @@
       handleLoadApis () {
         getAllApi().then(res => {
           if (res.code === 0) {
-            this.selectApis = listConvertGroup(res.data.list, 'apiCategory')
+            let result = []
+            res.data.list.map(item => {
+              result.push({
+                key: item.apiCode,
+                label: item.path,
+                description: item.apiName
+              })
+            })
+            this.selectApis = result
+          }
+        })
+      },
+      transferRender (item) {
+        return item.label + ' - ' + item.description;
+      },
+      handleTransferChange(newTargetKeys, direction, moveKeys) {
+        if (newTargetKeys.indexOf('all') !== -1) {
+          this.formItem.authorities = ['all']
+        }else{
+          this.formItem.authorities = newTargetKeys;
+        }
+      },
+      handleLoadUsers () {
+        getAllUsers().then(res => {
+          if (res.code === 0) {
+            this.selectUsers = res.data.list
           }
         })
       }
     },
     mounted: function () {
       this.handleSearch()
-      this.handleLoadApis()
     }
   }
 </script>
