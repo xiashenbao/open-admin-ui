@@ -424,6 +424,7 @@
         getUsers({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
+        }).finally(() =>{
           this.loading = false
         })
       },

@@ -249,9 +249,10 @@
       handleSearch () {
         this.loading = true
         getApis({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
-          this.loading = false
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
+        }).finally(() =>{
+          this.loading = false
         })
       },
       handlePage (current) {
