@@ -45,15 +45,14 @@ service.interceptors.response.use(
     if (error && error.response) {
       switch (error.response.status) {
         case 401:
-          message = '未授权，请重新登录'
           location.reload()
-          break;
+          return
         case 403:
           message = error.response.data.path + ',' +error.response.data.message;
-          break;
+          break
         default:
           message = error.response.data.message ? error.response.data.message : "服务器错误"
-          break;
+          break
       }
       Message.error({content: message})
       // 请求错误处理
