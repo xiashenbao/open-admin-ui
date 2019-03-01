@@ -1,12 +1,12 @@
 <template >
 
   <Layout style="height: 100%">
-    <Layout v-if="layout === 'top33333'" class="main-layout-top">
+    <Layout v-if="layout === 'topeee'" class="main-layout-top">
       <Header class="main-layout-header">
         <div class="main-layout-logo">
 
         </div>
-        <side-menu accordion mode="horizontal" ref="horizontal" :active-name="$route.name"  @on-select="turnToPage"
+        <side-menu accordion ref="sideMenu"  mode="horizontal" :active-name="$route.name"  @on-select="turnToPage"
                    :menu-list="menuList"></side-menu>
       </Header>
         <Content :class="mainClass" :style="{margin: '80px 20px 0', background: '#fff', minHeight: '500px'}">

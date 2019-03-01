@@ -41,6 +41,7 @@ export default {
       type: String,
       default: ''
     },
+    mode:'',
     menuList: {
       type: Array,
       default () {
@@ -63,8 +64,10 @@ export default {
       default: 16
     },
     accordion: Boolean,
-
-    mode:'',
+    activeName: {
+      type: String,
+      default: ''
+    },
     openNames: {
       type: Array,
       default: () => []
