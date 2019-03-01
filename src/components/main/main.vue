@@ -1,108 +1,93 @@
-<template>
-    <!-- <div style="height: 100%" class="layout-main-top">
-       <Layout>
-         <Header :style="{position: 'fixed', width: '100%'}">
-           <Menu mode="horizontal" theme="dark" active-name="1">
-             <div class="layout-main-logo"></div>
-             <div class="layout-main-nav">
-               <MenuItem name="1">
-                 <Icon type="ios-navigate"></Icon>
-                 Item 1
-             </MenuItem>
-               <MenuItem name="2">
-                 <Icon type="ios-keypad"></Icon>
-                 Item 2
-             </MenuItem>
-               <MenuItem name="3">
-                 <Icon type="ios-analytics"></Icon>
-                 Item 3
-             </MenuItem>
-               <MenuItem name="4">
-                 <Icon type="ios-paper"></Icon>
-                 Item 4
-             </MenuItem>
-             </div>
-           </Menu>
-           <header-bar :collapsed="collapsed" :screenWidth="screenWidth" @on-coll-change="handleCollapsedChange">
-             <custom-bread-crumb style="display: inline-block;vertical-align: top;" v-show="screenWidth>768" show-icon :list="breadCrumbList"></custom-bread-crumb>
-             <user :user-avatar="userAvatar" :user-name="userName" />
-               <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
-               <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader" :has-read="hasReadErrorPage" :count="errorCount"></error-store>
-               <div style="margin-right: 10px;">
-                 <Icon @click.native="value1 = true" type="md-settings" :size="23"></Icon>
-               </div>
-               <fullscreen  :screenWidth="screenWidth" v-model="isFullscreen" style="margin-right: 10px;"/>
-           </header-bar>
-         </Header>
-         <Content :style="{margin: '88px 20px 0', background: '#fff', minHeight: '500px'}">
-           Content
-       </Content>
-       </Layout>
-     </div>-->
+<template >
 
-      <Layout style="height: 100%" class="layout-main-left">
-        <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider"
-               :style="{overflow: 'hidden'}">
-          <div class="layout-main-logo">
-            <p v-show="!collapsed" class="logo-text" style="font-size: 20px">微服务开放平台</p>
-            <p v-show="collapsed" class="logo-text" style="font-size:12px">开放平台</p>
-            <!--  <img v-show="!collapsed" :src="maxLogo" key="max-logo" />
-              <img v-show="collapsed" :src="minLogo" key="min-logo" />-->
-          </div>
-          <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage"
-                     :menu-list="menuList">
-          </side-menu>
-        </Sider>
-        <Layout>
-          <Header class="layout-main-header">
-            <div :class="headerLogoClass">
-              <!-- <img v-show="!collapsed" :src="maxLogo"  key="max-logo" />
-               <img v-show="collapsed" :src="minLogo" key="min-logo" />-->
+  <Layout style="height: 100%">
+    <Layout v-if="layout === 'top33333'" class="main-layout-top">
+      <Header class="main-layout-header">
+        <div class="main-layout-logo">
+
+        </div>
+        <side-menu accordion mode="horizontal" ref="horizontal" :active-name="$route.name"  @on-select="turnToPage"
+                   :menu-list="menuList"></side-menu>
+      </Header>
+        <Content :class="mainClass" :style="{margin: '80px 20px 0', background: '#fff', minHeight: '500px'}">
+          <Layout class="main-layout-content-wrapper">
+            <custom-bread-crumb class="main-layout-bread-crumb" v-show="screenWidth>768" show-icon :list="breadCrumbList"></custom-bread-crumb>
+            <div class="main-layout-tag-nav-wrapper">
+              <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
             </div>
-              <sider-trigger :collapsed="collapsed" icon="md-menu" @on-change="handleCollapsedChange"></sider-trigger>
-              <custom-bread-crumb class="layout-main-bread-crumb" v-show="screenWidth>768" show-icon :list="breadCrumbList"></custom-bread-crumb>
-              <ul class="layout-main-header-bar">
-                  <li>
-                    <fullscreen :screenWidth="screenWidth" v-model="isFullscreen"/>
-                  </li>
-                  <li>
-                    <Icon @click.native="value1 = true" type="md-settings" :size="23"></Icon>
-                  </li>
-                  <li>
-                    <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader"  :has-read="hasReadErrorPage" :count="errorCount"></error-store>
-                  </li>
-                  <li>
-                    <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
-                  </li>
-                  <li>
-                    <user :user-avatar="userAvatar" :user-name="userName"/>
-                  </li>
-              </ul>
-          </Header>
-          <Content :class="mainClass">
-            <Layout class="layout-main-content-wrapper">
-              <div class="layout-main-tag-nav-wrapper">
-                <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
-              </div>
-              <Content class="layout-main-view-wrapper">
-                <keep-alive :include="cacheList">
-                  <router-view/>
-                </keep-alive>
-                <ABackTop :height="100" :bottom="80" :right="50" container=".layout-main-view-wrapper"></ABackTop>
-              </Content>
-            </Layout>
-          </Content>
-        </Layout>
-        <Drawer :closable="false" width="300" v-model="value1">
-          <h3>导航布局</h3>
-          <div>
-            <p style="display: inline-block;margin-left: 20px"><img src="../../assets/images/layout-left.svg"/></p>
-            <p style="display: inline-block;margin-left: 20px"><img src="../../assets/images/layout-top.svg"/></p>
-          </div>
-        </Drawer>
-      </Layout>
+            <Content class="main-layout-view-wrapper">
+              <keep-alive :include="cacheList">
+                <router-view/>
+              </keep-alive>
+              <ABackTop :height="100" :bottom="80" :right="50" container=".main-layout-view-wrapper"></ABackTop>
+            </Content>
+          </Layout>
+        </Content>
+    </Layout>
 
+    <Layout v-else=""  class="main-layout-left">
+      <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider"
+             :style="{overflow: 'hidden'}">
+        <div class="main-layout-logo">
+          <p v-show="!collapsed" class="logo-text" style="font-size: 20px">微服务开放平台</p>
+          <p v-show="collapsed" class="logo-text" style="font-size:12px">开放平台</p>
+        </div>
+        <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage"
+                   :menu-list="menuList">
+        </side-menu>
+      </Sider>
+      <Layout>
+      <Header class="main-layout-header">
+          <div :class="headerLogoClass">
+            <!-- <img v-show="!collapsed" :src="maxLogo"  key="max-logo" />
+             <img v-show="collapsed" :src="minLogo" key="min-logo" />-->
+          </div>
+          <sider-trigger :collapsed="collapsed" icon="md-menu" @on-change="handleCollapsedChange"></sider-trigger>
+          <custom-bread-crumb class="main-layout-bread-crumb" v-show="screenWidth>768" show-icon :list="breadCrumbList"></custom-bread-crumb>
+          <ul class="main-layout-header-bar">
+            <li>
+              <fullscreen :screenWidth="screenWidth" v-model="isFullscreen"/>
+            </li>
+            <li>
+              <Icon @click.native="value1 = true" type="md-settings" :size="23"></Icon>
+            </li>
+            <li>
+              <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader"  :has-read="hasReadErrorPage" :count="errorCount"></error-store>
+            </li>
+            <li>
+              <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
+            </li>
+            <li>
+              <user :user-avatar="userAvatar" :user-name="userName"/>
+            </li>
+          </ul>
+        </Header>
+        <Content :class="mainClass">
+          <Layout class="main-layout-content-wrapper">
+            <div class="main-layout-tag-nav-wrapper">
+              <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
+            </div>
+            <Content class="main-layout-view-wrapper">
+              <keep-alive :include="cacheList">
+                <router-view/>
+              </keep-alive>
+              <ABackTop :height="100" :bottom="80" :right="50" container=".main-layout-view-wrapper"></ABackTop>
+            </Content>
+          </Layout>
+        </Content>
+      </Layout>
+    </Layout>
+
+    <Drawer :closable="false" width="300" v-model="value1">
+      <h3>导航布局</h3>
+      <div>
+        <p @click="changeLayout('left')" style="display: inline-block;margin-left: 20px;cursor: pointer"><img src="../../assets/images/layout-left.svg"/></p>
+        <p @click="changeLayout('top')" style="display: inline-block;margin-left: 20px;cursor: pointer"><img src="../../assets/images/layout-top.svg"/></p>
+      </div>
+    </Drawer>
+  </Layout>
 </template>
+
 
 <script>
   import SideMenu from './components/side-menu'
@@ -139,6 +124,7 @@
       return {
         value1: false,
         collapsed: false,
+        layout:'',
         minLogo,
         maxLogo,
         isFullscreen: false,
@@ -154,14 +140,14 @@
       },
       headerLogoClass () {
         return [
-          'layout-main-header-logo',
-          this.collapsed ? 'layout-main-header-logo-collapsed' : ''
+          'main-layout-header-logo',
+          this.collapsed ? 'main-layout-header-logo-collapsed' : ''
         ]
       },
       mainClass () {
         return [
-          'layout-main-content',
-          this.collapsed ? 'layout-main-content-collapsed' : ''
+          'main-layout-content',
+          this.collapsed ? 'main-layout-content-collapsed' : ''
         ]
       },
       tagNavList () {
@@ -217,6 +203,13 @@
           query
         })
       },
+      changeLayout(layout){
+        if(!layout){
+          layout = 'left'
+        }
+        localStorage.setItem("layout",layout);
+        this.layout = layout
+      },
       handleCollapsedChange (state) {
         this.collapsed = state
       },
@@ -233,6 +226,14 @@
       },
       handleClick (item) {
         this.turnToPage(item)
+      },
+      setLayout(){
+        let layout = localStorage.getItem("layout");
+        if(!layout){
+          layout = 'left'
+          localStorage.setItem("layout",layout);
+        }
+        this.layout = layout
       }
     },
     watch: {
@@ -264,7 +265,8 @@
           that.screenWidth = document.body.clientWidth
         })()
       }
-
+      // 设置布局
+      this.setLayout()
       // 初始化设置面包屑导航和标签导航
       this.setTagNavList()
       this.addTag({

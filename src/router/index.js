@@ -22,7 +22,9 @@ const router = new Router({
   mode: 'history'
 })
 const LOGIN_PAGE_NAME = 'login'
-const LOGIN_SUCCESS_NAME = 'loginSuccess'
+
+const permitList = [LOGIN_PAGE_NAME, 'loginSuccess']
+
 const turnTo = (to, access, next) => {
   if(!to.name){
     // 防止地址栏刷新动态路由跳转到401或404,先跳转到homeName
@@ -38,16 +40,13 @@ const turnTo = (to, access, next) => {
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   const token = getToken()
-  if (!token && to.name !== LOGIN_PAGE_NAME && to.name !== LOGIN_SUCCESS_NAME) {
-    // 未登录且要跳转的页面不是登录页或登录成功页
+  if (!token && !permitList.includes(to.name)) {
+    // 未登录,并且不是白名单
     next({
       name: LOGIN_PAGE_NAME // 跳转到登录页
     })
-  } else if (!token && to.name === LOGIN_PAGE_NAME) {
-    // 未登陆且要跳转的页面是登录页
-    next() // 跳转
-  } else if (!token && to.name === LOGIN_SUCCESS_NAME) {
-    // 未登陆且要跳转的页面是登录成功页
+  } else if (!token && permitList.includes(to.name)) {
+    // 无需登录的页面
     next() // 跳转
   } else if (token && to.name === LOGIN_PAGE_NAME) {
     // 已登录且要跳转的页面是登录页
