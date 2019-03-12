@@ -1,4 +1,4 @@
-import {login, logout, getUserInfo, getUserMenus} from '@/api/user'
+import {login, logout, getUserInfo, getMyAuthority} from '@/api/user'
 import {setToken, getToken} from '@/libs/util'
 
 export default {
@@ -12,7 +12,8 @@ export default {
     hasGetInfo: false,
     mobile: '',
     email: '',
-    menus: []
+    menus: [],// 用户菜单
+    operations:[],// 用户操作
   },
   mutations: {
     setAvatar (state, avatarPath) {
@@ -39,6 +40,9 @@ export default {
     },
     setUserMenus (state, menus) {
       state.menus = menus
+    },
+    setUserOperations (state, operations) {
+      state.operations = operations
     },
     setMobile (state, mobile) {
       state.mobile = mobile
@@ -92,12 +96,34 @@ export default {
             commit('setUserId', res.data.userId)
             commit('setEmail', res.data.email)
             commit('setMobile', res.data.mobile)
+            const  access = []
+            if(res.data.authorities){
+              res.data.authorities.map(item =>{
+                if(item.authority){
+                  access.push(item.authority)
+                }
+              })
+            }
             // 转换权限
-            commit('setAccess', res.data.authorities)
+            commit('setAccess',access)
             commit('setHasGetInfo', true)
-            getUserMenus().then(res => {
+            getMyAuthority().then(res => {
               if (res.code === 0) {
-                commit('setUserMenus', res.data)
+                const  menus = [];
+                const  operations = [];
+
+                if(res.data){
+                  res.data.map(item =>{
+                     if(item.resourceType === 'menu'){
+                       menus.push(item.menu);
+                     }
+                    if(item.resourceType === 'operation'){
+                      operations.push(item.operation);
+                    }
+                  })
+                }
+                commit('setUserMenus', menus)
+                commit('setUserOperations',operations)
                 resolve(state)
               }
             }).catch(err => {

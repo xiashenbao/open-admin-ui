@@ -1,4 +1,6 @@
 import { on } from '@/libs/tools'
+import hljs from 'highlight.js';
+
 const directives = {
   draggable: {
     inserted: (el, binding, vnode) => {
@@ -38,6 +40,24 @@ const directives = {
       if (!binding.value.recover) return
       let bodyDom = document.querySelector(binding.value.body)
       bodyDom.style.transform = ''
+    }
+  },
+  highlight: {
+    inserted: (el, binding, vnode) => {
+      let blocks = el.querySelectorAll('pre');
+      setTimeout(() =>{
+        blocks.forEach((block)=>{
+          hljs.highlightBlock(block)
+        })
+      }, 200)
+    },
+    componentUpdated: function(el) {
+      let blocks = el.querySelectorAll('pre');
+      setTimeout(() =>{
+        blocks.forEach((block)=>{
+          hljs.highlightBlock(block)
+        })
+      }, 200)
     }
   }
 }

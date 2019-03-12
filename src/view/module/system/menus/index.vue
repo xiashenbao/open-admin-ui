@@ -18,76 +18,71 @@
             </template>
           </tree-table>
         </Col>
-        <div style="display: block;position: absolute;top: 0;bottom: 0;left: 25%;border-left: 1px solid #eee;"></div>
-        <Col span="18">
-          <Row>
-            <Col span="24">
-              <div class="search-con search-con-top">
-                <ButtonGroup>
-                  <Button type="primary" @click="setEnabled(true)">新建</Button>
-                  <Button type="primary" :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
-                  <Button type="primary" :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
-                </ButtonGroup>
-                <Modal
-                  v-model="confirmModal"
-                  title="提示"
-                  @on-ok="handleRemove">
-                  确定删除,菜单资源【{{formItem.menuName}}】吗?{{formItem.children && formItem.children.length > 0 ?
-                  '存在子菜单,将一起删除.是否继续?' : ''}}
+        <Col span="16">
+          <div class="search-con search-con-top">
+            <ButtonGroup>
+              <Button type="primary" @click="setEnabled(true)">新建</Button>
+              <Button type="primary" :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
+              <Button type="primary" :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
+            </ButtonGroup>
+            <Modal
+              v-model="confirmModal"
+              title="提示"
+              @on-ok="handleRemove">
+              确定删除,菜单资源【{{formItem.menuName}}】吗?{{formItem.children && formItem.children.length > 0 ?
+              '存在子菜单,将一起删除.是否继续?' : ''}}
 
-                </Modal>
-              </div>
-              <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="100">
-                <FormItem label="父级菜单">
-                  <treeselect :disabled="disabled"
-                              v-model="formItem.parentId"
-                              :options="selectTreeData"
-                              :default-expand-level="1"
-                              :normalizer="treeSelectNormalizer"/>
-                </FormItem>
-                <FormItem label="菜单标识" prop="menuCode">
-                  <Input :disabled="disabled" v-model="formItem.menuCode" placeholder="请输入内容"></Input>
-                </FormItem>
-                <FormItem label="菜单名称" prop="menuName">
-                  <Input :disabled="disabled" v-model="formItem.menuName" placeholder="请输入内容"></Input>
-                </FormItem>
-                <FormItem label="请求地址" prop="path">
-                  <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
-                    <Select :disabled="disabled" v-model="formItem.prefix" slot="prepend" style="width: 80px">
-                      <Option value="/">/</Option>
-                      <Option value="http://">http://</Option>
-                      <Option value="https://">https://</Option>
-                    </Select>
-                    <Select :disabled="disabled" v-model="formItem.target" slot="append" style="width: 100px">
-                      <Option value="_self">窗口内打开</Option>
-                      <Option value="_blank">新窗口打开</Option>
-                    </Select>
-                  </Input>
-                </FormItem>
-                <FormItem label="图标">
-                  <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容"></Input>
-                </FormItem>
-                <FormItem label="优先级">
-                  <InputNumber :disabled="disabled" v-model="formItem.priority"></InputNumber>
-                </FormItem>
-                <FormItem label="状态">
-                  <i-switch :disabled="disabled" v-model="formItem.statusSwatch" size="large">
-                    <span slot="open">有效</span>
-                    <span slot="close">无效</span>
-                  </i-switch>
-                </FormItem>
-                <FormItem label="描述">
-                  <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
-                </FormItem>
-                <FormItem>
-                  <Button :disabled="disabled" @click="handleSubmit" :loading="saving" type="primary">保存</Button>
-                  <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
-                </FormItem>
-              </Form>
-              <Divider orientation="left">操作资源</Divider>
-              <menu-action :value="formItem"></menu-action>
-            </Col>
-          </Row>
+            </Modal>
+          </div>
+          <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="100">
+            <FormItem label="上级菜单" prop="parentId">
+              <treeselect :disabled="disabled"
+                          v-model="formItem.parentId"
+                          :options="selectTreeData"
+                          :default-expand-level="1"
+                          :normalizer="treeSelectNormalizer"/>
+            </FormItem>
+            <FormItem label="菜单标识" prop="menuCode">
+              <Input :disabled="disabled" v-model="formItem.menuCode" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="菜单名称" prop="menuName">
+              <Input :disabled="disabled" v-model="formItem.menuName" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="请求地址" prop="path">
+              <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
+                <Select :disabled="disabled" v-model="formItem.prefix" slot="prepend" style="width: 80px">
+                  <Option value="/">/</Option>
+                  <Option value="http://">http://</Option>
+                  <Option value="https://">https://</Option>
+                </Select>
+                <Select :disabled="disabled" v-model="formItem.target" slot="append" style="width: 100px">
+                  <Option value="_self">窗口内打开</Option>
+                  <Option value="_blank">新窗口打开</Option>
+                </Select>
+              </Input>
+            </FormItem>
+            <FormItem label="图标">
+              <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="优先级">
+              <InputNumber :disabled="disabled" v-model="formItem.priority"></InputNumber>
+            </FormItem>
+            <FormItem label="状态">
+              <i-switch :disabled="disabled" v-model="formItem.statusSwatch" size="large">
+                <span slot="open">有效</span>
+                <span slot="close">无效</span>
+              </i-switch>
+            </FormItem>
+            <FormItem label="描述">
+              <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem>
+              <Button :disabled="disabled" @click="handleSubmit" :loading="saving" type="primary">保存</Button>
+              <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
+            </FormItem>
+          </Form>
+          <Divider orientation="left">操作资源</Divider>
+          <menu-operation :value="formItem"></menu-operation>
         </Col>
       </Row>
     </Card>
@@ -97,12 +92,12 @@
 <script>
   import {listConvertTree, updateTreeNode} from '@/libs/util'
   import {getMenus, updateMenu, addMenu, removeMenu} from '@/api/menu'
-  import MenuAction from './menu-action'
+  import MenuOperation from './menu-operation'
 
   export default {
     name: 'SystemMenu',
     components: {
-      MenuAction
+      MenuOperation
     },
     data () {
       const validateEn = (rule, value, callback) => {
@@ -121,8 +116,11 @@
         saving: false,
         selectTreeData: [],
         formItemRules: {
+          parentId: [
+            {required: true, message: '上级菜单', trigger: 'blur'}
+          ],
           menuCode: [
-            {validator: validateEn, trigger: 'blur'}
+            {required: true,validator: validateEn, trigger: 'blur'}
           ],
           menuName: [
             {required: true, message: '菜单名称不能为空', trigger: 'blur'}
@@ -169,7 +167,7 @@
       setSelectTree (data) {
         const root = {
           menuId: 0,
-          menuName: '根节点'
+          menuName: '无'
         }
         this.selectTreeData = [root].concat(data)
       },

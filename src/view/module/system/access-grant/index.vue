@@ -72,7 +72,7 @@
             slot: 'authorityPrefix'
           },
           {
-            title: '资源所属服务',
+            title: '服务名',
             key: 'serviceId'
           },
           {

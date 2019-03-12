@@ -3,16 +3,16 @@ import request from '@/libs/request'
 export const getMenus = () => {
   const data = {}
   return request({
-    url: 'base/menu/list',
+    url: 'base/menu/all',
     data,
     method: 'post'
   })
 }
 
-export const getMenuActions = () => {
+export const getMenuOperations = () => {
   const data = {}
   return request({
-    url: 'base/menu/action/list',
+    url: 'base/menu/operation/list',
     data,
     method: 'post'
   })
@@ -44,3 +44,4 @@ export const removeMenu = ({menuId}) => {
     method: 'post'
   })
 }
+

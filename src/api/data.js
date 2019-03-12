@@ -40,7 +40,7 @@ export const uploadImg = formData => {
 
 export const loginConfig = () => {
   return request({
-    url: 'auth/login/config',
+    url: 'auth/thirdParty/config',
     method: 'get'
   })
 }

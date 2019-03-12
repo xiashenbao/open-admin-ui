@@ -445,11 +445,12 @@ export const isURL = (url) => {
  */
 export const formatRouters = (array, access) => {
   let opt = {
-    primaryKey: 'resourceId',
-    parentKey: 'resourcePid',
+    primaryKey: 'menuId',
+    parentKey: 'parentId',
     startPid: '0'
   }
   let menus = listConvertTree(array, opt)
+  console.log(JSON.stringify(menus))
   let routers = filterRouter(menus, access, [])
   const error_404 = {
     path: '*',
@@ -466,37 +467,59 @@ export const formatRouters = (array, access) => {
 
 export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
-      let url = item.resource.prefix + (item.path ? item.path : item.resource.menuCode)
+      let path = startWith(item.path,"/") ? item.path.substring(1) :item.path;
+      let url =  item.prefix+item.path
       let router = {
         //使用菜单id不使用menuCode防止修改后,刷新后缓存的页面无法找到
-        name: `router${item.resource.menuId}`,
+        name: `router${item.menuId}`,
         path: url,
         meta: {
           access: access,
           hideInMenu: false,
-          title: item.resource.menuName,
+          title: item.menuName,
           notCache: true,
-          icon: item.resource.icon || 'md-document',
+          icon: item.icon || 'md-document',
           hideInBread: false,
         },
         children: []
       }
-      if (item.resourcePid === 0 || item.resourcePid === '0') {
+      if (item.parentId === 0 || item.parentId === '0') {
         // 根节点
         router.path = '/'
         router.component = (resolve) => {
           require(['_c/main'], resolve)
         }
+        if (!hasChild(item)) {
+          // 非根节点
+          if (item.target === '_blank') {
+            // 新窗口打开,使用meta.href
+            router.meta.href = url
+          } else {
+            if (item.prefix === '/') {
+              // 内部组件
+              router.component = (resolve) => {
+                require([`@/view/module/${path}.vue`], resolve)
+              }
+            } else {
+              // 传递iframe路径参数
+              router.path = `/iframe?src=${encodeURIComponent(url)}`
+              // frame组件
+              router.component = (resolve) => {
+                require([`_c/iframe-view`], resolve)
+              }
+            }
+          }
+        }
       } else {
         // 非根节点
-        if (item.resource.target === '_blank') {
+        if (item.target === '_blank') {
           // 新窗口打开,使用meta.href
           router.meta.href = url
         } else {
-          if (item.resource.prefix === '/') {
+          if (item.prefix === '/') {
             // 内部组件
             router.component = (resolve) => {
-              require([`@/view/module/${item.path}.vue`], resolve)
+              require([`@/view/module/${path}.vue`], resolve)
             }
           } else {
             // 传递iframe路径参数
@@ -616,4 +639,68 @@ export const startWith = (str, prefix) => {
 export const endWith = (str, suffix) => {
   let reg = new RegExp(suffix + '$')
   return reg.test(str)
+}
+
+
+/**
+ * 判断终端以及浏览器
+ * userAgent string User-Agent信息
+ */
+export const  readUserAgent =(userAgent)=> {
+  let data = {
+    terminal: "",
+    browser: ""
+  };
+  let regs = {};
+  let terminal = {
+    'windows nt 10'      : 'Windows 10',
+    'windows nt 6.3'     : 'Windows 8.1',
+    'windows nt 6.2'     : 'Windows 8',
+    'windows nt 6.1'     : 'Windows 7',
+    'windows nt 6.0'     : 'Windows Vista',
+    'windows nt 5.2'     : 'Windows Server 2003XP x64',
+    'windows nt 5.1'     : 'Windows XP',
+    'windows xp'         : 'Windows XP',
+    'windows nt 5.0'     : 'Windows 2000',
+    'windows me'         : 'Windows ME',
+    'win98'              : 'Windows 98',
+    'win95'              : 'Windows 95',
+    'win16'              : 'Windows 3.11',
+    'macintosh|mac os x' : 'Mac OS X',
+    'mac_powerpc'        : 'Mac OS 9',
+    'linux'              : 'Linux',
+    'ubuntu'             : 'Ubuntu',
+    'phone'              : 'iPhone',
+    'pod'                : 'iPod',
+    'pad'                : 'iPad',
+    'android'            : 'Android',
+    'blackberry'         : 'BlackBerry',
+    'webos'              : 'Mobile',
+    'freebsd'            : 'FreeBSD',
+    'sunos'              : 'Solaris'
+  };
+  for (let key in terminal) {
+    if (new RegExp(key).test(userAgent.toLowerCase())) {
+      data.terminal = terminal[key];
+      break;
+    }
+  }
+
+  if (regs = userAgent.match(/MSIE\s(\d+)\..*/)) {
+    // ie 除11
+    data.browser = 'ie ' + regs['1'];
+  } else if (regs = userAgent.match(/FireFox\/(\d+)\..*/)) {
+    data.browser = 'firefox ' + regs['1'];
+  } else if (regs = userAgent.match(/Opera[\s|\/](\d+)\..*/)) {
+    data.browser = 'opera ' + regs['1'];
+  } else if (regs = userAgent.match(/Chrome\/(\d+)\..*/)) {
+    data.browser = 'chrome ' + regs['1'];
+  } else if (regs = userAgent.match(/Safari\/(\d+)\..*$/)) {
+    // chrome浏览器都声明了safari
+    data.browser = 'safari ' + regs['1'];
+  } else if (regs = userAgent.match(/rv:(\d+)\..*/)) {
+    // ie 11
+    data.browser = 'ie ' + regs['1'];
+  }
+  return data;
 }

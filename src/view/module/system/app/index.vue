@@ -158,7 +158,13 @@
             <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.label }} - {{ item.title }}</span></Checkbox>
           </CheckboxGroup>
         </FormItem>
-        <FormItem label="功能授权" prop="authorities">
+        <FormItem label="访问令牌有效期" prop="accessTokenValidity">
+            <InputNumber :max="10800" :min="900" v-model="formItem.accessTokenValidity"></InputNumber>秒
+        </FormItem>
+        <FormItem label="刷新令牌有效期" prop="refreshTokenValidity">
+          <InputNumber :max="31536000" :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>秒
+        </FormItem>
+        <FormItem label="开放接口" prop="authorities">
             <Transfer
               :data="selectApis"
               :list-style="listStyle"
@@ -274,7 +280,13 @@
           ],
           scopes: [
             {required: true, type: 'array', min: 1, message: '用户授权范围不能为空', trigger: 'blur'}
-          ]
+          ],
+          accessTokenValidity: [
+            {required: true, message: '访问令牌有效期不能为空', trigger: 'blur'}
+          ],
+          refreshTokenValidity: [
+            {required: true, message: '刷新令牌有效期不能为空', trigger: 'blur'}
+          ],
         },
         formItem: {
           appId: '',
@@ -295,7 +307,9 @@
           userType: 'platform',
           scopes: [],
           authorities: [],
-          grantTypes: ['authorization_code', 'client_credentials', 'refresh_token']
+          grantTypes: ['authorization_code', 'client_credentials', 'refresh_token'],
+          accessTokenValidity:3600,
+          refreshTokenValidity:2592000
         },
         columns: [
           {
@@ -374,6 +388,8 @@
             if (res.code === 0) {
               this.formItem.scopes = res.data.scope
               this.formItem.grantTypes = res.data.authorized_grant_types
+              this.formItem.accessTokenValidity = res.data.access_token_validity
+              this.formItem.refreshTokenValidity = res.data.refresh_token_validity
               if (res.data.authorities && res.data.authorities.length > 0) {
                 this.formItem.authorities = res.data.authorities.map(item => {
                     // 替换掉前缀
@@ -417,7 +433,9 @@
           userType: 'platform',
           scopes: [],
           authorities: [],
-          grantTypes: ['authorization_code', 'client_credentials', 'refresh_token']
+          grantTypes: ['authorization_code', 'client_credentials', 'refresh_token'],
+          accessTokenValidity:3600,
+          refreshTokenValidity:2592000
         }
         this.formItem = newData
         this.forms.map(form => {

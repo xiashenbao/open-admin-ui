@@ -12,7 +12,7 @@
         <Badge v-if="row.status===1" status="success" text="有效"/>
         <Badge v-else="" status="error" text="无效"/>
       </template>
-      <template slot="action" slot-scope="{ row }">
+      <template slot="operation" slot-scope="{ row }">
         <a @click="handleModal(row)">编辑</a> &nbsp;
         <Poptip
           confirm
@@ -26,15 +26,15 @@
            :title="modalTitle"
            width="680"
            @on-cancel="handleReset">
-      <Form ref="actionForm" :model="formItem" :rules="formItemRules" :label-width="100">
+      <Form ref="operationForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="所属菜单">
           <Input disabled v-model="value.menuName"></Input>
         </FormItem>
-        <FormItem label="操作标识" prop="actionCode">
-          <Input v-model="formItem.actionCode" placeholder="请输入内容"></Input>
+        <FormItem label="操作标识" prop="operationCode">
+          <Input v-model="formItem.operationCode" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="操作名称" prop="actionName">
-          <Input v-model="formItem.actionName" placeholder="请输入内容"></Input>
+        <FormItem label="操作名称" prop="operationName">
+          <Input v-model="formItem.operationName" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="请求地址" prop="path">
           <Input v-model="formItem.path" placeholder="请输入内容"></Input>
@@ -49,7 +49,7 @@
           </i-switch>
         </FormItem>
         <FormItem label="描述">
-          <Input v-model="formItem.actionDesc" type="textarea" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.operationDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -61,10 +61,10 @@
 </template>
 
 <script>
-  import {getActions, updateAction, addAction, removeAction} from '@/api/action'
+  import {getOperationsByMenu, updateOperation, addOperation, removeOperation} from '@/api/operation'
 
   export default {
-    name: 'MenuAction',
+    name: 'MenuOperation',
     props: {
       value: Object
     },
@@ -85,32 +85,32 @@
         modalTitle: '',
         confirmModal: false,
         formItemRules: {
-          actionCode: [
-            {validator: validateEn, trigger: 'blur'}
+          operationCode: [
+            {required: true,validator: validateEn, message: '操作编码不能为空', trigger: 'blur'}
           ],
-          actionName: [
+          operationName: [
             {required: true, message: '操作名称不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
-          actionId: '',
-          actionCode: '',
-          actionName: '',
+          operationId: '',
+          operationCode: '',
+          operationName: '',
           path: '',
           status: 1,
           statusSwatch: true,
           menuId: '',
           priority: 0,
-          actionDesc: ''
+          operationDesc: ''
         },
         columns: [
           {
             title: '操作名称',
-            key: 'actionName'
+            key: 'operationName'
           },
           {
             title: '操作标识',
-            key: 'actionCode'
+            key: 'operationCode'
           },
           {
             title: '请求地址',
@@ -123,11 +123,11 @@
           },
           {
             title: '描述',
-            key: 'actionDesc'
+            key: 'operationDesc'
           },
           {
             title: '操作',
-            slot: 'action',
+            slot: 'operation',
             width: 150
           }
         ],
@@ -137,7 +137,7 @@
     methods: {
       handleModal (data) {
         if (data) {
-          this.modalTitle = '编辑操作 - '+data.actionName
+          this.modalTitle = '编辑操作 - '+data.operationName
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         } else {
@@ -148,29 +148,29 @@
       },
       handleReset () {
         const newData = {
-          actionId: '',
-          actionCode: '',
-          actionName: '',
+          operationId: '',
+          operationCode: '',
+          operationName: '',
           path: '',
           status: 1,
           statusSwatch: true,
           menuId: '',
           priority: 0,
-          actionDesc: ''
+          operationDesc: ''
         }
         this.formItem = newData
         //重置验证
-        this.$refs['actionForm'].resetFields()
+        this.$refs['operationForm'].resetFields()
         this.modalVisible = false
         this.saving = false
       },
       handleSubmit () {
-        this.$refs['actionForm'].validate((valid) => {
+        this.$refs['operationForm'].validate((valid) => {
           if (valid) {
             this.saving = true
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
-            if (this.formItem.actionId) {
-              updateAction(this.formItem).then(res => {
+            if (this.formItem.operationId) {
+              updateOperation(this.formItem).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
@@ -180,7 +180,7 @@
                 this.saving = false
               })
             } else {
-              addAction(this.formItem).then(res => {
+              addOperation(this.formItem).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
@@ -198,12 +198,12 @@
           this.data = []
           return
         }
-        getActions(this.value.menuId).then(res => {
+        getOperationsByMenu(this.value.menuId).then(res => {
           this.data = res.data.list
         })
       },
       handleRemove (data) {
-        removeAction({actionId: data.actionId}).then(res => {
+        removeOperation({operationId: data.operationId}).then(res => {
           this.handleSearch()
           if (res.code === 0) {
             this.pageInfo.page = 1

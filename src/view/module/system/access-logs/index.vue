@@ -4,33 +4,47 @@
     <Table :columns="columns" :data="data" :loading="loading">
       <template slot="httpStatus" slot-scope="{ row }">
         <Badge v-if="row.httpStatus==='200'" status="success"/>
-        <Badge v-else="" status="error"/>
-        {{row.httpStatus}}
+        <Badge v-else="" status="error"/>{{row.httpStatus}}
       </template>
-      <template  slot="headers" slot-scope="{ row }">
-        <Tooltip max-width="200" :content="row.headers">
-          <Button>查看</Button>
-        </Tooltip>
-      </template>
-      <template  slot="data" slot-scope="{ row }">
-        <Tooltip max-width="200" :content="row.data">
-          <Button>查看</Button>
-        </Tooltip>
+      <template  slot="detail" slot-scope="{ row }">
+        <a @click="openDrawer(row)">详情</a>
       </template>
     </Table>
     <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
           show-total
           @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
+    <Drawer width="500" title="请求详情" :closable="false" v-model="drawer">
+      <div v-highlight>
+        <h3>请求头
+          <Badge v-if="currentRow.httpStatus==='200'" status="success"/>
+          <Badge v-else="" status="error"/>{{currentRow.httpStatus}}
+        </h3>
+        <pre>
+             {{ currentRow.headers ?  JSON.stringify(JSON.parse(currentRow.headers), null, 2):''}}
+        </pre>
+        <h3>请求参数</h3>
+        <pre>
+              {{ currentRow.params ? JSON.stringify(JSON.parse(currentRow.params), null, 2) : ''}}
+        </pre>
+        <h3>认证信息</h3>
+        <pre>
+              {{ currentRow.authentication ? JSON.stringify(JSON.parse(currentRow.authentication), null, 2) : ''}}
+        </pre>
+      </div>
+    </Drawer>
   </div>
 </template>
 
 <script>
   import {getAccessLogs} from '@/api/access-logs'
+  import {readUserAgent} from '@/libs/util'
   export default {
     name: 'SystemGrantAccess',
     data () {
       return {
+        drawer:false,
+        currentRow:{},
         loading: false,
         pageInfo: {
           total: 0,
@@ -44,12 +58,8 @@
             align: 'center'
           },
           {
-            title: '访问路径',
+            title: '请求地址',
             key: 'path'
-          },
-          {
-            title: '访问时间',
-            key: 'accessTime'
           },
           {
             title: '请求方式',
@@ -60,25 +70,46 @@
             key: 'ip'
           },
           {
-            title: '请求头',
-            key: 'headers',
-            slot: 'headers'
+            title: '终端',
+            render:(h,params) => {
+              return   h('div', readUserAgent(params.row.userAgent).terminal)
+            }
           },
           {
-            title: '请求数据',
-            key: 'data',
-            slot: 'data'
+            title: '浏览器',
+            render:(h,params) => {
+              return   h('div', readUserAgent(params.row.userAgent).browser)
+            }
           },
           {
             title: '响应状态',
             key: 'httpStatus',
             slot: 'httpStatus'
+          },
+          {
+            title: '请求时间',
+            key: 'requestTime'
+          },
+          {
+            title: '耗时',
+            key: 'useTime',
+            render:(h,params) => {
+              return   h('div',( params.row.useTime?params.row.useTime:0)+' ms')
+            }
+          },
+          {
+            title: '详情',
+            slot: 'detail'
           }
         ],
         data: []
       }
     },
     methods: {
+      openDrawer(data){
+        this.currentRow = data
+        this.drawer = true
+      },
       handleSearch () {
         this.loading = true
         getAccessLogs({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {

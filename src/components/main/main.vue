@@ -29,8 +29,8 @@
       <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider"
              :style="{overflow: 'hidden'}">
         <div class="main-layout-logo">
-          <p v-show="!collapsed" class="logo-text" style="font-size: 20px">微服务开放平台</p>
-          <p v-show="collapsed" class="logo-text" style="font-size:12px">开放平台</p>
+          <p v-show="!collapsed" class="logo-text" style="font-size: 20px">微服务运营后台</p>
+          <p v-show="collapsed" class="logo-text" style="font-size:12px">运营后台</p>
         </div>
         <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage"
                    :menu-list="menuList">

@@ -6,7 +6,7 @@ export const login = ({ username, password }) => {
     password
   }
   return request({
-    url: 'login/token',
+    url: 'admin/login/token',
     data,
     method: 'post'
   })
@@ -14,7 +14,7 @@ export const login = ({ username, password }) => {
 
 export const getUserInfo = () => {
   return request({
-    url: 'auth/user',
+    url: 'auth/user/me',
     method: 'get'
   })
 }
@@ -26,9 +26,9 @@ export const getUsers = ({page,limit}) => {
     method: 'post'
   })
 }
-export const getUserMenus = () => {
+export const getMyAuthority = () => {
   return request({
-    url: 'base/grant/login/menus',
+    url: 'base/authority/granted/me',
     method: 'get'
   })
 }
@@ -36,7 +36,7 @@ export const getUserMenus = () => {
 export const getAllUsers = () => {
   const data = {keyword:''}
   return request({
-    url: 'base/user/list',
+    url: 'base/user/all',
     data,
     method: 'post'
   })

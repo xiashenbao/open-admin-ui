@@ -1,8 +1,6 @@
 <template>
   <div>
-    <Alert show-icon>服务器启动后,自动添加和更新API列表(需开启<code>@EnableResourceServer</code>)
 
-    </Alert>
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
@@ -11,10 +9,16 @@
           </Button>
         </ButtonGroup>
       </div>
+      <Alert show-icon><code>@EnableResourceServer</code>接口资源将自动进行维护。&nbsp;&nbsp;开放接口 <a><strong>{{openApiCount}}</strong></a> 个可授权 </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
-        <template slot="status" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success" text="有效"/>
-          <Badge v-else="" status="error" text="无效"/>
+        <template slot="apiName" slot-scope="{ row }">
+          <Badge v-if="row.status===1" status="success" />
+          <Badge v-else="" status="error" />
+          {{row.apiName}}
+        </template>
+        <template slot="isOpen" slot-scope="{ row }">
+          <Tag color="green" v-if="row.isOpen===1" >是</Tag>
+          <Tag color="red" v-else="" >否</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
@@ -25,7 +29,6 @@
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="rateLimit">接口限流</DropdownItem>
               <DropdownItem name="remove">删除接口</DropdownItem>
             </DropdownMenu>
           </Dropdown>
@@ -39,40 +42,65 @@
            :title="modalTitle"
            width="680"
            @on-cancel="handleReset">
-      <Alert show-icon v-if="formItem.apiId?true:false">
-        如需修改(接口标识、名称、请求地址),请在服务端修改<code>@RestController</code>标注类中的<code>方法名称</code>和<code>@ApiOperation</code>。
+          <Alert show-icon v-if="formItem.apiId?true:false">
+            接口信息部分内容,需要在接口定义时修改。
 
-      </Alert>
-      <Form ref="apiForm" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="所属服务" prop="serviceId">
-          <Input :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="接口分类" prop="apiCategory">
-          <Input v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="接口标识" prop="apiCode">
-          <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="接口名称" prop="apiName">
-          <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiName" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="请求地址" prop="path">
-          <Input :disabled="formItem.apiId?true:false" v-model="formItem.path" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="优先级">
-          <InputNumber v-model="formItem.priority"></InputNumber>
-        </FormItem>
-        <FormItem label="状态">
-          <i-switch v-model="formItem.statusSwatch" size="large">
-            <span slot="open">有效</span>
-            <span slot="close">无效</span>
-          </i-switch>
-        </FormItem>
-        <FormItem label="描述">
-          <Input v-model="formItem.apiDesc" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-      </Form>
-
+            <Poptip placement="bottom"  title="示例代码" >
+              <a>示例代码</a>
+              <div slot="content">
+                <div v-highlight>
+                <pre>
+                        // 访问权限
+                        @Access(value = {
+                          @AccessPreAuthorize(value = "hasAuthority('ROLE_user')",allow = true),
+                        },open = true)
+                        // 接口介绍
+                        @ApiOperation(value = "接口名称", notes = "接口备注")
+                        @PostMapping("/testApi")
+                        // 方法名为接口标识
+                        public ResultBody testApi() {
+                           return ResultBody.success();
+                        }
+                </pre>
+                </div>
+              </div>
+            </Poptip>
+          </Alert>
+          <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
+            <FormItem label="所属服务" prop="serviceId">
+              <Input :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="接口分类" prop="apiCategory">
+              <Input v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="接口标识" prop="apiCode">
+              <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="接口名称" prop="apiName">
+              <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiName" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="请求地址" prop="path">
+              <Input :disabled="formItem.apiId?true:false" v-model="formItem.path" placeholder="请输入内容"></Input>
+            </FormItem>
+            <FormItem label="优先级">
+              <InputNumber v-model="formItem.priority"></InputNumber>
+            </FormItem>
+            <FormItem label="开放接口">
+              <i-switch v-model="formItem.openSwatch" size="large">
+                <span slot="open">是</span>
+                <span slot="close">否</span>
+              </i-switch>
+            </FormItem>
+            <FormItem label="状态">
+              <i-switch v-model="formItem.statusSwatch" size="large">
+                <span slot="open">有效</span>
+                <span slot="close">无效</span>
+              </i-switch>
+            </FormItem>
+            <FormItem label="描述">
+              <Input v-model="formItem.apiDesc" type="textarea" placeholder="请输入内容"></Input>
+            </FormItem>
+          </Form>
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
         <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
@@ -108,6 +136,7 @@
           page: 1,
           limit: 10
         },
+        openApiCount:0,
         formItemRules: {
           serviceId: [
             {required: true, message: '所属服务不能为空', trigger: 'blur'}
@@ -130,6 +159,8 @@
           path: '',
           status: 1,
           statusSwatch: true,
+          isOpen: 0,
+          openSwatch: false,
           serviceId: '',
           priority: 0,
           apiDesc: ''
@@ -141,37 +172,35 @@
             align: 'center'
           },
           {
-            title: '接口名称',
-            key: 'apiName'
+            title: '接口',
+            key: 'path',
           },
           {
-            title: '接口标识',
-            key: 'apiCode'
+            title: '名称',
+            key: 'apiName',
+            slot: 'apiName',
+            width: 250,
           },
           {
-            title: '接口分类',
-            key: 'apiCategory'
+            title: '开放接口',
+            key: 'isOpen',
+            slot: 'isOpen',
+            width: 100,
           },
           {
-            title: '请求路径',
-            key: 'path'
+            title: '分类',
+            key: 'apiCategory',
+            width: 100,
           },
           {
-            title: '描述',
-            key: 'apiDesc'
+            title: '服务名',
+            key: 'serviceId',
+            width: 200,
           },
           {
-            title: '状态',
-            key: 'status',
-            slot: 'status'
-          },
-          {
-            title: '资源所属服务',
-            key: 'serviceId'
-          },
-          {
-            title: '创建时间',
-            key: 'createTime'
+            title: '最后更新时间',
+            key: 'updateTime',
+            width: 200
           },
           {
             title: '操作',
@@ -189,6 +218,7 @@
           this.modalTitle = '编辑接口 - '+data.apiName
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
+          this.formItem.openSwatch = this.formItem.isOpen === 1 ? true : false
         } else {
           this.modalTitle = '添加接口'
         }
@@ -203,21 +233,24 @@
           path: '',
           status: 1,
           statusSwatch: true,
+          isOpen: 0,
+          openSwatch: false,
           serviceId: '',
           priority: 0,
           apiDesc: ''
         }
         this.formItem = newData
         //重置验证
-        this.$refs['apiForm'].resetFields()
+        this.$refs['form1'].resetFields()
         this.modalVisible = false
         this.saving = false
       },
       handleSubmit () {
-        this.$refs['apiForm'].validate((valid) => {
+        this.$refs['form1'].validate((valid) => {
           if (valid) {
             this.saving = true
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
+            this.formItem.isOpen = this.formItem.openSwatch ? 1 : 0
             if (this.formItem.apiId) {
               updateApi(this.formItem).then(res => {
                 this.handleReset()
@@ -260,6 +293,7 @@
         this.loading = true
         getApis({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
+          this.openApiCount = res.extra.openApiCount
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() =>{
           this.loading = false

@@ -64,7 +64,6 @@
                 ref="tree"
                 max-height="500"
                 expand-key="menuName"
-                @checkbox-click="checkboxClick"
                 :expand-type="false"
                 :is-fold="false"
                 :tree-type="true"
@@ -84,7 +83,7 @@
         </TabPane>
         <TabPane label="接口授权" :disabled="formItem.roleId?false:true" name="form3">
           <Form ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
-              <FormItem label="接口资源" prop="grantApis">
+              <FormItem label="开放接口" prop="grantApis">
                 <Transfer
                   :data="selectApis"
                   :list-style="listStyle"
@@ -229,7 +228,7 @@
       }
     },
     methods: {
-      checkboxClick (row, rowIndex, $event) {
+      getCheckedProp () {
         this.formItem.grantMenus = this.$refs['tree'].getCheckedProp('menuId')
         if (this.formItem.grantMenus && this.formItem.grantMenus.length === 0) {
           this.formItem.grantActions = []
@@ -309,6 +308,7 @@
         }
 
         if (this.current === this.forms[1]) {
+          this.getCheckedProp()
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
