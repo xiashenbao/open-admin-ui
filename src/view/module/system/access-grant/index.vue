@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import {getGrantAccess} from '@/api/grant-access'
+  import {getGrantAccess} from '@/api/authority'
   import {refreshGateway} from '@/api/gateway'
 
   export default {

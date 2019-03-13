@@ -9,15 +9,6 @@ export const getMenus = () => {
   })
 }
 
-export const getMenuOperations = () => {
-  const data = {}
-  return request({
-    url: 'base/menu/operation/list',
-    data,
-    method: 'post'
-  })
-}
-
 export const updateMenu = (data) => {
   return request({
     url: 'base/menu/update',

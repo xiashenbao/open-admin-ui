@@ -5,6 +5,9 @@
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新建用户
+
+
+
           </Button>
         </ButtonGroup>
       </div>
@@ -15,17 +18,18 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)" :disabled="row.userName === 'admin' ?true:false">
+          <a @click="handleModal(row)">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)" :disabled="row.userName === 'admin' ?true:false">
+            <a href="javascript:void(0)">
               更多
+
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="grantMenu">菜单授权</DropdownItem>
-              <DropdownItem name="grantApi">接口授权</DropdownItem>
-              <DropdownItem name="remove">修改密码</DropdownItem>
+              <DropdownItem name="grantRole">分配角色</DropdownItem>
+              <DropdownItem name="grantMenu">分配权限</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -39,94 +43,72 @@
            width="680"
            @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Tabs v-model="current">
-        <TabPane label="用户信息" name="form1">.
-          <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
-            <FormItem label="用户类型" prop="userType">
-              <RadioGroup v-model="formItem.userType">
-                <Radio label="platform">平台</Radio>
-                <Radio label="isp">服务提供商</Radio>
-                <Radio label="dev">自研开发者</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="昵称" prop="nickName">
-              <Input v-model="formItem.nickName" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="登录名" prop="userName">
-              <Input :disabled="formItem.userId?true:false" v-model="formItem.userName" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem v-if="formItem.userId?false:true" label="登录密码" prop="password">
-              <Input type="password" v-model="formItem.password" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem v-if="formItem.userId?false:true" label="再次确认密码" prop="passwordConfirm">
-              <Input type="password" v-model="formItem.passwordConfirm" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="邮箱" prop="email">
-              <Input v-model="formItem.email" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="手机号" prop="mobile">
-              <Input v-model="formItem.mobile" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="状态">
-              <RadioGroup v-model="formItem.status">
-                <Radio label="0">禁用</Radio>
-                <Radio label="1">正常</Radio>
-                <Radio label="2">锁定</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="描述">
-              <Input v-model="formItem.userDesc" type="textarea" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="分配角色" prop="grantRoles">
-              <Select v-model="formItem.grantRoles" multiple filterable>
-                <Option :title="role.roleName"
-                        v-for="role in selectRoles" :value="role.roleId" :label="role.roleName">
-                </Option>
-              </Select>
-            </FormItem>
-          </Form>
-        </TabPane>
-        <TabPane label="私有菜单授权"  :disabled="formItem.userId?false:true" name="form2">
-          <Form ref="form2" :model="formItem" :rules="formItemRules" :label-width="100">
-            <FormItem label="菜单/操作资源" prop="grantMenus">
-              <tree-table
-                ref="tree"
-                max-height="500"
-                expand-key="menuName"
-                :expand-type="false"
-                :is-fold="false"
-                :tree-type="true"
-                :selectable="true"
-                :columns="columns2"
-                :data="selectMenus">
-                <template slot="status" slot-scope="scope">
-                  <CheckboxGroup v-model="formItem.grantActions">
-                    <Checkbox v-for="item in scope.row.actionList" :label="item.actionId">
-                      <span>{{item.actionName}}</span>
-                    </Checkbox>
-                  </CheckboxGroup>
-                </template>
-              </tree-table>
-            </FormItem>
-          </Form>
-        </TabPane>
-        <TabPane label="私有接口授权"  :disabled="formItem.userId?false:true" name="form3">
-          <Form ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
-            <FormItem label="开放接口" prop="grantApis">
-              <Transfer
-                :data="selectApis"
-                :list-style="listStyle"
-                :titles="titles"
-                :render-format="transferRender"
-                :target-keys="formItem.grantApis"
-                @on-change="handleTransferChange"
-                filterable
-               >
-              </Transfer>
-            </FormItem>
-          </Form>
-        </TabPane>
-      </Tabs>
+      <Form v-show="current == 'form1'" ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="用户类型" prop="userType">
+          <RadioGroup v-model="formItem.userType">
+            <Radio label="platform">系统用户</Radio>
+            <Radio label="isp">服务提供商</Radio>
+            <Radio label="dev">自研开发者</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="昵称" prop="nickName">
+          <Input v-model="formItem.nickName" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="登录名" prop="userName">
+          <Input :disabled="formItem.userId?true:false" v-model="formItem.userName" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem v-if="formItem.userId?false:true" label="登录密码" prop="password">
+          <Input type="password" v-model="formItem.password" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem v-if="formItem.userId?false:true" label="再次确认密码" prop="passwordConfirm">
+          <Input type="password" v-model="formItem.passwordConfirm" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="邮箱" prop="email">
+          <Input v-model="formItem.email" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="手机号" prop="mobile">
+          <Input v-model="formItem.mobile" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="状态">
+          <RadioGroup v-model="formItem.status">
+            <Radio label="0">禁用</Radio>
+            <Radio label="1">正常</Radio>
+            <Radio label="2">锁定</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="描述">
+          <Input v-model="formItem.userDesc" type="textarea" placeholder="请输入内容"></Input>
+        </FormItem>
+      </Form>
+      <Form v-show="current == 'form2'" ref="form2" :model="formItem" :label-width="100" :rules="formItemRules">
+        <FormItem label="分配角色" prop="grantRoles">
+          <CheckboxGroup v-model="formItem.grantRoles">
+            <Checkbox v-for="item in selectRoles" :label="item.roleId"><span>{{ item.roleName }}</span></Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+      </Form>
+      <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="菜单/操作资源" prop="grantMenus">
+          <tree-table
+            ref="tree"
+            max-height="500"
+            expand-key="menuName"
+            :expand-type="false"
+            :is-fold="false"
+            :tree-type="true"
+            :selectable="true"
+            :columns="columns2"
+            :data="selectMenus">
+            <template slot="status" slot-scope="scope">
+              <CheckboxGroup v-model="formItem.grantActions">
+                <Checkbox v-for="item in scope.row.actionList" :label="item.actionId">
+                  <span>{{item.actionName}}</span>
+                </Checkbox>
+              </CheckboxGroup>
+            </template>
+          </tree-table>
+        </FormItem>
+      </Form>
       <div slot="footer">
         <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
@@ -136,19 +118,14 @@
 </template>
 
 <script>
-  import {getUsers, updateUser, addUser,getUserRoles} from '@/api/user'
-  import {
-    getGrantedUserMenu,
-    getGrantedUserAction,
-    getGrantedUserApi,
-    grantUserMenu,
-    grantUserAction,
-    grantUserApi
-  } from '@/api/grant-access'
-  import {getMenuActions} from '@/api/menu'
+  import {getUsers, updateUser, addUser, getUserRoles, addUserRoles} from '@/api/user'
   import {getAllApi} from '@/api/apis'
   import {getAllRoles} from '@/api/role'
-  import {startWith,  listConvertTree} from '@/libs/util'
+  import {startWith, listConvertTree} from '@/libs/util'
+  import {
+    getUserGrantedAuthority,
+    getAuthorityList
+  } from '@/api/authority'
 
   export default {
     name: 'SystemUser',
@@ -159,7 +136,7 @@
           callback(new Error('登录名不能为空'))
         } else if (value !== '' && !reg.test(value)) {
           callback(new Error('只允许字母、数字、下划线'))
-        }  else {
+        } else {
           callback()
         }
       }
@@ -181,7 +158,7 @@
         }
       }
       return {
-        titles:["选择接口","已选择接口"],
+        titles: ["选择接口", "已选择接口"],
         listStyle: {
           width: '240px',
           height: '500px'
@@ -198,7 +175,7 @@
         ],
         selectApis: [],
         selectMenus: [],
-        selectRoles:[],
+        selectRoles: [],
         pageInfo: {
           total: 0,
           page: 1,
@@ -209,7 +186,7 @@
             {required: true, message: '用户类型不能为空', trigger: 'blur'}
           ],
           userName: [
-            {required: true,validator: validateEn, trigger: 'blur'}
+            {required: true, validator: validateEn, trigger: 'blur'}
           ],
           password: [
             {required: true, message: '登录密码不能为空', trigger: 'blur'}
@@ -221,7 +198,7 @@
             {required: true, message: '昵称不能为空', trigger: 'blur'}
           ],
           email: [
-            {required: false,type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
+            {required: false, type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
           ]
           ,
           mobile: [
@@ -241,7 +218,7 @@
           userType: 'platform',
           userDesc: '',
           avatar: '',
-          grantRoles:[],
+          grantRoles: [],
           grantMenus: [],
           grantActions: [],
           grantApis: []
@@ -315,19 +292,24 @@
       },
       handleModal (data, step) {
         if (data) {
-          this.modalTitle = '编辑用户 - '+ data.userName
           this.formItem = Object.assign({}, this.formItem, data)
-          this.handleLoadUserGranted(this.formItem.userId)
-        } else {
-          this.modalTitle = '添加用户'
         }
-        this.formItem.status = this.formItem.status + ''
         if (!step) {
           step = this.forms[0]
         }
+        if (step === this.forms[0]) {
+          this.modalTitle = data ? '编辑用户' : '添加用户'
+        }
+        if (step === this.forms[1]) {
+          this.modalTitle = data ? '分配角色' : '分配角色'
+          this.handleLoadRoles(this.formItem.userId)
+        }
+        if (step === this.forms[2]) {
+          this.modalTitle = data ? '分配特殊权限' : '分配特殊权限'
+          this.handleLoadUserGranted(this.formItem.userId)
+        }
+        this.formItem.status = this.formItem.status + ''
         this.current = step
-        this.handleLoadApis()
-        this.handleLoadRoles()
         this.modalVisible = true
       },
       handleReset () {
@@ -344,7 +326,7 @@
           userType: 'platform',
           userDesc: '',
           avatar: '',
-          grantRoles:[],
+          grantRoles: [],
           grantMenus: [],
           grantActions: [],
           grantApis: []
@@ -352,7 +334,7 @@
         this.formItem = newData
         //重置验证
         this.forms.map(form => {
-          this.$refs[form].resetFields()
+          this.$refs[this.current].resetFields()
         })
         this.current = this.forms[0]
         this.formItem.grantMenus = []
@@ -365,23 +347,24 @@
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              this.formItem.roleIds = this.formItem.grantRoles.join(',')
               if (this.formItem.userId) {
                 updateUser(this.formItem).then(res => {
-                  this.handleSearch()
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
+                    this.handleReset()
                   }
-                }).finally(() =>{
+                  this.handleSearch()
+                }).finally(() => {
                   this.saving = false
                 })
               } else {
                 addUser(this.formItem).then(res => {
-                  this.handleSearch()
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
+                    this.handleReset()
                   }
-                }).finally(() =>{
+                  this.handleSearch()
+                }).finally(() => {
                   this.saving = false
                 })
               }
@@ -389,41 +372,31 @@
           })
         }
 
-        if (this.current === this.forms[1]) {
+        if (this.current === this.forms[1] && this.formItem.userId) {
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              addUserRoles(this.formItem).then(res => {
+                if (res.code === 0) {
+                  this.$Message.success('分配角色成功')
+                  this.handleReset()
+                }
+                this.handleSearch()
+              }).finally(() => {
+                this.saving = false
+              })
+            }
+          })
+        }
+
+        if (this.current === this.forms[2] && this.formItem.userId) {
           this.getCheckedProp()
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              if (this.formItem.userId) {
-                grantUserMenu(this.formItem).then(res => {
-                  grantUserAction(this.formItem).then(res => {
-                    this.handleSearch()
-                    if (res.code === 0) {
-                      this.$Message.success('授权成功')
-                    }
-                  }).finally(() =>{
-                    this.saving = false
-                  })
-                })
-              }
-            }
-          })
-        }
+              grantUserMenu(this.formItem).then(res => {
 
-        if (this.current === this.forms[2]) {
-          this.$refs[this.current].validate((valid) => {
-            if (valid) {
-              this.saving = true
-              if (this.formItem.userId) {
-                grantUserApi(this.formItem).then(res => {
-                  this.handleSearch()
-                  if (res.code === 0) {
-                    this.$Message.success('授权成功')
-                  }
-                }).finally(() =>{
-                  this.saving = false
-                })
-              }
+              })
             }
           })
         }
@@ -433,11 +406,14 @@
         getUsers({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
-        }).finally(() =>{
+        }).finally(() => {
           this.loading = false
         })
       },
       handleLoadUserGranted (userId) {
+        Promise.all([grantMenuList, promise2, promise3]).then(function(values) {
+          console.log(values);
+        });
         getGrantedUserMenu(userId).then(res => {
           if (res.code === 0) {
             let result = []
@@ -448,22 +424,21 @@
             this.handleLoadMenus()
           }
         })
-        getGrantedUserAction(userId).then(res => {
+      },
+      transferRender (item) {
+        return item.label + ' - ' + item.description;
+      },
+      handleTransferChange(newTargetKeys, direction, moveKeys) {
+        if (newTargetKeys.indexOf('1') !== -1) {
+          this.formItem.grantApis = ['1']
+        } else {
+          this.formItem.grantApis = newTargetKeys;
+        }
+      },
+      handleLoadRoles (userId) {
+        getAllRoles().then(res => {
           if (res.code === 0) {
-            let result = []
-            res.data.list.map(item => {
-              result.push(item.resourceId)
-            })
-            this.formItem.grantActions = result
-          }
-        })
-        getGrantedUserApi(userId).then(res => {
-          if (res.code === 0) {
-            let result = []
-            res.data.list.map(item => {
-              result.push(item.resourceId)
-            })
-            this.formItem.grantApis = result
+            this.selectRoles = res.data.list
           }
         })
         getUserRoles(userId).then(res => {
@@ -473,38 +448,6 @@
               result.push(item.roleId)
             })
             this.formItem.grantRoles = result
-          }
-        })
-      },
-      handleLoadApis () {
-        getAllApi().then(res => {
-          if (res.code === 0) {
-            let result = []
-            res.data.list.map(item => {
-              result.push({
-                key: item.apiId,
-                label: item.path,
-                description: item.apiName
-              })
-            })
-            this.selectApis = result
-          }
-        })
-      },
-      transferRender (item) {
-        return item.label + ' - ' + item.description;
-      },
-      handleTransferChange(newTargetKeys, direction, moveKeys) {
-        if (newTargetKeys.indexOf('1') !== -1) {
-          this.formItem.grantApis = ['1']
-        }else{
-          this.formItem.grantApis = newTargetKeys;
-        }
-      },
-      handleLoadRoles () {
-        getAllRoles().then(res => {
-          if (res.code === 0) {
-            this.selectRoles = res.data.list
           }
         })
       },
@@ -535,14 +478,11 @@
       },
       handleClick (name, row) {
         switch (name) {
-          case'grantMenu':
+          case'grantRole':
             this.handleModal(row, this.forms[1])
             break
-          case'grantApi':
+          case'grantMenu':
             this.handleModal(row, this.forms[2])
-            break
-          case 'remove':
-            this.handleRemove(row)
             break
         }
       }

@@ -12,7 +12,7 @@ export const getRoles = ({page,limit}) => {
 export const getAllRoles = () => {
   const data = {keyword:''}
   return request({
-    url: 'base/role/list',
+    url: 'base/role/all',
     data,
     method: 'post'
   })

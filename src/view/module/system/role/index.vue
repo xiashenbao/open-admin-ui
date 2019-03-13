@@ -116,7 +116,7 @@
     grantRoleMenu,
     grantRoleAction,
     grantRoleApi
-  } from '@/api/grant-access'
+  } from '@/api/authority'
   import {getMenuActions} from '@/api/menu'
   import {getAllApi} from '@/api/apis'
   import {startWith, listConvertTree} from '@/libs/util'

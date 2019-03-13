@@ -42,12 +42,6 @@ export const getAllUsers = () => {
   })
 }
 
-export const getUserActions = () => {
-  return request({
-    url: 'base/grant/login/actions',
-    method: 'get'
-  })
-}
 
 export const logout = () => {
   return request({
@@ -72,6 +66,18 @@ export const addUser = (data) => {
   })
 }
 
+/**
+ * 分配用户角色
+ * @param data
+ */
+export const addUserRoles = ({userId,grantRoles}) => {
+  const data = {userId:userId,roleIds:grantRoles.join(',')}
+  return request({
+    url: 'base/user/roles/add',
+    data,
+    method: 'post'
+  })
+}
 
 export const getUserRoles = (userId) => {
   const data= {

@@ -36,8 +36,8 @@
         <FormItem label="操作名称" prop="operationName">
           <Input v-model="formItem.operationName" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="请求地址" prop="path">
-          <Input v-model="formItem.path" placeholder="请输入内容"></Input>
+        <FormItem label="绑定API" prop="apiId">
+          <Input v-model="formItem.apiId" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="优先级">
           <InputNumber v-model="formItem.priority"></InputNumber>
@@ -96,7 +96,7 @@
           operationId: '',
           operationCode: '',
           operationName: '',
-          path: '',
+          apiId: '',
           status: 1,
           statusSwatch: true,
           menuId: '',
@@ -111,10 +111,6 @@
           {
             title: '操作标识',
             key: 'operationCode'
-          },
-          {
-            title: '请求地址',
-            key: 'path'
           },
           {
             title: '状态',
@@ -151,7 +147,7 @@
           operationId: '',
           operationCode: '',
           operationName: '',
-          path: '',
+          apiId: '',
           status: 1,
           statusSwatch: true,
           menuId: '',
