@@ -1,4 +1,4 @@
-import {login, logout, getUserInfo, getMyAuthority} from '@/api/user'
+import {login, logout, getUserInfo, getMyMenuAuthority} from '@/api/user'
 import {setToken, getToken} from '@/libs/util'
 
 export default {
@@ -13,7 +13,6 @@ export default {
     mobile: '',
     email: '',
     menus: [],// 用户菜单
-    operations:[],// 用户操作
   },
   mutations: {
     setAvatar (state, avatarPath) {
@@ -40,9 +39,6 @@ export default {
     },
     setUserMenus (state, menus) {
       state.menus = menus
-    },
-    setUserOperations (state, operations) {
-      state.operations = operations
     },
     setMobile (state, mobile) {
       state.mobile = mobile
@@ -107,23 +103,9 @@ export default {
             // 转换权限
             commit('setAccess',access)
             commit('setHasGetInfo', true)
-            getMyAuthority().then(res => {
+            getMyMenuAuthority().then(res => {
               if (res.code === 0) {
-                const  menus = [];
-                const  operations = [];
-
-                if(res.data){
-                  res.data.map(item =>{
-                     if(item.resourceType === 'menu'){
-                       menus.push(item.menu);
-                     }
-                    if(item.resourceType === 'operation'){
-                      operations.push(item.operation);
-                    }
-                  })
-                }
-                commit('setUserMenus', menus)
-                commit('setUserOperations',operations)
+                commit('setUserMenus', res.data)
                 resolve(state)
               }
             }).catch(err => {

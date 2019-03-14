@@ -431,16 +431,13 @@
               startPid: '0'
             }
             let menus = []
-            let operations = []
             res1.data.map(item =>{
               if(item.resourceType === 'menu'){
                 item.menuId = item.menu.menuId;
                 item.parentId = item.menu.parentId;
                 item.menuName = item.menu.menuName;
-                item.operationList = []
                 menus.push(item)
               }
-
             })
             console.log(menus)
             /*  if (this.formItem.grantAuthorities && res.data.list) {

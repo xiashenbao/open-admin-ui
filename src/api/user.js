@@ -26,9 +26,9 @@ export const getUsers = ({page,limit}) => {
     method: 'post'
   })
 }
-export const getMyAuthority = () => {
+export const getMyMenuAuthority = () => {
   return request({
-    url: 'base/authority/granted/me',
+    url: 'base/authority/granted/me/menu',
     method: 'get'
   })
 }
