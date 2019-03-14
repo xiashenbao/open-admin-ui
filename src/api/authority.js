@@ -28,7 +28,7 @@ export const getAuthorityList = () => {
   return request({
     url: 'base/authority/list',
     method: 'get',
-    data:{type:0}
+    params:{type:'1'}
   })
 }
 
@@ -40,7 +40,7 @@ export const getApiAuthorityList = (serviceId) => {
   return request({
     url: 'base/authority/list',
     method: 'get',
-    data:{type:1,serviceId:serviceId}
+    params:{type:'2',serviceId:serviceId}
   })
 }
 

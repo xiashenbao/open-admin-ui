@@ -20,6 +20,10 @@
           <Tag color="green" v-if="row.isOpen===1" >是</Tag>
           <Tag color="red" v-else="" >否</Tag>
         </template>
+        <template slot="isAuth" slot-scope="{ row }">
+          <Tag color="green" v-if="row.isAuth===1" >是</Tag>
+          <Tag color="red" v-else="" >否</Tag>
+        </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
@@ -50,10 +54,6 @@
               <div slot="content">
                 <div v-highlight>
                 <pre>
-                        // 访问权限
-                        @Access(value = {
-                          @AccessPreAuthorize(value = "hasAuthority('ROLE_user')",allow = true),
-                        },open = true)
                         // 接口介绍
                         @ApiOperation(value = "接口名称", notes = "接口备注")
                         @PostMapping("/testApi")
@@ -91,6 +91,12 @@
                 <span slot="close">否</span>
               </i-switch>
             </FormItem>
+            <FormItem label="身份认证">
+              <i-switch v-model="formItem.authSwatch" size="large">
+                <span slot="open">是</span>
+                <span slot="close">否</span>
+              </i-switch>
+            </FormItem>
             <FormItem label="状态">
               <i-switch v-model="formItem.statusSwatch" size="large">
                 <span slot="open">有效</span>
@@ -111,7 +117,7 @@
 
 <script>
   import {listConvertTree} from '@/libs/util'
-  import {getApis, updateApi, addApi, removeApi} from '@/api/apis'
+  import {getApis, updateApi, addApi, removeApi} from '@/api/api'
 
   export default {
     name: 'SystemApi',
@@ -145,7 +151,7 @@
             {required: true, message: '接口分类不能为空', trigger: 'blur'}
           ],
           apiCode: [
-            {validator: validateEn, trigger: 'blur'}
+            {required: true,validator: validateEn, trigger: 'blur'}
           ],
           apiName: [
             {required: true, message: '接口名称不能为空', trigger: 'blur'}
@@ -160,7 +166,9 @@
           status: 1,
           statusSwatch: true,
           isOpen: 0,
+          isAuth: 1,
           openSwatch: false,
+          authSwatch: true,
           serviceId: '',
           priority: 0,
           apiDesc: ''
@@ -185,6 +193,12 @@
             title: '开放接口',
             key: 'isOpen',
             slot: 'isOpen',
+            width: 100,
+          },
+          {
+            title: '身份认证',
+            key: 'isAuth',
+            slot: 'isAuth',
             width: 100,
           },
           {
@@ -219,6 +233,7 @@
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
           this.formItem.openSwatch = this.formItem.isOpen === 1 ? true : false
+          this.formItem.authSwatch = this.formItem.isAuth === 1 ? true : false
         } else {
           this.modalTitle = '添加接口'
         }
@@ -233,8 +248,10 @@
           path: '',
           status: 1,
           statusSwatch: true,
-          isOpen: 0,
           openSwatch: false,
+          authSwatch: true,
+          isOpen: 0,
+          isAuth: 1,
           serviceId: '',
           priority: 0,
           apiDesc: ''
@@ -251,23 +268,24 @@
             this.saving = true
             this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             this.formItem.isOpen = this.formItem.openSwatch ? 1 : 0
+            this.formItem.isAuth = this.formItem.authSwatch ? 1 : 0
             if (this.formItem.apiId) {
               updateApi(this.formItem).then(res => {
-                this.handleReset()
-                this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+                this.handleReset()
+                this.handleSearch()
               }).finally(() =>{
                 this.saving = false
               })
             } else {
               addApi(this.formItem).then(res => {
-                this.handleReset()
-                this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+                this.handleReset()
+                this.handleSearch()
               }).finally(() =>{
                 this.saving = false
               })

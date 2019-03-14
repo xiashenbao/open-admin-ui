@@ -195,7 +195,7 @@
           return
         }
         getOperationsByMenu(this.value.menuId).then(res => {
-          this.data = res.data.list
+          this.data = res.data
         })
       },
       handleRemove (data) {

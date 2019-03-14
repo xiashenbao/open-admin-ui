@@ -189,7 +189,7 @@
 
 <script>
   import {getApps, updateApp, addApp, removeApp, getAppDevInfo, restApp} from '@/api/app'
-  import {getAllApi} from '@/api/apis'
+  import {getAllApi} from '@/api/api'
   import {getAllUsers} from '@/api/user'
   import {startWith, listConvertGroup} from '@/libs/util'
 

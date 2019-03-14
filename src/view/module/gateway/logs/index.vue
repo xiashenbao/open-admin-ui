@@ -37,10 +37,10 @@
 </template>
 
 <script>
-  import {getAccessLogs} from '@/api/access-logs'
+  import {getAccessLogs} from '@/api/gateway'
   import {readUserAgent} from '@/libs/util'
   export default {
-    name: 'SystemGrantAccess',
+    name: 'GatewayAccessLog',
     data () {
       return {
         drawer:false,

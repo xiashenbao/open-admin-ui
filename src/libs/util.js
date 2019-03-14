@@ -450,7 +450,6 @@ export const formatRouters = (array, access) => {
     startPid: '0'
   }
   let menus = listConvertTree(array, opt)
-  console.log(JSON.stringify(menus))
   let routers = filterRouter(menus, access, [])
   const error_404 = {
     path: '*',

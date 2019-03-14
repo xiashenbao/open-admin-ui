@@ -118,7 +118,7 @@
     grantRoleApi
   } from '@/api/authority'
   import {getMenuActions} from '@/api/menu'
-  import {getAllApi} from '@/api/apis'
+  import {getAllApi} from '@/api/api'
   import {startWith, listConvertTree} from '@/libs/util'
 
   export default {

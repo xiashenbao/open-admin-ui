@@ -7,7 +7,6 @@
             <Icon type="search"/>&nbsp;&nbsp;新建用户
 
 
-
           </Button>
         </ButtonGroup>
       </div>
@@ -88,7 +87,7 @@
         </FormItem>
       </Form>
       <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="菜单/操作资源" prop="grantMenus">
+        <FormItem label="菜单/操作资源" prop="grantAuthorities">
           <tree-table
             ref="tree"
             max-height="500"
@@ -99,10 +98,10 @@
             :selectable="true"
             :columns="columns2"
             :data="selectMenus">
-            <template slot="status" slot-scope="scope">
-              <CheckboxGroup v-model="formItem.grantActions">
-                <Checkbox v-for="item in scope.row.actionList" :label="item.actionId">
-                  <span>{{item.actionName}}</span>
+            <template slot="operation" slot-scope="scope">
+              <CheckboxGroup v-model="formItem.grantAuthorities">
+                <Checkbox v-for="item in scope.row.operationList" :label="item.authorityId">
+                  <span>{{item.operation.operationName}}</span>
                 </Checkbox>
               </CheckboxGroup>
             </template>
@@ -119,7 +118,7 @@
 
 <script>
   import {getUsers, updateUser, addUser, getUserRoles, addUserRoles} from '@/api/user'
-  import {getAllApi} from '@/api/apis'
+  import {getAllApi} from '@/api/api'
   import {getAllRoles} from '@/api/role'
   import {startWith, listConvertTree} from '@/libs/util'
   import {
@@ -158,7 +157,7 @@
         }
       }
       return {
-        titles: ["选择接口", "已选择接口"],
+        titles: ['选择接口', '已选择接口'],
         listStyle: {
           width: '240px',
           height: '500px'
@@ -173,7 +172,6 @@
           'form2',
           'form3'
         ],
-        selectApis: [],
         selectMenus: [],
         selectRoles: [],
         pageInfo: {
@@ -219,8 +217,8 @@
           userDesc: '',
           avatar: '',
           grantRoles: [],
-          grantMenus: [],
-          grantActions: [],
+          grantAuthorities: [],
+          grantOperations: [],
           grantApis: []
         },
         columns: [
@@ -269,14 +267,14 @@
         ],
         columns2: [
           {
-            title: '菜单资源',
+            title: '菜单',
             key: 'menuName',
             minWidth: '250px'
           },
           {
-            title: '操作资源',
+            title: '功能',
             type: 'template',
-            template: 'status',
+            template: 'operation',
             minWidth: '200px'
           },
         ],
@@ -285,9 +283,9 @@
     },
     methods: {
       getCheckedProp () {
-        this.formItem.grantMenus = this.$refs['tree'].getCheckedProp('menuId')
-        if (this.formItem.grantMenus && this.formItem.grantMenus.length === 0) {
-          this.formItem.grantActions = []
+        this.formItem.grantAuthorities = this.$refs['tree'].getCheckedProp('menuId')
+        if (this.formItem.grantAuthorities && this.formItem.grantAuthorities.length === 0) {
+          this.formItem.grantOperations = []
         }
       },
       handleModal (data, step) {
@@ -327,8 +325,7 @@
           userDesc: '',
           avatar: '',
           grantRoles: [],
-          grantMenus: [],
-          grantActions: [],
+          grantAuthorities: [],
           grantApis: []
         }
         this.formItem = newData
@@ -337,8 +334,8 @@
           this.$refs[this.current].resetFields()
         })
         this.current = this.forms[0]
-        this.formItem.grantMenus = []
-        this.formItem.grantActions = []
+        this.formItem.grantAuthorities = []
+        this.formItem.grantOperations = []
         this.modalVisible = false
         this.saving = false
       },
@@ -411,61 +408,79 @@
         })
       },
       handleLoadUserGranted (userId) {
-        Promise.all([grantMenuList, promise2, promise3]).then(function(values) {
-          console.log(values);
-        });
-        getGrantedUserMenu(userId).then(res => {
-          if (res.code === 0) {
+        const that = this
+        const p1 = getAuthorityList()
+        const p2 = getUserGrantedAuthority(userId)
+        Promise.all([p1, p2]).then(function (values) {
+          let res1 = values[0]
+          let res2 = values[1]
+          console.log(res1)
+          console.log(res2)
+          if (res2.code === 0 && res2.data) {
             let result = []
-            res.data.list.map(item => {
-              result.push(item.resourceId)
+            res2.data.map(item => {
+              result.push(item.authorityId)
             })
-            this.formItem.grantMenus = result
-            this.handleLoadMenus()
+            that.formItem.grantAuthorities = result
+          }
+
+          if (res1.code === 0 && res1.data) {
+            let opt = {
+              primaryKey: 'menuId',
+              parentKey: 'parentId',
+              startPid: '0'
+            }
+            let menus = []
+            let operations = []
+            res1.data.map(item =>{
+              if(item.resourceType === 'menu'){
+                item.menuId = item.menu.menuId;
+                item.parentId = item.menu.parentId;
+                item.menuName = item.menu.menuName;
+                item.operationList = []
+                menus.push(item)
+              }
+
+            })
+            console.log(menus)
+            /*  if (this.formItem.grantAuthorities && res.data.list) {
+                res.data.list.map(item => {
+                  if (this.formItem.grantAuthorities.indexOf(item.menuId) !== -1) {
+                    item._isChecked = true
+                  }
+                })
+              }*/
+            that.selectMenus = listConvertTree(menus, opt)
           }
         })
       },
       transferRender (item) {
-        return item.label + ' - ' + item.description;
+        return item.label + ' - ' + item.description
       },
-      handleTransferChange(newTargetKeys, direction, moveKeys) {
+      handleTransferChange (newTargetKeys, direction, moveKeys) {
         if (newTargetKeys.indexOf('1') !== -1) {
           this.formItem.grantApis = ['1']
         } else {
-          this.formItem.grantApis = newTargetKeys;
+          this.formItem.grantApis = newTargetKeys
         }
       },
       handleLoadRoles (userId) {
-        getAllRoles().then(res => {
-          if (res.code === 0) {
-            this.selectRoles = res.data.list
+        const that = this
+        const p1 = getAllRoles()
+        const p2 = getUserRoles(userId)
+        Promise.all([p1, p2]).then(function (values) {
+          let res1 = values[0]
+          let res2 = values[1]
+          if (res1.code === 0) {
+            that.selectRoles = res1.data
           }
-        })
-        getUserRoles(userId).then(res => {
-          if (res.code === 0) {
+          if (res2.code === 0) {
             let result = []
-            res.data.list.map(item => {
+            res2.data.map(item => {
               result.push(item.roleId)
             })
-            this.formItem.grantRoles = result
+            that.formItem.grantRoles = result
           }
-        })
-      },
-      handleLoadMenus () {
-        getMenuActions().then(res => {
-          let opt = {
-            primaryKey: 'menuId',
-            parentKey: 'parentId',
-            startPid: '0'
-          }
-          if (this.formItem.grantMenus && res.data.list) {
-            res.data.list.map(item => {
-              if (this.formItem.grantMenus.indexOf(item.menuId) !== -1) {
-                item._isChecked = true
-              }
-            })
-          }
-          this.selectMenus = listConvertTree(res.data.list, opt)
         })
       },
       handlePage (current) {

@@ -249,7 +249,7 @@
             parentKey: 'parentId',
             startPid: '0'
           }
-          this.data = listConvertTree(res.data.list, opt)
+          this.data = listConvertTree(res.data, opt)
           this.setSelectTree(this.data)
         })
       }
