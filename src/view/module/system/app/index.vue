@@ -5,6 +5,7 @@
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;新建应用
+
           </Button>
         </ButtonGroup>
       </div>
@@ -24,9 +25,11 @@
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">
               更多
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
+              <DropdownItem name="devInfo">开发配置</DropdownItem>
               <DropdownItem name="grantApi">功能授权</DropdownItem>
               <DropdownItem name="resetSecret">重置密钥</DropdownItem>
               <DropdownItem name="remove">删除应用</DropdownItem>
@@ -41,9 +44,12 @@
     <Modal v-model="modalVisible"
            :title="modalTitle"
            @on-cancel="handleReset"
-           width="780">
+           width="800">
       <Alert v-if="formItem.appId?true:false" show-icon>
-        重要信息,请妥善保管：AppId：<Tag color="red" >{{formItem.appId}}</Tag>AppSecret：<Tag color="red">{{formItem.appSecret}}</Tag>&nbsp;&nbsp;
+        重要信息,请妥善保管：AppId：
+        <Tag color="red">{{formItem.appId}}</Tag>
+        AppSecret：
+        <Tag color="red">{{formItem.appSecret}}</Tag>&nbsp;&nbsp;
         <Poptip
           confirm
           placement="left"
@@ -52,125 +58,130 @@
           <a>重置密钥</a>
         </Poptip>
       </Alert>
-      <Steps :current="current" size="small">
-        <Step title="选择开发者"></Step>
+      <Steps :current="current">
         <Step title="完善应用信息"></Step>
-        <Step title="功能授权"></Step>
+        <Step title="开发配置"></Step>
+        <Step title="接口授权"></Step>
       </Steps>
-      <Form ref="stepForm1" v-show="current==0" :model="formItem" :rules="formItemRules" :label-width="135">
-        <FormItem label="开发者" prop="userId">
-          <Select v-model="formItem.userId"  filterable >
-            <Option :title="item.userName" v-for="item in selectUsers" @click.native="handleOnSelectUser(item)" :value="item.userId" :label="item.userName">
-              <span>{{ item.userName }}</span>
-              <span style="float: right">
-                  <Tag color="red" >{{item.nickName}}</Tag>
+      <div style="margin-top: 10px;">
+        <Form ref="stepForm1" v-show="current==0" :model="formItem" :rules="formItemRules" :label-width="135">
+          <FormItem label="开发者" prop="userId">
+            <Select v-model="formItem.userId" filterable>
+              <Option :title="item.userName" v-for="item in selectUsers" @click.native="handleOnSelectUser(item)"
+                      :value="item.userId" :label="item.userName">
+                <span>{{ item.userName }}</span>
+                <span style="float: right">
                   <Tag color="blue" v-if="item.userType==='isp'">服务提供商</Tag>
                   <Tag color="blue" v-else-if="item.userType==='dev'">自研开发者</Tag>
                   <Tag color="blue" v-else="">平台</Tag>
                 </span>
-            </Option>
-          </Select>
-        </FormItem>
-        <FormItem label="开发者类型" prop="userType">
-          <RadioGroup  v-model="formItem.userType">
-            <Radio disabled label="platform">平台</Radio>
-            <Radio disabled label="isp">服务提供商</Radio>
-            <Radio disabled label="dev">自研开发者</Radio>
-          </RadioGroup>
-        </FormItem>
-      </Form>
-      <Form ref="stepForm2" v-show="current==1" :model="formItem" :rules="formItemRules" :label-width="135">
-        <FormItem label="应用图标">
-          <div class="upload-list" v-for="item in uploadList">
-            <template v-if="item.status === 'finished'">
-              <img :src="item.url">
-              <div class="upload-list-cover">
-                <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
-                <Icon type="ios-trash-outline" @click.native="handleRemoveImg(item)"></Icon>
-              </div>
-            </template>
-            <template v-else>
-              <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
-            </template>
-          </div>
-          <Upload
-            ref="upload"
-            :show-upload-list="false"
-            :default-file-list="defaultList"
-            :format="['jpg','jpeg','png']"
-            :max-size="2048"
-            :on-success="handleSuccess"
-            :on-format-error="handleFormatError"
-            :on-exceeded-size="handleMaxSize"
-            :before-upload="handleBeforeUpload"
-            type="drag"
-            action="//jsonplaceholder.typicode.com/posts/"
-            style="display: inline-block;width:58px;">
-            <div style="width: 58px;height:58px;line-height: 58px;">
-              <Icon type="ios-camera" size="20"></Icon>
+              </Option>
+            </Select>
+          </FormItem>
+          <FormItem label="开发者类型" prop="userType">
+            <RadioGroup v-model="formItem.userType">
+              <Radio disabled label="platform">平台</Radio>
+              <Radio disabled label="isp">服务提供商</Radio>
+              <Radio disabled label="dev">自研开发者</Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="应用图标">
+            <div class="upload-list" v-for="item in uploadList">
+              <template v-if="item.status === 'finished'">
+                <img :src="item.url">
+                <div class="upload-list-cover">
+                  <Icon type="ios-eye-outline" @click.native="handleView(item.name)"></Icon>
+                  <Icon type="ios-trash-outline" @click.native="handleRemoveImg(item)"></Icon>
+                </div>
+              </template>
+              <template v-else>
+                <Progress v-if="item.showProgress" :percent="item.percentage" hide-info></Progress>
+              </template>
             </div>
-          </Upload>
+            <Upload
+              ref="upload"
+              :show-upload-list="false"
+              :default-file-list="defaultList"
+              :format="['jpg','jpeg','png']"
+              :max-size="2048"
+              :on-success="handleSuccess"
+              :on-format-error="handleFormatError"
+              :on-exceeded-size="handleMaxSize"
+              :before-upload="handleBeforeUpload"
+              type="drag"
+              action="//jsonplaceholder.typicode.com/posts/"
+              style="display: inline-block;width:58px;">
+              <div style="width: 58px;height:58px;line-height: 58px;">
+                <Icon type="ios-camera" size="20"></Icon>
+              </div>
+            </Upload>
+          </FormItem>
+          <FormItem label="应用名称" prop="appName">
+            <Input v-model="formItem.appName" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="英文名称" prop="appNameEn">
+            <Input v-model="formItem.appNameEn" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="应用类型" prop="appType">
+            <Select v-model="formItem.appType" @on-change="handleOnAppTypeChange">
+              <Option value="server">服务器应用</Option>
+              <Option value="app">手机应用</Option>
+              <Option value="pc">PC网页应用</Option>
+              <Option value="wap">手机网页应用</Option>
+            </Select>
+          </FormItem>
+          <FormItem v-if="current==1 && formItem.appType === 'app'" prop="appOs" label="操作系统">
+            <RadioGroup v-model="formItem.appOs">
+              <Radio label="ios">
+                <Icon type="logo-apple"></Icon>
+                <span>苹果IOS</span>
+              </Radio>
+              <Radio label="android">
+                <Icon type="logo-android"></Icon>
+                <span>安卓Android</span>
+              </Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="官网" prop="website">
+            <Input v-model="formItem.website" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="第三方授权回掉地址" prop="redirectUrls">
+            <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="状态">
+            <i-switch v-model="formItem.statusSwatch" size="large">
+              <span slot="open">启用</span>
+              <span slot="close">禁用</span>
+            </i-switch>
+          </FormItem>
+          <FormItem label="描述">
+            <Input v-model="formItem.appDesc" type="textarea" placeholder="请输入内容"></Input>
+          </FormItem>
+        </Form>
+        <Form ref="stepForm2" v-show="current==1" :model="formItem" :rules="formItemRules" :label-width="135">
+          <FormItem label="授权类型" prop="grantTypes">
+            <CheckboxGroup v-model="formItem.grantTypes">
+              <Checkbox v-for="item in selectGrantTypes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
+            </CheckboxGroup>
+          </FormItem>
+          <FormItem label="用户授权范围" prop="scopes">
+            <CheckboxGroup v-model="formItem.scopes">
+              <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.title }}({{ item.label }})</span>
+              </Checkbox>
+            </CheckboxGroup>
+          </FormItem>
+          <FormItem label="访问令牌有效期" prop="accessTokenValidity">
+            <InputNumber :max="43200" :min="900" v-model="formItem.accessTokenValidity"></InputNumber>&nbsp;秒
         </FormItem>
-        <FormItem label="应用名称" prop="appName">
-          <Input v-model="formItem.appName" placeholder="请输入内容"></Input>
+          <FormItem label="刷新令牌有效期" prop="refreshTokenValidity">
+            <InputNumber :max="2592000" :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>&nbsp;秒
         </FormItem>
-        <FormItem label="英文名称" prop="appNameEn">
-          <Input v-model="formItem.appNameEn" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="应用类型" prop="appType">
-          <Select v-model="formItem.appType" @on-change="handleOnAppTypeChange">
-            <Option value="server">服务器应用</Option>
-            <Option value="app">手机应用</Option>
-            <Option value="pc">PC网页应用</Option>
-            <Option value="wap">手机网页应用</Option>
-          </Select>
-        </FormItem>
-        <FormItem v-if="current==1 && formItem.appType === 'app'" prop="appOs" label="操作系统">
-          <RadioGroup v-model="formItem.appOs">
-            <Radio label="ios">
-              <Icon type="logo-apple"></Icon>
-              <span>苹果IOS</span>
-            </Radio>
-            <Radio label="android">
-              <Icon type="logo-android"></Icon>
-              <span>安卓Android</span>
-            </Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="官网" prop="website">
-          <Input v-model="formItem.website" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="第三方授权回掉地址" prop="redirectUrls">
-          <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="状态">
-          <i-switch v-model="formItem.statusSwatch" size="large">
-            <span slot="open">启用</span>
-            <span slot="close">禁用</span>
-          </i-switch>
-        </FormItem>
-        <FormItem label="描述">
-          <Input v-model="formItem.appDesc" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-      </Form>
-      <Form ref="stepForm3" v-show="current==2" :model="formItem" :rules="formItemRules" :label-width="135">
-        <FormItem label="授权类型" prop="grantTypes">
-          <CheckboxGroup v-model="formItem.grantTypes">
-            <Checkbox v-for="item in selectGrantTypes" :label="item.label"><span>{{ item.title }}</span></Checkbox>
-          </CheckboxGroup>
-        </FormItem>
-        <FormItem label="用户授权范围" prop="scopes">
-          <CheckboxGroup v-model="formItem.scopes">
-            <Checkbox v-for="item in selectScopes" :label="item.label"><span>{{ item.label }} - {{ item.title }}</span></Checkbox>
-          </CheckboxGroup>
-        </FormItem>
-        <FormItem label="访问令牌有效期" prop="accessTokenValidity">
-            <InputNumber :max="10800" :min="900" v-model="formItem.accessTokenValidity"></InputNumber>秒
-        </FormItem>
-        <FormItem label="刷新令牌有效期" prop="refreshTokenValidity">
-          <InputNumber :max="31536000" :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>秒
-        </FormItem>
-        <FormItem label="开放接口" prop="authorities">
+        </Form>
+        <Form ref="stepForm3" v-show="current==2" :model="formItem" :rules="formItemRules" :label-width="100">
+          <FormItem label="授权过期时间" prop="expireTime">
+            <DatePicker v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
+          </FormItem>
+          <FormItem label="接口授权" prop="authorities">
             <Transfer
               :data="selectApis"
               :list-style="listStyle"
@@ -178,11 +189,11 @@
               :render-format="transferRender"
               :target-keys="formItem.authorities"
               @on-change="handleTransferChange"
-              filterable
-            >
+              filterable>
             </Transfer>
           </FormItem>
-      </Form>
+        </Form>
+      </div>
       <div slot="footer">
         <Button v-if="current!==0" type="default" @click="handleUp" style="float: left">上一步</Button>&nbsp;
         <Button v-if="current===2" type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
@@ -195,9 +206,13 @@
 
 <script>
   import {getApps, updateApp, addApp, removeApp, getAppDevInfo, restApp} from '@/api/app'
-  import {getAllApi} from '@/api/api'
   import {getAllUsers} from '@/api/user'
   import {startWith, listConvertGroup} from '@/libs/util'
+  import {
+    getApiAuthorityList,
+    getUserGrantedAuthority,
+    grantUserAuthority
+  } from '@/api/authority'
 
   export default {
     name: 'SystemApp',
@@ -208,15 +223,15 @@
           callback(new Error('英文不能为空'))
         } else if (value !== '' && !reg.test(value)) {
           callback(new Error('只允许字母、数字、下划线'))
-        }  else {
+        } else {
           callback()
         }
       }
       return {
-        titles:["选择接口","已选择接口"],
+        titles: ["选择接口", "已选择接口"],
         listStyle: {
-          width: '240px',
-          height: '400px'
+          width: '300px',
+          height: '500px'
         },
         current: 0,
         loading: false,
@@ -288,10 +303,10 @@
             {required: true, type: 'array', min: 1, message: '用户授权范围不能为空', trigger: 'blur'}
           ],
           accessTokenValidity: [
-            {required: true, message: '访问令牌有效期不能为空', trigger: 'blur'}
+            {required: true, type: 'integer',max:43200,min:900, message: '访问令牌有效期900-43200', trigger: 'blur'}
           ],
           refreshTokenValidity: [
-            {required: true, message: '刷新令牌有效期不能为空', trigger: 'blur'}
+            {required: true, type: 'integer',max:2592000,min:900, message: '刷新令牌有效期900-2592000', trigger: 'blur'}
           ],
         },
         formItem: {
@@ -311,11 +326,12 @@
           statusSwatch: true,
           userId: '',
           userType: 'platform',
-          scopes: [],
-          authorities: [],
+          scopes: ['userProfile'],
+          authorities: ['100'],
           grantTypes: ['authorization_code', 'client_credentials', 'refresh_token'],
-          accessTokenValidity:3600,
-          refreshTokenValidity:2592000
+          accessTokenValidity: 43200,
+          refreshTokenValidity: 2592000,
+          expireTime: ''
         },
         columns: [
           {
@@ -376,36 +392,22 @@
       handleNext () {
         this.$refs[this.forms[this.current]].validate((valid) => {
           if (valid) {
-            if (this.current < 2) {
+            if (this.current <= 2) {
               this.current += 1
             }
           }
         })
       },
       handleUp () {
-        if (this.current > 0 && this.current < 3) {
+        if (this.current > 0 && this.current <= 2) {
           this.current -= 1
         }
       },
       handleModal (data, step) {
-
+        this.handleLoadApis()
+        this.handleLoadUsers()
         if (data) {
-          getAppDevInfo({appId: data.appId}).then(res => {
-            if (res.code === 0) {
-              this.formItem.scopes = res.data.scope
-              this.formItem.grantTypes = res.data.authorized_grant_types
-              this.formItem.accessTokenValidity = res.data.access_token_validity
-              this.formItem.refreshTokenValidity = res.data.refresh_token_validity
-              if (res.data.authorities && res.data.authorities.length > 0) {
-                this.formItem.authorities = res.data.authorities.map(item => {
-                    // 替换掉前缀
-                    return item.replace('APP_', '').replace('API_', '')
-                  }
-                )
-              }
-            }
-          })
-          this.modalTitle = '编辑应用 - '+ data.appName
+          this.modalTitle = '编辑应用 - ' + data.appName
           this.formItem = Object.assign({}, this.formItem, data)
           this.formItem.userType = this.formItem.userType + ''
           this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
@@ -415,9 +417,13 @@
         if (!step) {
           step = 0
         }
+        if (step === this.forms[1]) {
+          this.handleLoadAppDev(data.appId)
+        }
+        if (step === this.forms[2]) {
+          this.handleLoadAppGranted(data.appId)
+        }
         this.current = step
-        this.handleLoadApis()
-        this.handleLoadUsers()
         this.modalVisible = true
       },
       handleReset () {
@@ -437,11 +443,12 @@
           statusSwatch: true,
           userId: '',
           userType: 'platform',
-          scopes: [],
-          authorities: [],
+          scopes: ['userProfile'],
+          authorities: ['100'],
           grantTypes: ['authorization_code', 'client_credentials', 'refresh_token'],
-          accessTokenValidity:3600,
-          refreshTokenValidity:2592000
+          accessTokenValidity: 43200,
+          refreshTokenValidity: 2592000,
+          expireTime: ''
         }
         this.formItem = newData
         this.forms.map(form => {
@@ -467,7 +474,7 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             } else {
@@ -477,7 +484,7 @@
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             }
@@ -489,7 +496,7 @@
         getApps({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
-        }).finally(() =>{
+        }).finally(() => {
           this.loading = false
         })
       },
@@ -508,17 +515,20 @@
         })
       },
       handleResetSecret (data) {
-      restApp({appId: data.appId}).then(res => {
-        if (res.code === 0) {
-          this.pageInfo.page = 1
-          this.formItem.appSecret = res.data
-          this.$Message.success('重置成功,请妥善保管.并及时更新到相关应用')
-        }
-        this.handleSearch()
-      })
+        restApp({appId: data.appId}).then(res => {
+          if (res.code === 0) {
+            this.pageInfo.page = 1
+            this.formItem.appSecret = res.data
+            this.$Message.success('重置成功,请妥善保管.并及时更新到相关应用')
+          }
+          this.handleSearch()
+        })
       },
       handleClick (name, row) {
         switch (name) {
+          case 'devInfo':
+            this.handleModal(row, 1)
+            break
           case'grantApi':
             this.handleModal(row, 2)
             break
@@ -591,13 +601,28 @@
         }
         return check
       },
+      handleLoadAppGranted(appId){
+        if(!appId){return}
+
+      },
+      handleLoadAppDev(appId){
+        if(!appId){return}
+        getAppDevInfo({appId: appId}).then(res => {
+          if (res.code === 0) {
+            this.formItem.scopes = res.data.scope
+            this.formItem.grantTypes = res.data.authorized_grant_types
+            this.formItem.accessTokenValidity = res.data.access_token_validity
+            this.formItem.refreshTokenValidity = res.data.refresh_token_validity
+          }
+        })
+      },
       handleLoadApis () {
-        getAllApi().then(res => {
+        getApiAuthorityList().then(res => {
           if (res.code === 0) {
             let result = []
-            res.data.list.map(item => {
+            res.data.map(item => {
               result.push({
-                key: item.apiCode,
+                key: item.authorityId,
                 label: item.path,
                 description: item.apiName
               })
@@ -610,16 +635,16 @@
         return item.label + ' - ' + item.description;
       },
       handleTransferChange(newTargetKeys, direction, moveKeys) {
-        if (newTargetKeys.indexOf('all') !== -1) {
-          this.formItem.authorities = ['all']
-        }else{
+        if (newTargetKeys.indexOf('1')!=-1) {
+          this.formItem.authorities = ['1']
+        } else {
           this.formItem.authorities = newTargetKeys;
         }
       },
       handleLoadUsers () {
         getAllUsers().then(res => {
           if (res.code === 0) {
-            this.selectUsers = res.data.list
+            this.selectUsers = res.data
           }
         })
       }

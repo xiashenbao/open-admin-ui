@@ -3,10 +3,11 @@
  */
 import request from '@/libs/request'
 
+
+
 /**
  * 获取用户已分配权限
- * @param roleId
- * @param grantMenus
+ * @param userId
  */
 export const getUserGrantedAuthority = (userId) => {
   const data = {
@@ -19,6 +20,35 @@ export const getUserGrantedAuthority = (userId) => {
   })
 }
 
+/**
+ * 获取角色已分配权限
+ * @param roleId
+ */
+export const getRoleGrantedAuthority = (roleId) => {
+  const data = {
+    roleId: roleId
+  }
+  return request({
+    url: 'base/authority/granted/role',
+    data,
+    method: 'post'
+  })
+}
+
+/**
+ * 获取应用已分配权限
+ * @param roleId
+ */
+export const getAppGrantedAuthority = (appId) => {
+  const data = {
+    appId: appId
+  }
+  return request({
+    url: 'base/authority/granted/app',
+    data,
+    method: 'post'
+  })
+}
 
 /**
  * 获取菜单和操作权限列表
@@ -42,3 +72,54 @@ export const getApiAuthorityList = (serviceId) => {
   })
 }
 
+
+/**
+ * 用户授权
+ * @param userId
+ */
+export const grantUserAuthority = ({userId,expireTime,authorityIds}) => {
+  const data = {
+    userId: userId,
+    expireTime:expireTime,
+    authorityIds:authorityIds.join(",")
+  }
+  return request({
+    url: 'base/authority/grant/user',
+    data,
+    method: 'post'
+  })
+}
+
+/**
+ * 角色授权
+ * @param userId
+ */
+export const grantRoleAuthority = ({roleId,expireTime,authorityIds}) => {
+  const data = {
+    roleId: roleId,
+    expireTime:expireTime,
+    authorityIds:authorityIds.join(",")
+  }
+  return request({
+    url: 'base/authority/grant/role',
+    data,
+    method: 'post'
+  })
+}
+
+/**
+ * 应用授权
+ * @param userId
+ */
+export const grantAppAuthority = ({appId,expireTime,authorityIds}) => {
+  const data = {
+    roleId: appId,
+    expireTime:expireTime,
+    authorityIds:authorityIds.join(",")
+  }
+  return request({
+    url: 'base/authority/grant/app',
+    data,
+    method: 'post'
+  })
+}

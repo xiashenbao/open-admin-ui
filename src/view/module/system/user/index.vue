@@ -7,6 +7,13 @@
             <Icon type="search"/>&nbsp;&nbsp;新建用户
 
 
+
+
+
+
+
+
+
           </Button>
         </ButtonGroup>
       </div>
@@ -22,6 +29,13 @@
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
+
+
+
+
+
+
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -88,11 +102,10 @@
         <FormItem label="授权过期时间" prop="expireTime">
           <DatePicker v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
-        <FormItem label="分配权限" prop="grantAuthorities">
+        <FormItem label="分配权限" prop="grantMenus">
           <tree-table
             ref="tree"
-            height="400"
-            max-height="400"
+            style="max-height:500px;overflow: auto"
             expand-key="menuName"
             :expand-type="false"
             :is-fold="false"
@@ -101,9 +114,9 @@
             :columns="columns2"
             :data="selectMenus">
             <template slot="operation" slot-scope="scope">
-              <CheckboxGroup v-model="formItem.grantAuthorities">
+              <CheckboxGroup v-model="formItem.grantOperations">
                 <Checkbox v-for="item in scope.row.operationList" :label="item.authorityId">
-                  <span :title="item.operationDesc">{{item.operationName}}</span>
+                  <span :class="item.isExpired?'text-disabled':''" :title="item.isExpired?'授权已过期':item.operationDesc">{{item.operationName}}</span>
                 </Checkbox>
               </CheckboxGroup>
             </template>
@@ -124,8 +137,9 @@
   import {getAllRoles} from '@/api/role'
   import {startWith, listConvertTree} from '@/libs/util'
   import {
+    getMenuAuthorityList,
     getUserGrantedAuthority,
-    getMenuAuthorityList
+    grantUserAuthority
   } from '@/api/authority'
 
   export default {
@@ -214,8 +228,8 @@
           userDesc: '',
           avatar: '',
           grantRoles: [],
-          grantAuthorities: [],
-          grantApis: [],
+          grantOperations: [],
+          grantMenus: [],
           expireTime: ''
         },
         columns: [
@@ -266,14 +280,14 @@
           {
             title: '菜单',
             key: 'menuName',
-            minWidth: '250px'
+            minWidth: '250px',
           },
           {
             title: '功能',
             type: 'template',
             template: 'operation',
             minWidth: '200px'
-          },
+          }
         ],
         data: []
       }
@@ -316,8 +330,8 @@
           userDesc: '',
           avatar: '',
           grantRoles: [],
-          grantAuthorities: [],
-          grantApis: [],
+          grantMenus: [],
+          grantOperations: [],
           expireTime: '',
         }
         this.formItem = newData
@@ -326,7 +340,8 @@
           this.$refs[this.current].resetFields()
         })
         this.current = this.forms[0]
-        this.formItem.grantAuthorities = []
+        this.formItem.grantMenus = []
+        this.formItem.grantOperations = []
         this.modalVisible = false
         this.saving = false
       },
@@ -378,12 +393,22 @@
         }
 
         if (this.current === this.forms[2] && this.formItem.userId) {
-          this.getCheckedProp()
           this.$refs[this.current].validate((valid) => {
             if (valid) {
+              const authorityIds = this.getCheckedAuthorities()
               this.saving = true
-              grantUserMenu(this.formItem).then(res => {
-
+              grantUserAuthority({
+                userId: this.formItem.userId,
+                expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern("yyyy-MM-dd HH:mm:ss") : '',
+                authorityIds: authorityIds
+              }).then(res => {
+                if (res.code === 0) {
+                  this.$Message.success('授权成功')
+                  this.handleReset()
+                }
+                this.handleSearch()
+              }).finally(() => {
+                this.saving = false
               })
             }
           })
@@ -398,8 +423,9 @@
           this.loading = false
         })
       },
-      getCheckedProp () {
-        this.formItem.grantAuthorities = this.$refs['tree'].getCheckedProp('authorityId')
+      getCheckedAuthorities() {
+        const menus = this.$refs['tree'].getCheckedProp('authorityId')
+        return menus.concat(this.formItem.grantOperations)
       },
       handleLoadUserGranted (userId) {
         const that = this
@@ -414,13 +440,47 @@
               parentKey: 'parentId',
               startPid: '0'
             }
-            if (res2.code === 0 && res2.data) {
+            if (res2.code === 0 && res2.data && res2.data.length>0) {
               res2.data.map(item => {
-                that.formItem.grantAuthorities.push(item.authorityId)
+                // 菜单权限
+                if (item.authority.indexOf("menu:") != -1) {
+                  that.formItem.grantMenus.push(item.authorityId)
+                }
+                // 操作权限
+                if (item.authority.indexOf("operation:") != -1) {
+                  that.formItem.grantOperations.push(item.authorityId)
+                }
               })
+              // 时间
+              if(res2.data.length>0){
+                that.formItem.expireTime = res2.data[0].expireTime
+              }
             }
             res1.data.map(item => {
-              if (that.formItem.grantAuthorities.includes(item.authorityId)) {
+              // 设置已授权菜单是否过期和所有者
+              res2.data.every(item2 => {
+                if (item.authorityId === item2.authorityId) {
+                  item.isExpired = item2.isExpired
+                  return false
+                }
+                return true
+              })
+
+              // 设置已授权操作是否过期和所有者
+              if (item.operationList) {
+                item.operationList.map(opt => {
+                  res2.data.every(item2 => {
+                    if (opt.authorityId === item2.authorityId) {
+                      opt.isExpired = item2.isExpired
+                      opt.owner = item2.owner
+                      return false
+                    }
+                    return true
+                  })
+                })
+              }
+              // 菜单选中
+              if (that.formItem.grantMenus.includes(item.authorityId)) {
                 item._isChecked = true
               }
             })
@@ -429,6 +489,7 @@
         })
       },
       handleLoadRoles (userId) {
+         if(!userId){return}
         const that = this
         const p1 = getAllRoles()
         const p2 = getUserRoles(userId)

@@ -12,7 +12,7 @@ export const getApis = ({page,limit}) => {
 export const getAllApi = () => {
   const data = {}
   return request({
-    url: 'base/api/list',
+    url: 'base/api/all',
     data,
     method: 'post'
   })
