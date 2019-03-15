@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
@@ -9,20 +8,20 @@
           </Button>
         </ButtonGroup>
       </div>
-      <Alert show-icon><code>@EnableResourceServer</code>接口资源将自动进行维护。&nbsp;&nbsp;开放接口 <a><strong>{{openApiCount}}</strong></a> 个可授权 </Alert>
+      <Alert show-icon><Tag color="red">@EnableResourceServer</Tag>自动扫描服务下的API接口。&nbsp;&nbsp;已上线接口 <a><strong>{{openApiCount}}</strong></a> 个可授权 </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="apiName" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" />
           <Badge v-else="" status="error" />
-          {{row.apiName}}
+           {{row.apiName}}
         </template>
         <template slot="isOpen" slot-scope="{ row }">
-          <Tag color="green" v-if="row.isOpen===1" >是</Tag>
-          <Tag color="red" v-else="" >否</Tag>
+          <Tag color="green" v-if="row.isOpen===1" >已上线</Tag>
+          <Tag v-else="">已下线</Tag>
         </template>
         <template slot="isAuth" slot-scope="{ row }">
-          <Tag color="green" v-if="row.isAuth===1" >是</Tag>
-          <Tag color="red" v-else="" >否</Tag>
+          <Tag color="green" v-if="row.isAuth===1" >已开启</Tag>
+          <Tag v-else="">未开启</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
@@ -67,8 +66,10 @@
             </Poptip>
           </Alert>
           <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
-            <FormItem label="所属服务" prop="serviceId">
-              <Input :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" placeholder="请输入内容"></Input>
+            <FormItem label="服务名称" prop="serviceId">
+              <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" class="search-col">
+                <Option v-for="item in selectServiceList"  :value="item.serviceId" >{{ item.serviceName }}</Option>
+              </Select>
             </FormItem>
             <FormItem label="接口分类" prop="apiCategory">
               <Input v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
@@ -91,7 +92,7 @@
                 <span slot="close">否</span>
               </i-switch>
             </FormItem>
-            <FormItem label="身份认证">
+            <FormItem label="安全认证">
               <i-switch v-model="formItem.authSwatch" size="large">
                 <span slot="open">是</span>
                 <span slot="close">否</span>
@@ -99,8 +100,8 @@
             </FormItem>
             <FormItem label="状态">
               <i-switch v-model="formItem.statusSwatch" size="large">
-                <span slot="open">有效</span>
-                <span slot="close">无效</span>
+                <span slot="open">启用</span>
+                <span slot="close">禁用</span>
               </i-switch>
             </FormItem>
             <FormItem label="描述">
@@ -118,16 +119,17 @@
 <script>
   import {listConvertTree} from '@/libs/util'
   import {getApis, updateApi, addApi, removeApi} from '@/api/api'
+  import {getServiceList} from '@/api/data'
 
   export default {
     name: 'SystemApi',
     data () {
       const validateEn = (rule, value, callback) => {
-        let reg = /^[_a-zA-Z0-9]+$/
+        let reg = /^[_.a-zA-Z0-9]+$/
         if (value === '') {
           callback(new Error('接口标识不能为空'))
         } else if (value !== '' && !reg.test(value)) {
-          callback(new Error('只允许字母、数字、下划线'))
+          callback(new Error('只允许字母、数字、点、下划线'))
         }  else {
           callback()
         }
@@ -142,6 +144,7 @@
           page: 1,
           limit: 10
         },
+        selectServiceList:[{serviceId:'all',serviceName:'所有'}],
         openApiCount:0,
         formItemRules: {
           serviceId: [
@@ -190,26 +193,26 @@
             width: 250,
           },
           {
+            title: '分类',
+            key: 'apiCategory',
+            width: 100,
+          },
+          {
+            title: '服务名称',
+            key: 'serviceId',
+            width: 200
+          },
+          {
             title: '开放接口',
             key: 'isOpen',
             slot: 'isOpen',
             width: 100,
           },
           {
-            title: '身份认证',
+            title: '安全认证',
             key: 'isAuth',
             slot: 'isAuth',
             width: 100,
-          },
-          {
-            title: '分类',
-            key: 'apiCategory',
-            width: 100,
-          },
-          {
-            title: '服务名',
-            key: 'serviceId',
-            width: 200,
           },
           {
             title: '最后更新时间',
@@ -225,7 +228,6 @@
         data: []
       }
     },
-
     methods: {
       handleModal (data) {
         if (data) {
@@ -331,9 +333,17 @@
             this.handleRemove(row)
             break
         }
+      },
+      handleLoadServiceList(){
+        getServiceList().then(res =>{
+          if(res.code===0){
+            this.selectServiceList.push(...res.data)
+          }
+        })
       }
     },
     mounted: function () {
+      this.handleLoadServiceList()
       this.handleSearch()
     }
   }

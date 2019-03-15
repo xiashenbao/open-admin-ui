@@ -15,8 +15,8 @@
           <Tag color="blue" v-else="">平台</Tag>
         </template>
         <template slot="status" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success" text="有效"/>
-          <Badge v-else="" status="error" text="无效"/>
+          <Badge v-if="row.status===1" status="success" text="启用"/>
+          <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)" :disabled="row.appId === 'gateway' ?true:false">
@@ -43,8 +43,14 @@
            @on-cancel="handleReset"
            width="780">
       <Alert v-if="formItem.appId?true:false" show-icon>
-        重要信息,请妥善保管：AppId：<code>{{formItem.appId}}</code>AppSecret：<code>{{formItem.appSecret}}</code>&nbsp;&nbsp;<a
-        @click="handleResetSecret(formItem)">重置密钥</a>
+        重要信息,请妥善保管：AppId：<Tag color="red" >{{formItem.appId}}</Tag>AppSecret：<Tag color="red">{{formItem.appSecret}}</Tag>&nbsp;&nbsp;
+        <Poptip
+          confirm
+          placement="left"
+          title="重置后将无法恢复,并影响应用正常使用.确定继续吗？"
+          @on-ok="handleResetSecret(formItem)">
+          <a>重置密钥</a>
+        </Poptip>
       </Alert>
       <Steps :current="current" size="small">
         <Step title="选择开发者"></Step>
@@ -139,8 +145,8 @@
         </FormItem>
         <FormItem label="状态">
           <i-switch v-model="formItem.statusSwatch" size="large">
-            <span slot="open">有效</span>
-            <span slot="close">无效</span>
+            <span slot="open">启用</span>
+            <span slot="close">禁用</span>
           </i-switch>
         </FormItem>
         <FormItem label="描述">
@@ -502,19 +508,14 @@
         })
       },
       handleResetSecret (data) {
-        this.$Modal.confirm({
-          title: '重置后将无法恢复,确定继续吗？',
-          onOk: () => {
-            restApp({appId: data.appId}).then(res => {
-              if (res.code === 0) {
-                this.pageInfo.page = 1
-                this.formItem.appSecret = res.data
-                this.$Message.success('重置成功,请妥善保管.并及时更新到相关应用')
-              }
-              this.handleSearch()
-            })
-          }
-        })
+      restApp({appId: data.appId}).then(res => {
+        if (res.code === 0) {
+          this.pageInfo.page = 1
+          this.formItem.appSecret = res.data
+          this.$Message.success('重置成功,请妥善保管.并及时更新到相关应用')
+        }
+        this.handleSearch()
+      })
       },
       handleClick (name, row) {
         switch (name) {

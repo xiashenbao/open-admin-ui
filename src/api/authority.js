@@ -24,11 +24,10 @@ export const getUserGrantedAuthority = (userId) => {
  * 获取菜单和操作权限列表
  * @param serviceId
  */
-export const getAuthorityList = () => {
+export const getMenuAuthorityList = () => {
   return request({
-    url: 'base/authority/list',
-    method: 'get',
-    params:{type:'1'}
+    url: 'base/authority/menu/list',
+    method: 'get'
   })
 }
 
@@ -38,9 +37,8 @@ export const getAuthorityList = () => {
  */
 export const getApiAuthorityList = (serviceId) => {
   return request({
-    url: 'base/authority/list',
-    method: 'get',
-    params:{type:'2',serviceId:serviceId}
+    url: 'base/authority/api/list',
+    method: 'get'
   })
 }
 

@@ -14,11 +14,15 @@
           show-total
           @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
-    <Drawer width="500" title="请求详情" :closable="false" v-model="drawer">
-      <div v-highlight>
+    <Drawer width="30" :closable="false" v-model="drawer">
+      <div slot="header">
+        <Badge v-if="currentRow.httpStatus==='200'" status="success"/>
+        <Badge v-else="" status="error"/>{{currentRow.httpStatus}}
+        {{currentRow.path}}
+      </div>
+      <div>
         <h3>请求头
-          <Badge v-if="currentRow.httpStatus==='200'" status="success"/>
-          <Badge v-else="" status="error"/>{{currentRow.httpStatus}}
+
         </h3>
         <pre>
              {{ currentRow.headers ?  JSON.stringify(JSON.parse(currentRow.headers), null, 2):''}}

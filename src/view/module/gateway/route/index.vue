@@ -10,8 +10,8 @@
       </div>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success" text="有效"/>
-          <Badge v-else="" status="error" text="无效"/>
+          <Badge v-if="row.status===1" status="success" text="启用"/>
+          <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
@@ -47,8 +47,8 @@
         </FormItem>
         <FormItem label="状态">
           <i-switch v-model="formItem.statusSwatch" size="large">
-            <span slot="open">有效</span>
-            <span slot="close">无效</span>
+            <span slot="open">启用</span>
+            <span slot="close">禁用</span>
           </i-switch>
         </FormItem>
         <FormItem label="描述">

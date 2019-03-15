@@ -24,3 +24,10 @@ export const loginConfig = () => {
   })
 }
 
+
+export const getServiceList = () => {
+  return request({
+    url: 'service/list',
+    method: 'get'
+  })
+}

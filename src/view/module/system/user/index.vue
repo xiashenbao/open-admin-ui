@@ -22,13 +22,11 @@
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
-
-
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
               <DropdownItem name="grantRole">分配角色</DropdownItem>
-              <DropdownItem name="grantMenu">分配权限</DropdownItem>
+              <DropdownItem name="grantMenu">分配特殊权限</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -87,10 +85,14 @@
         </FormItem>
       </Form>
       <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="菜单/操作资源" prop="grantAuthorities">
+        <FormItem label="授权过期时间" prop="expireTime">
+          <DatePicker v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
+        </FormItem>
+        <FormItem label="分配权限" prop="grantAuthorities">
           <tree-table
             ref="tree"
-            max-height="500"
+            height="400"
+            max-height="400"
             expand-key="menuName"
             :expand-type="false"
             :is-fold="false"
@@ -101,7 +103,7 @@
             <template slot="operation" slot-scope="scope">
               <CheckboxGroup v-model="formItem.grantAuthorities">
                 <Checkbox v-for="item in scope.row.operationList" :label="item.authorityId">
-                  <span>{{item.operation.operationName}}</span>
+                  <span :title="item.operationDesc">{{item.operationName}}</span>
                 </Checkbox>
               </CheckboxGroup>
             </template>
@@ -123,7 +125,7 @@
   import {startWith, listConvertTree} from '@/libs/util'
   import {
     getUserGrantedAuthority,
-    getAuthorityList
+    getMenuAuthorityList
   } from '@/api/authority'
 
   export default {
@@ -157,11 +159,6 @@
         }
       }
       return {
-        titles: ['选择接口', '已选择接口'],
-        listStyle: {
-          width: '240px',
-          height: '500px'
-        },
         loading: false,
         saving: false,
         modalVisible: false,
@@ -218,8 +215,8 @@
           avatar: '',
           grantRoles: [],
           grantAuthorities: [],
-          grantOperations: [],
-          grantApis: []
+          grantApis: [],
+          expireTime: ''
         },
         columns: [
           {
@@ -282,12 +279,6 @@
       }
     },
     methods: {
-      getCheckedProp () {
-        this.formItem.grantAuthorities = this.$refs['tree'].getCheckedProp('menuId')
-        if (this.formItem.grantAuthorities && this.formItem.grantAuthorities.length === 0) {
-          this.formItem.grantOperations = []
-        }
-      },
       handleModal (data, step) {
         if (data) {
           this.formItem = Object.assign({}, this.formItem, data)
@@ -296,14 +287,14 @@
           step = this.forms[0]
         }
         if (step === this.forms[0]) {
-          this.modalTitle = data ? '编辑用户' : '添加用户'
+          this.modalTitle = data ? '编辑用户 - ' + data.userName : '添加用户'
         }
         if (step === this.forms[1]) {
-          this.modalTitle = data ? '分配角色' : '分配角色'
+          this.modalTitle = data ? '分配角色 - ' + data.userName : '分配角色'
           this.handleLoadRoles(this.formItem.userId)
         }
         if (step === this.forms[2]) {
-          this.modalTitle = data ? '分配特殊权限' : '分配特殊权限'
+          this.modalTitle = data ? '分配特殊权限 - ' + data.userName : '分配特殊权限'
           this.handleLoadUserGranted(this.formItem.userId)
         }
         this.formItem.status = this.formItem.status + ''
@@ -326,7 +317,8 @@
           avatar: '',
           grantRoles: [],
           grantAuthorities: [],
-          grantApis: []
+          grantApis: [],
+          expireTime: '',
         }
         this.formItem = newData
         //重置验证
@@ -335,7 +327,6 @@
         })
         this.current = this.forms[0]
         this.formItem.grantAuthorities = []
-        this.formItem.grantOperations = []
         this.modalVisible = false
         this.saving = false
       },
@@ -407,59 +398,35 @@
           this.loading = false
         })
       },
+      getCheckedProp () {
+        this.formItem.grantAuthorities = this.$refs['tree'].getCheckedProp('authorityId')
+      },
       handleLoadUserGranted (userId) {
         const that = this
-        const p1 = getAuthorityList()
+        const p1 = getMenuAuthorityList()
         const p2 = getUserGrantedAuthority(userId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
           let res2 = values[1]
-          console.log(res1)
-          console.log(res2)
-          if (res2.code === 0 && res2.data) {
-            let result = []
-            res2.data.map(item => {
-              result.push(item.authorityId)
-            })
-            that.formItem.grantAuthorities = result
-          }
-
           if (res1.code === 0 && res1.data) {
             let opt = {
               primaryKey: 'menuId',
               parentKey: 'parentId',
               startPid: '0'
             }
-            let menus = []
-            res1.data.map(item =>{
-              if(item.resourceType === 'menu'){
-                item.menuId = item.menu.menuId;
-                item.parentId = item.menu.parentId;
-                item.menuName = item.menu.menuName;
-                menus.push(item)
+            if (res2.code === 0 && res2.data) {
+              res2.data.map(item => {
+                that.formItem.grantAuthorities.push(item.authorityId)
+              })
+            }
+            res1.data.map(item => {
+              if (that.formItem.grantAuthorities.includes(item.authorityId)) {
+                item._isChecked = true
               }
             })
-            console.log(menus)
-            /*  if (this.formItem.grantAuthorities && res.data.list) {
-                res.data.list.map(item => {
-                  if (this.formItem.grantAuthorities.indexOf(item.menuId) !== -1) {
-                    item._isChecked = true
-                  }
-                })
-              }*/
-            that.selectMenus = listConvertTree(menus, opt)
+            that.selectMenus = listConvertTree(res1.data, opt)
           }
         })
-      },
-      transferRender (item) {
-        return item.label + ' - ' + item.description
-      },
-      handleTransferChange (newTargetKeys, direction, moveKeys) {
-        if (newTargetKeys.indexOf('1') !== -1) {
-          this.formItem.grantApis = ['1']
-        } else {
-          this.formItem.grantApis = newTargetKeys
-        }
       },
       handleLoadRoles (userId) {
         const that = this
