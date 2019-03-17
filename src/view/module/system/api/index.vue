@@ -4,7 +4,7 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;新建接口
+            <Icon type="search"/>&nbsp;&nbsp;添加接口
           </Button>
         </ButtonGroup>
       </div>
@@ -37,7 +37,7 @@
           </Dropdown>
         </template>
       </Table>
-      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
@@ -67,7 +67,7 @@
           </Alert>
           <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
             <FormItem label="服务名称" prop="serviceId">
-              <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" class="search-col">
+              <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" filterable clearable>
                 <Option v-for="item in selectServiceList"  :value="item.serviceId" >{{ item.serviceName }}</Option>
               </Select>
             </FormItem>
@@ -87,22 +87,22 @@
               <InputNumber v-model="formItem.priority"></InputNumber>
             </FormItem>
             <FormItem label="开放接口">
-              <i-switch v-model="formItem.openSwatch" size="large">
-                <span slot="open">是</span>
-                <span slot="close">否</span>
-              </i-switch>
+              <RadioGroup v-model="formItem.isOpen">
+                <Radio label="0">否</Radio>
+                <Radio label="1">是</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem label="安全认证">
-              <i-switch v-model="formItem.authSwatch" size="large">
-                <span slot="open">是</span>
-                <span slot="close">否</span>
-              </i-switch>
+              <RadioGroup v-model="formItem.isAuth">
+                <Radio label="0">否</Radio>
+                <Radio label="1">是</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem label="状态">
-              <i-switch v-model="formItem.statusSwatch" size="large">
-                <span slot="open">启用</span>
-                <span slot="close">禁用</span>
-              </i-switch>
+              <RadioGroup v-model="formItem.status">
+                <Radio label="0">禁用</Radio>
+                <Radio label="1">启用</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem label="描述">
               <Input v-model="formItem.apiDesc" type="textarea" placeholder="请输入内容"></Input>
@@ -167,7 +167,6 @@
           apiCategory: 'default',
           path: '',
           status: 1,
-          statusSwatch: true,
           isOpen: 0,
           isAuth: 1,
           openSwatch: false,
@@ -233,12 +232,12 @@
         if (data) {
           this.modalTitle = '编辑接口 - '+data.apiName
           this.formItem = Object.assign({}, this.formItem, data)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-          this.formItem.openSwatch = this.formItem.isOpen === 1 ? true : false
-          this.formItem.authSwatch = this.formItem.isAuth === 1 ? true : false
         } else {
           this.modalTitle = '添加接口'
         }
+        this.formItem.status=this.formItem.status+''
+        this.formItem.isOpen=this.formItem.isOpen+''
+        this.formItem.isAuth=this.formItem.isAuth+''
         this.modalVisible = true
       },
       handleReset () {
@@ -249,9 +248,6 @@
           apiCategory: 'default',
           path: '',
           status: 1,
-          statusSwatch: true,
-          openSwatch: false,
-          authSwatch: true,
           isOpen: 0,
           isAuth: 1,
           serviceId: '',
@@ -268,9 +264,6 @@
         this.$refs['form1'].validate((valid) => {
           if (valid) {
             this.saving = true
-            this.formItem.status = this.formItem.statusSwatch ? 1 : 0
-            this.formItem.isOpen = this.formItem.openSwatch ? 1 : 0
-            this.formItem.isAuth = this.formItem.authSwatch ? 1 : 0
             if (this.formItem.apiId) {
               updateApi(this.formItem).then(res => {
                 if (res.code === 0) {
@@ -299,7 +292,7 @@
         this.$Modal.confirm({
           title: '确定删除吗？',
           onOk: () => {
-            removeApi({apiId: data.apiId}).then(res => {
+            removeApi(data.apiId).then(res => {
               this.handleSearch()
               if (res.code === 0) {
                 this.pageInfo.page = 1

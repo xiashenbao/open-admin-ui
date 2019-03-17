@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Card shadow>
-      <Row :gutter="16">
-        <Col span="6">
-          <tree-table height="900"
+      <Row :gutter="8">
+        <Col :xs="8" :sm="8" :md="8" :lg="6">
+          <Card shadow>
+          <tree-table max-height="780"
                       expand-key="menuName"
                       @radio-click="rowClick"
                       :expand-type="false"
@@ -13,15 +13,19 @@
                       :columns="columns"
                       :data="data">
             <template slot="status" slot-scope="scope">
-              <Badge v-if="scope.row.status===1" status="success" text="启用"/>
-              <Badge v-else="" status="error" text="禁用"/>
+              <Badge v-if="scope.row.status===1" status="success" />
+              <Badge v-else="" status="error" />
+              <Icon :type="scope.row.icon" size="20" />
             </template>
           </tree-table>
+          </Card>
         </Col>
-        <Col span="16">
+
+        <Col :xs="16" :sm="16" :md="16" :lg="12">
+          <Card shadow>
           <div class="search-con search-con-top">
             <ButtonGroup>
-              <Button type="primary" @click="setEnabled(true)">新建</Button>
+              <Button type="primary" @click="setEnabled(true)">添加</Button>
               <Button type="primary" :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
               <Button type="primary" :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
             </ButtonGroup>
@@ -34,7 +38,7 @@
 
             </Modal>
           </div>
-          <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="100">
+          <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
             <FormItem label="上级菜单" prop="parentId">
               <treeselect :disabled="disabled"
                           v-model="formItem.parentId"
@@ -48,7 +52,7 @@
             <FormItem label="菜单名称" prop="menuName">
               <Input :disabled="disabled" v-model="formItem.menuName" placeholder="请输入内容"></Input>
             </FormItem>
-            <FormItem label="请求地址" prop="path">
+            <FormItem  label="请求地址" prop="path">
               <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
                 <Select :disabled="disabled" v-model="formItem.prefix" slot="prepend" style="width: 80px">
                   <Option value="/">/</Option>
@@ -62,16 +66,30 @@
               </Input>
             </FormItem>
             <FormItem label="图标">
-              <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容"></Input>
+              <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容">
+                <Icon size="20" :type="formItem.icon" slot="prepend" />
+                  <Poptip  width="600" slot="append" placement="left">
+                    <Button :disabled="disabled" icon="ios-search"></Button>
+                    <div slot="content">
+                      <ul class="icons">
+                        <li class="icons-item"  :title="item" @click="onIconClick(item)" v-for="item in selectIcons">
+                          <Icon :type="item" size="28" />
+                          <p>{{item}}</p>
+                        </li>
+                      </ul>
+                    </div>
+                  </Poptip>
+              </Input>
+
             </FormItem>
             <FormItem label="优先级">
               <InputNumber :disabled="disabled" v-model="formItem.priority"></InputNumber>
             </FormItem>
             <FormItem label="状态">
-              <i-switch :disabled="disabled" v-model="formItem.statusSwatch" size="large">
-                <span slot="open">启用</span>
-                <span slot="close">禁用</span>
-              </i-switch>
+              <RadioGroup  v-model="formItem.status">
+                <Radio :disabled="disabled" label="0">禁用</Radio>
+                <Radio :disabled="disabled" label="1">启用</Radio>
+              </RadioGroup>
             </FormItem>
             <FormItem label="描述">
               <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
@@ -81,11 +99,14 @@
               <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
             </FormItem>
           </Form>
-          <Divider orientation="left">操作资源</Divider>
+          </Card>
+        </Col>
+        <Col :xs="16" :sm="16" :md="16" :lg="6">
+          <Card shadow>
           <menu-operation :value="formItem"></menu-operation>
+          </Card>
         </Col>
       </Row>
-    </Card>
   </div>
 </template>
 
@@ -93,6 +114,7 @@
   import {listConvertTree, updateTreeNode} from '@/libs/util'
   import {getMenus, updateMenu, addMenu, removeMenu} from '@/api/menu'
   import MenuOperation from './menu-operation'
+  import icons from './icons'
 
   export default {
     name: 'SystemMenu',
@@ -114,7 +136,12 @@
         confirmModal: false,
         disabled: true,
         saving: false,
-        selectTreeData: [],
+        visible:false,
+        selectIcons:icons,
+        selectTreeData: [{
+          menuId: 0,
+          menuName: '无'
+        }],
         formItemRules: {
           parentId: [
             {required: true, message: '上级菜单', trigger: 'blur'}
@@ -130,12 +157,11 @@
           menuId: '',
           menuCode: '',
           menuName: '',
-          icon: '',
+          icon: 'md-document',
           path: '',
           prefix: '/',
           target: '_self',
           status: 1,
-          statusSwatch: true,
           parentId: '0',
           priority: 0,
           menuDesc: ''
@@ -165,11 +191,7 @@
         }
       },
       setSelectTree (data) {
-        const root = {
-          menuId: 0,
-          menuName: '无'
-        }
-        this.selectTreeData = [root].concat(data)
+        this.selectTreeData.push(...data)
       },
       setEnabled (enabled) {
         if (enabled) {
@@ -179,23 +201,21 @@
       },
       rowClick (data) {
         this.disabled = true
-        this.handleReset()
         if (data) {
           this.formItem = Object.assign({}, data.row)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         }
+        this.formItem.status=this.formItem.status+''
       },
       handleReset () {
         const newData = {
           menuId: '',
           menuCode: '',
           menuName: '',
-          icon: '',
+          icon: 'md-document',
           path: '',
           prefix: '/',
           target: '_self',
           status: 1,
-          statusSwatch: true,
           parentId: '0',
           priority: 0,
           menuDesc: ''
@@ -208,7 +228,6 @@
         this.$refs['menuForm'].validate((valid) => {
           if (valid) {
             this.saving = true
-            this.formItem.status = this.formItem.statusSwatch ? 1 : 0
             if (this.formItem.menuId) {
               updateMenu(this.formItem).then(res => {
                 if (res.code === 0) {
@@ -234,13 +253,16 @@
         })
       },
       handleRemove () {
-        removeMenu({menuId: this.formItem.menuId}).then(res => {
+        removeMenu(this.formItem.menuId).then(res => {
           this.handleReset()
           this.handleSearch()
           if (res.code === 0) {
             this.$Message.success('删除成功')
           }
         })
+      },
+      onIconClick(item){
+        this.formItem.icon = item
       },
       handleSearch () {
         getMenus().then(res => {
@@ -259,3 +281,26 @@
     }
   }
 </script>
+<style>
+  .icons{
+    overflow: auto;
+    zoom: 1;
+    height: 300px;
+  }
+
+  .icons-item{
+    float: left;
+    margin: 6px;
+    width: 60px;
+    text-align: center;
+    list-style: none;
+    cursor: pointer;
+    color: #5c6b77;
+    transition: all .2s ease;
+    position: relative;
+  }
+
+  .icons-item p{
+    word-break:break-all;  overflow:hidden;
+  }
+</style>

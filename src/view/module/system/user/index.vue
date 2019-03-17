@@ -4,7 +4,7 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;新建用户
+            <Icon type="search"/>&nbsp;&nbsp;添加用户
 
 
 
@@ -29,13 +29,6 @@
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
-
-
-
-
-
-
-
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -45,14 +38,13 @@
           </Dropdown>&nbsp;
         </template>
       </Table>
-      <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="handleSubmit"
            @on-cancel="handleReset">
       <Form v-show="current == 'form1'" ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="用户类型" prop="userType">
@@ -99,10 +91,13 @@
         </FormItem>
       </Form>
       <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="授权过期时间" prop="expireTime">
-          <DatePicker v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
+        <FormItem label="过期时间(选填)" prop="expireTime">
+          <Badge v-if="formItem.isExpired" count="授权已过期">
+            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime" placeholder="设置有效期"></DatePicker>
+          </Badge>
+          <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
-        <FormItem label="分配权限" prop="grantMenus">
+        <FormItem label="分配权限(选填)" prop="grantMenus">
           <tree-table
             ref="tree"
             style="max-height:500px;overflow: auto"
@@ -116,7 +111,7 @@
             <template slot="operation" slot-scope="scope">
               <CheckboxGroup v-model="formItem.grantOperations">
                 <Checkbox v-for="item in scope.row.operationList" :label="item.authorityId">
-                  <span :class="item.isExpired?'text-disabled':''" :title="item.isExpired?'授权已过期':item.operationDesc">{{item.operationName}}</span>
+                  <span  :title="item.operationDesc">{{item.operationName}}</span>
                 </Checkbox>
               </CheckboxGroup>
             </template>
@@ -133,7 +128,6 @@
 
 <script>
   import {getUsers, updateUser, addUser, getUserRoles, addUserRoles} from '@/api/user'
-  import {getAllApi} from '@/api/api'
   import {getAllRoles} from '@/api/role'
   import {startWith, listConvertTree} from '@/libs/util'
   import {
@@ -230,7 +224,8 @@
           grantRoles: [],
           grantOperations: [],
           grantMenus: [],
-          expireTime: ''
+          expireTime: '',
+          isExpired:false
         },
         columns: [
           {
@@ -302,6 +297,7 @@
         }
         if (step === this.forms[0]) {
           this.modalTitle = data ? '编辑用户 - ' + data.userName : '添加用户'
+          this.modalVisible = true
         }
         if (step === this.forms[1]) {
           this.modalTitle = data ? '分配角色 - ' + data.userName : '分配角色'
@@ -311,9 +307,8 @@
           this.modalTitle = data ? '分配特殊权限 - ' + data.userName : '分配特殊权限'
           this.handleLoadUserGranted(this.formItem.userId)
         }
-        this.formItem.status = this.formItem.status + ''
+        this.formItem.status=this.formItem.status+''
         this.current = step
-        this.modalVisible = true
       },
       handleReset () {
         const newData = {
@@ -333,6 +328,7 @@
           grantMenus: [],
           grantOperations: [],
           expireTime: '',
+          isExpired:false
         }
         this.formItem = newData
         //重置验证
@@ -454,31 +450,10 @@
               // 时间
               if(res2.data.length>0){
                 that.formItem.expireTime = res2.data[0].expireTime
+                that.formItem.isExpired = res2.data[0].isExpired
               }
             }
             res1.data.map(item => {
-              // 设置已授权菜单是否过期和所有者
-              res2.data.every(item2 => {
-                if (item.authorityId === item2.authorityId) {
-                  item.isExpired = item2.isExpired
-                  return false
-                }
-                return true
-              })
-
-              // 设置已授权操作是否过期和所有者
-              if (item.operationList) {
-                item.operationList.map(opt => {
-                  res2.data.every(item2 => {
-                    if (opt.authorityId === item2.authorityId) {
-                      opt.isExpired = item2.isExpired
-                      opt.owner = item2.owner
-                      return false
-                    }
-                    return true
-                  })
-                })
-              }
               // 菜单选中
               if (that.formItem.grantMenus.includes(item.authorityId)) {
                 item._isChecked = true
@@ -486,6 +461,7 @@
             })
             that.selectMenus = listConvertTree(res1.data, opt)
           }
+          that.modalVisible = true
         })
       },
       handleLoadRoles (userId) {
@@ -506,6 +482,7 @@
             })
             that.formItem.grantRoles = result
           }
+          that.modalVisible = true
         })
       },
       handlePage (current) {

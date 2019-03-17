@@ -4,9 +4,10 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;新建
+            <Icon type="search"/>&nbsp;&nbsp;添加
           </Button>
         </ButtonGroup>
+        <Alert show-icon>谨慎添加或修改路由,如果修改不当,将影响正常访问！&nbsp;<a @click="handleRefreshGateway">手动刷新网关</a></Alert>
       </div>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
@@ -22,8 +23,6 @@
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="grantMenu">菜单授权</DropdownItem>
-              <DropdownItem name="grantApi">接口授权</DropdownItem>
               <DropdownItem name="remove">删除</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
@@ -36,37 +35,65 @@
     <Modal v-model="modalVisible"
            :title="modalTitle"
            width="680"
-           @on-ok="handleSubmit"
            @on-cancel="handleReset">
-      <Form ref="roleForm" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="角色标识" prop="roleCode">
-          <Input v-model="formItem.roleCode" placeholder="请输入内容"></Input>
+      <Form ref="routeForm" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="路由地址" prop="path">
+          <Input v-model="formItem.path" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="角色名称" prop="roleName">
-          <Input v-model="formItem.roleName" placeholder="请输入内容"></Input>
+        <FormItem label="路由方式" >
+          <Select v-model="selectType">
+            <Option value="service" label="服务名称"></Option>
+            <Option value="url" label="服务地址"></Option>
+          </Select>
+        </FormItem>
+        <FormItem v-if="selectType==='service'" label="服务名称" prop="serviceId" :rules="{required: true, message: '服务名称不能为空', trigger: 'blur'}">
+          <Select v-model="formItem.serviceId">
+            <Option v-for="item in selectServiceList"  :value="item.serviceId" >{{ item.serviceName }}</Option>
+          </Select>
+        </FormItem>
+        <FormItem v-if="selectType==='url'" label="服务地址" prop="url" :rules="{required: true, message: '服务地址不能为空', trigger: 'blur'}">
+          <Input  v-model="formItem.url" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="状态">
-          <i-switch v-model="formItem.statusSwatch" size="large">
-            <span slot="open">启用</span>
-            <span slot="close">禁用</span>
-          </i-switch>
+          <RadioGroup v-model="formItem.status">
+            <Radio label="0">禁用</Radio>
+            <Radio label="1">启用</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="忽略前缀">
+          <RadioGroup v-model="formItem.stripPrefix">
+            <Radio label="0">否</Radio>
+            <Radio label="1">是</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="失败重试">
+          <RadioGroup v-model="formItem.retryable">
+            <Radio label="0">否</Radio>
+            <Radio label="1">是</Radio>
+          </RadioGroup>
         </FormItem>
         <FormItem label="描述">
-          <Input v-model="formItem.roleDesc" type="textarea" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.routeDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
+      <div slot="footer">
+        <Button type="primary"  :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
+        <Button type="default" @click="handleReset">取消</Button>
+      </div>
     </Modal>
   </div>
 </template>
 
 <script>
-  import {getRoles, updateRole, addRole, removeRole} from '@/api/role'
-
+  import {getRoutes, updateRoute, addRoute, removeRoute} from '@/api/route'
+  import {getServiceList} from '@/api/data'
+  import {refreshGateway} from '@/api/gateway'
   export default {
     name: 'GatewayRoute',
     data () {
       return {
         loading: false,
+        saving: false,
         modalVisible: false,
         modalTitle: '',
         pageInfo: {
@@ -74,49 +101,55 @@
           page: 1,
           limit: 10
         },
+        selectType:'service',
+        selectServiceList:[{serviceId:'all',serviceName:'所有'}],
         formItemRules: {
-          roleCode: [
-            {required: true, message: '角色标识不能为空', trigger: 'blur'}
-          ],
-          roleName: [
-            {required: true, message: '角色名称不能为空', trigger: 'blur'}
+          path: [
+            {required: true, message: '路由地址不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
-          roleId: '',
-          roleCode: '',
-          roleName: '',
+          routeId:'',
           path: '',
+          serviceId: '',
+          url: '',
+          stripPrefix: 1,
+          retryable: 0,
           status: 1,
-          statusSwatch: true,
-          menuId: '',
-          priority: 0,
-          roleDesc: ''
+          routeDesc: ''
         },
         columns: [
           {
-            title: '角色名称',
-            key: 'roleName'
+            title: '路由地址',
+            key: 'path'
           },
           {
-            title: '角色标识',
-            key: 'roleCode'
+            title: '服务名称',
+            key: 'serviceId'
           },
           {
-            title: '描述',
-            key: 'roleDesc'
+            title: '服务地址',
+            key: 'url'
+          },
+          {
+            title: '忽略前缀',
+            key: 'stripPrefix'
+          },
+          {
+            title: '失败重试',
+            key: 'retryable'
           },
           {
             title: '状态',
-            slot: 'status',
-            key: 'status'
+            key: 'status',
+            slot:'status'
           },
           {
-            title: '创建时间',
-            key: 'createTime'
+            title: '描述',
+            key: 'routeDesc'
           },
           {
-            title: '角色',
+            title: '操作',
             slot: 'action'
           }
         ],
@@ -128,47 +161,53 @@
         if (data) {
           this.modalTitle = '编辑角色'
           this.formItem = Object.assign({}, this.formItem, data)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
         } else {
           this.modalTitle = '添加角色'
         }
+        this.formItem.status=this.formItem.status+''
+        this.formItem.stripPrefix=this.formItem.stripPrefix+''
+        this.formItem.retryable=this.formItem.retryable+''
         this.modalVisible = true
       },
       handleReset () {
         const newData = {
-          roleId: '',
-          roleCode: '',
-          roleName: '',
+          routeId:'',
           path: '',
+          serviceId: '',
+          url: '',
+          stripPrefix: 1,
+          retryable: 0,
           status: 1,
-          statusSwatch: true,
-          menuId: '',
-          priority: 0,
-          roleDesc: ''
+          routeDesc: ''
         }
         this.formItem = newData
         //重置验证
-        this.$refs['roleForm'].resetFields()
+        this.$refs['routeForm'].resetFields()
+        this.modalVisible = false
       },
       handleSubmit () {
-        this.$refs['roleForm'].validate((valid) => {
+        this.$refs['routeForm'].validate((valid) => {
           if (valid) {
-            this.formItem.status = this.formItem.statusSwatch ? 1 : 0
-            if (this.formItem.roleId) {
-              updateRole(this.formItem).then(res => {
-                this.handleReset()
-                this.handleSearch()
+            this.saving = true
+            if (this.formItem.routeId) {
+              updateRoute(this.formItem).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
+                  this.handleReset()
                 }
+                this.handleSearch()
+              }).finally(() => {
+                this.saving = false
               })
             } else {
-              addRole(this.formItem).then(res => {
+              addRoute(this.formItem).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('保存成功')
                 }
+              }).finally(() => {
+                this.saving = false
               })
             }
           }
@@ -176,7 +215,7 @@
       },
       handleSearch () {
         this.loading = true
-        getRoles({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getRoutes({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
           this.loading = false
@@ -194,7 +233,7 @@
         this.$Modal.confirm({
           title: '确定删除吗？',
           onOk: () => {
-            removeRole({roleId: data.roleId}).then(res => {
+            removeRoute(data.routeId).then(res => {
               if (res.code === 0) {
                 this.pageInfo.page = 1
                 this.$Message.success('删除成功')
@@ -210,10 +249,31 @@
             this.handleRemove(row)
             break
         }
+      },
+      handleLoadServiceList(){
+        getServiceList().then(res =>{
+          if(res.code===0){
+            this.selectServiceList.push(...res.data)
+          }
+        })
+      },
+      handleRefreshGateway () {
+        this.$Modal.confirm({
+          title: '提示',
+          content: '将重新加载所有网关实例包括（访问权限、流量限制、IP访问限制、路由缓存），是否继续？',
+          onOk: () => {
+            refreshGateway().then(res => {
+              if (res.code === 0) {
+                this.$Message.success('刷新成功')
+              }
+            })
+          }
+        })
       }
     },
     mounted: function () {
       this.handleSearch()
+      this.handleLoadServiceList()
     }
   }
 </script>

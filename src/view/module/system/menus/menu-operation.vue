@@ -3,17 +3,19 @@
     <div class="search-con search-con-top">
       <ButtonGroup>
         <Button :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="handleModal()">
-          <Icon type="search"/>&nbsp;&nbsp;新建操作
+          <Icon type="search"/>&nbsp;&nbsp;添加操作
         </Button>
       </ButtonGroup>
     </div>
-    <Table :columns="columns" :data="data">
+    <Table :columns="columns" :data="data" :loading="loading">
       <template slot="status" slot-scope="{ row }">
-        <Badge v-if="row.status===1" status="success" text="启用"/>
-        <Badge v-else="" status="error" text="禁用"/>
+        <Badge v-if="row.status===1" status="success"/>
+        <Badge v-else="" status="error" />
+        {{row.operationName}}
       </template>
       <template slot="operation" slot-scope="{ row }">
         <a @click="handleModal(row)">编辑</a> &nbsp;
+        <a @click="handleModal(row,forms[1])">绑定API</a> &nbsp;
         <Poptip
           confirm
           title="确定删除吗?"
@@ -24,9 +26,9 @@
     </Table>
     <Modal v-model="modalVisible"
            :title="modalTitle"
-           width="680"
+           width="800"
            @on-cancel="handleReset">
-      <Form ref="operationForm" :model="formItem" :rules="formItemRules" :label-width="100">
+      <Form ref="form1" v-show="current=='form1'" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="所属菜单">
           <Input disabled v-model="value.menuName"></Input>
         </FormItem>
@@ -36,20 +38,31 @@
         <FormItem label="操作名称" prop="operationName">
           <Input v-model="formItem.operationName" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="绑定API" prop="apiId">
-          <Input v-model="formItem.apiId" placeholder="请输入内容"></Input>
-        </FormItem>
         <FormItem label="优先级">
           <InputNumber v-model="formItem.priority"></InputNumber>
         </FormItem>
         <FormItem label="状态">
-          <i-switch v-model="formItem.statusSwatch" size="large">
-            <span slot="open">启用</span>
-            <span slot="close">禁用</span>
-          </i-switch>
+          <RadioGroup v-model="formItem.status">
+            <Radio label="0">禁用</Radio>
+            <Radio label="1">启用</Radio>
+          </RadioGroup>
         </FormItem>
         <FormItem label="描述">
           <Input v-model="formItem.operationDesc" type="textarea" placeholder="请输入内容"></Input>
+        </FormItem>
+      </Form>
+
+      <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="接口授权(选填)" prop="authorities">
+          <Transfer
+            :data="selectApis"
+            :list-style="{width: '300px',height: '500px'}"
+            :titles="['选择接口', '已选择接口']"
+            :render-format="transferRender"
+            :target-keys="formItem.apiIds"
+            @on-change="handleTransferChange"
+            filterable>
+          </Transfer>
         </FormItem>
       </Form>
       <div slot="footer">
@@ -61,7 +74,8 @@
 </template>
 
 <script>
-  import {getOperationsByMenu, updateOperation, addOperation, removeOperation} from '@/api/operation'
+  import {getOperationsByMenu, updateOperation, addOperation, removeOperation,addOperationApi,getOperationApi} from '@/api/operation'
+  import {getAllApi} from '@/api/api'
 
   export default {
     name: 'MenuOperation',
@@ -82,8 +96,15 @@
       return {
         modalVisible: false,
         saving: false,
+        loading: false,
+        current: 'form1',
+        forms: [
+          'form1',
+          'form2'
+        ],
         modalTitle: '',
         confirmModal: false,
+        selectApis:[],
         formItemRules: {
           operationCode: [
             {required: true,validator: validateEn, message: '操作编码不能为空', trigger: 'blur'}
@@ -96,9 +117,8 @@
           operationId: '',
           operationCode: '',
           operationName: '',
-          apiId: '',
+          apiIds:[],
           status: 1,
-          statusSwatch: true,
           menuId: '',
           priority: 0,
           operationDesc: ''
@@ -106,20 +126,11 @@
         columns: [
           {
             title: '操作名称',
-            key: 'operationName'
-          },
-          {
-            title: '操作标识',
-            key: 'operationCode'
-          },
-          {
-            title: '状态',
             slot: 'status',
-            key: 'status'
           },
           {
-            title: '描述',
-            key: 'operationDesc'
+            title: '操作编码',
+            key: 'operationCode',
           },
           {
             title: '操作',
@@ -131,82 +142,146 @@
       }
     },
     methods: {
-      handleModal (data) {
+      handleModal (data, step) {
         if (data) {
-          this.modalTitle = '编辑操作 - '+data.operationName
           this.formItem = Object.assign({}, this.formItem, data)
-          this.formItem.statusSwatch = this.formItem.status === 1 ? true : false
-        } else {
-          this.modalTitle = '添加操作'
         }
-        this.formItem.menuId = this.value.menuId
-        this.modalVisible = true
+        if (!step) {
+          step = this.forms[0]
+        }
+        if (step === this.forms[0]) {
+          this.modalTitle = data ? '编辑操作 - '+this.value.menuName + ' > '  + data.operationName : '添加操作 - '+this.value.menuName
+          this.modalVisible = true
+        }
+        if (step === this.forms[1]) {
+          this.modalTitle = data ? '绑定API - '+this.value.menuName + ' > ' + data.operationName : '绑定API'
+          this.handleLoadOperationApi(this.formItem.operationId)
+        }
+        this.current = step
+        this.formItem.status=this.formItem.status+''
       },
       handleReset () {
         const newData = {
           operationId: '',
           operationCode: '',
           operationName: '',
-          apiId: '',
+          apiIds:[],
           status: 1,
-          statusSwatch: true,
           menuId: '',
           priority: 0,
           operationDesc: ''
         }
         this.formItem = newData
         //重置验证
-        this.$refs['operationForm'].resetFields()
+        this.forms.map(form => {
+          this.$refs[form].resetFields()
+        })
+        this.current = this.forms[0]
         this.modalVisible = false
         this.saving = false
       },
       handleSubmit () {
-        this.$refs['operationForm'].validate((valid) => {
-          if (valid) {
-            this.saving = true
-            this.formItem.status = this.formItem.statusSwatch ? 1 : 0
-            if (this.formItem.operationId) {
-              updateOperation(this.formItem).then(res => {
+        if (this.current === this.forms[0]) {
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              if (this.formItem.operationId) {
+                updateOperation(this.formItem).then(res => {
+                  this.handleReset()
+                  this.handleSearch()
+                  if (res.code === 0) {
+                    this.$Message.success('保存成功')
+                  }
+                }).finally(() =>{
+                  this.saving = false
+                })
+              } else {
+                addOperation(this.formItem).then(res => {
+                  this.handleReset()
+                  this.handleSearch()
+                  if (res.code === 0) {
+                    this.$Message.success('保存成功')
+                  }
+                }).finally(() =>{
+                  this.saving = false
+                })
+              }
+            }
+          })
+        }
+        if (this.current === this.forms[1]) {
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              addOperationApi({operationId:this.formItem.operationId,apiIds:this.formItem.apiIds}).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
-                  this.$Message.success('保存成功')
-                }
-              }).finally(() =>{
-                this.saving = false
-              })
-            } else {
-              addOperation(this.formItem).then(res => {
-                this.handleReset()
-                this.handleSearch()
-                if (res.code === 0) {
-                  this.$Message.success('保存成功')
+                  this.$Message.success('绑定成功')
                 }
               }).finally(() =>{
                 this.saving = false
               })
             }
-          }
-        })
+          })
+        }
+
       },
       handleSearch () {
-        if (!this.value.menuId) {
-          this.data = []
+        if (!this.value) {
           return
         }
-        getOperationsByMenu(this.value.menuId).then(res => {
+        this.formItem.menuId = this.value.menuId;
+        this.loading = true
+        getOperationsByMenu(this.formItem.menuId).then(res => {
           this.data = res.data
+        }).finally(() => {
+          this.loading = false
         })
       },
       handleRemove (data) {
-        removeOperation({operationId: data.operationId}).then(res => {
+        removeOperation(data.operationId).then(res => {
           this.handleSearch()
           if (res.code === 0) {
             this.pageInfo.page = 1
             this.$Message.success('删除成功')
           }
         })
+      },
+      handleLoadOperationApi (operationId) {
+        if(!operationId){return}
+        const that = this
+        const p1 = getAllApi()
+        const p2 = getOperationApi(operationId)
+        Promise.all([p1, p2]).then(function (values) {
+          let res1 = values[0]
+          let res2 = values[1]
+          if (res1.code === 0) {
+            res1.data.map(item => {
+              item.key =  item.apiId
+            })
+            that.selectApis = res1.data;
+          }
+          if (res2.code === 0) {
+              const  result = []
+              res2.data.map(item =>{
+                result.push(item.apiId);
+              })
+              that.formItem.apiIds = result;
+          }
+          that.modalVisible = true
+        })
+      },
+    transferRender (item) {
+      return `<span  title="${item.apiDesc}">${item.path} - ${item.apiName}`
+    },
+    handleTransferChange (newTargetKeys, direction, moveKeys) {
+      if (newTargetKeys.indexOf('1') != -1) {
+        this.formItem.apiIds = ['1']
+      } else {
+        this.formItem.apiIds = newTargetKeys
       }
+    },
     },
     watch: {
       value (val) {

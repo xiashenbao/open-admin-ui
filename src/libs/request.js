@@ -11,7 +11,7 @@ const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : co
  */
 const service = axios.create({
   baseURL: baseUrl, // api的base_url
-  timeout: 5000 // 请求超时时间
+  timeout: 30000  // 设置请求超时时间30s
 })
 /**
  * 请求参数处理
@@ -48,10 +48,10 @@ service.interceptors.response.use(
           location.reload()
           return
         case 403:
-          message = error.response.data.path + ',' +error.response.data.message;
+          message = error.response.data.path + ',' + error.response.data.message
           break
         default:
-          message = error.response.data.message ? error.response.data.message : "服务器错误"
+          message = error.response.data.message ? error.response.data.message : '服务器错误'
           break
       }
       Message.error({content: message})

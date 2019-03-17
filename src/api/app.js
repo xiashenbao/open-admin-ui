@@ -1,7 +1,12 @@
 import request from '@/libs/request'
 
-export const getApps = ({page,limit}) => {
-  const data = {page:page,limit:limit}
+/**
+ * 获取应用列表
+ * @param page
+ * @param limit
+ */
+export const getApps = ({page, limit}) => {
+  const data = {page: page, limit: limit}
   return request({
     url: 'base/app',
     data,
@@ -9,16 +14,32 @@ export const getApps = ({page,limit}) => {
   })
 }
 
-
-export const updateApp = (data) => {
-  return request({
-    url: 'base/app/update',
-    data,
-    method: 'post'
-  })
-}
-
-export const addApp = (data) => {
+/**
+ * 添加应用信息
+ * @param appName
+ * @param appNameEn
+ * @param appType
+ * @param appIcon
+ * @param appOs
+ * @param appDesc
+ * @param status
+ * @param website
+ * @param userId
+ * @param userType
+ */
+export const addApp = ({appName, appNameEn, appType, appIcon, appOs, appDesc, status, website, userId, userType}) => {
+  const data = {
+    appName: appName,
+    appNameEn: appNameEn,
+    appType: appType,
+    appIcon: appIcon,
+    appOs: appOs,
+    appDesc: appDesc,
+    status: status,
+    website: website,
+    userId: userId,
+    userType: userType
+  }
   return request({
     url: 'base/app/add',
     data,
@@ -26,9 +47,75 @@ export const addApp = (data) => {
   })
 }
 
+/**
+ * 更新应用信息
+ * @param appId
+ * @param appName
+ * @param appNameEn
+ * @param appType
+ * @param appIcon
+ * @param appOs
+ * @param appDesc
+ * @param status
+ * @param website
+ * @param userId
+ * @param userType
+ */
+export const updateApp = ({appId, appName, appNameEn, appType, appIcon, appOs, appDesc, status, website, userId, userType}) => {
+  const data = {
+    appId: appId,
+    appName: appName,
+    appNameEn: appNameEn,
+    appType: appType,
+    appIcon: appIcon,
+    appOs: appOs,
+    appDesc: appDesc,
+    status: status,
+    website: website,
+    userId: userId,
+    userType: userType
+  }
+  return request({
+    url: 'base/app/update',
+    data,
+    method: 'post'
+  })
+}
+
+/**
+ * 完善应用开发信息
+ * @param appId
+ * @param grantTypes
+ * @param redirectUrls
+ * @param scopes
+ * @param accessTokenValidity
+ * @param refreshTokenValidity
+ * @param autoApproveScopes
+ */
+export const updateAppClientInfo = ({appId, grantTypes, redirectUrls, scopes, accessTokenValidity, refreshTokenValidity, autoApproveScopes}) => {
+  const data = {
+    appId: appId,
+    grantTypes: grantTypes.join(','),
+    redirectUrls: redirectUrls,
+    scopes: scopes.join(','),
+    accessTokenValidity: accessTokenValidity,
+    refreshTokenValidity: refreshTokenValidity,
+    autoApproveScopes: autoApproveScopes.join(',')
+  }
+  return request({
+    url: 'base/app/client/update',
+    data,
+    method: 'post'
+  })
+}
+
+/**
+ * 删除应用
+ * @param appId
+ */
 export const removeApp = ({appId}) => {
-  const data= {
-    appId:appId
+  const data = {
+    appId: appId
   }
   return request({
     url: 'base/app/remove',
@@ -37,9 +124,13 @@ export const removeApp = ({appId}) => {
   })
 }
 
+/**
+ * 重置秘钥
+ * @param appId
+ */
 export const restApp = ({appId}) => {
-  const data= {
-    appId:appId
+  const data = {
+    appId: appId
   }
   return request({
     url: 'base/app/reset',
@@ -48,6 +139,10 @@ export const restApp = ({appId}) => {
   })
 }
 
+/**
+ * 获取应用信息
+ * @param appId
+ */
 export const getAppInfo = ({appId}) => {
   return request({
     url: `base/app/${appId}`,
@@ -55,9 +150,13 @@ export const getAppInfo = ({appId}) => {
   })
 }
 
-export const getAppDevInfo = ({appId}) => {
+/**
+ * 获取应用开发信息
+ * @param appId
+ */
+export const getAppClientInfo = ({appId}) => {
   return request({
-    url: `base/app/dev/${appId}`,
+    url: `base/app/client/${appId}`,
     method: 'get'
   })
 }

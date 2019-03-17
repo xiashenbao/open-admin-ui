@@ -10,7 +10,7 @@
         <a @click="openDrawer(row)">详情</a>
       </template>
     </Table>
-    <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+    <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
           show-total
           @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>

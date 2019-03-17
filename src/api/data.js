@@ -1,5 +1,9 @@
 import request from '@/libs/request'
 
+/**
+ * 保存错误日志
+ * @param info
+ */
 export const saveErrorLogger = info => {
   return request({
     url: 'save_error_logger',
@@ -8,15 +12,9 @@ export const saveErrorLogger = info => {
   })
 }
 
-
-export const uploadImg = formData => {
-  return request({
-    url: 'image/upload',
-    data: formData
-  })
-}
-
-
+/**
+ * 获取第三方登录配置
+ */
 export const loginConfig = () => {
   return request({
     url: 'auth/login/other/config',
@@ -24,7 +22,9 @@ export const loginConfig = () => {
   })
 }
 
-
+/**
+ * 获取服务列表
+ */
 export const getServiceList = () => {
   return request({
     url: 'service/list',

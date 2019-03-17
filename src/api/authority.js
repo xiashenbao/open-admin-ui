@@ -68,7 +68,11 @@ export const getMenuAuthorityList = () => {
 export const getApiAuthorityList = (serviceId) => {
   return request({
     url: 'base/authority/api/list',
-    method: 'get'
+    method: 'get',
+    params:{
+      isOpen:1,
+      serviceId:serviceId
+    }
   })
 }
 
@@ -113,7 +117,7 @@ export const grantRoleAuthority = ({roleId,expireTime,authorityIds}) => {
  */
 export const grantAppAuthority = ({appId,expireTime,authorityIds}) => {
   const data = {
-    roleId: appId,
+    appId: appId,
     expireTime:expireTime,
     authorityIds:authorityIds.join(",")
   }
