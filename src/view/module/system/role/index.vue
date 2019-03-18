@@ -166,28 +166,35 @@
           },
           {
             title: '角色名称',
-            key: 'roleName'
+            key: 'roleName',
+            width: 300,
           },
           {
             title: '角色标识',
-            key: 'roleCode'
-          },
-          {
-            title: '描述',
-            key: 'roleDesc'
+            key: 'roleCode',
+            width: 300,
           },
           {
             title: '状态',
             slot: 'status',
-            key: 'status'
+            key: 'status',
+            width: 100,
           },
           {
             title: '创建时间',
-            key: 'createTime'
+            key: 'createTime',
+            width: 180,
+          },
+          {
+            title: '描述',
+            key: 'roleDesc',
+            width:600
           },
           {
             title: '角色',
-            slot: 'action'
+            slot: 'action',
+            fixed:'right',
+            width: 120
           }
         ],
         columns2: [

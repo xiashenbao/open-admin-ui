@@ -235,40 +235,50 @@
           },
           {
             title: '登录名称',
-            key: 'userName'
+            key: 'userName',
+            width: 200
           },
           {
             title: '昵称',
-            key: 'nickName'
+            key: 'nickName',
+            width: 150
           },
           {
             title: '邮箱',
-            key: 'email'
+            key: 'email',
+            width: 150
           },
           {
             title: '手机号',
-            key: 'mobile'
+            key: 'mobile',
+            width: 150
           },
           {
             title: '状态',
             slot: 'status',
-            key: 'status'
+            key: 'status',
+            width: 100
           },
           {
             title: '用户类型',
-            key: 'userType'
-          },
-          {
-            title: '描述',
-            key: 'userDesc'
+            key: 'userType',
+            width: 150
           },
           {
             title: '注册时间',
-            key: 'registerTime'
+            key: 'registerTime',
+            width: 180
+          },
+          {
+            title: '描述',
+            key: 'userDesc',
+            width:400
           },
           {
             title: '操作',
-            slot: 'action'
+            slot: 'action',
+            fixed:'right',
+            width: 120
           }
         ],
         columns2: [

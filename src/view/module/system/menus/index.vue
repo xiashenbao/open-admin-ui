@@ -176,6 +176,7 @@
             title: '状态',
             key: 'status',
             type: 'template',
+            minWidth: '100px',
             template: 'status'
           },
         ],

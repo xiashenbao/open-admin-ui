@@ -63,24 +63,29 @@
           },
           {
             title: '请求地址',
-            key: 'path'
+            key: 'path',
+            width: 300
           },
           {
             title: '请求方式',
-            key: 'method'
+            key: 'method',
+            width: 100
           },
           {
             title: 'IP',
-            key: 'ip'
+            key: 'ip',
+            width: 200
           },
           {
             title: '终端',
+            width: 250,
             render:(h,params) => {
               return   h('div', readUserAgent(params.row.userAgent).terminal)
             }
           },
           {
             title: '浏览器',
+            width: 250,
             render:(h,params) => {
               return   h('div', readUserAgent(params.row.userAgent).browser)
             }
@@ -88,22 +93,27 @@
           {
             title: '响应状态',
             key: 'httpStatus',
-            slot: 'httpStatus'
+            slot: 'httpStatus',
+            width: 100
           },
           {
             title: '请求时间',
-            key: 'requestTime'
+            key: 'requestTime',
+            width: 200
           },
           {
             title: '耗时',
             key: 'useTime',
             render:(h,params) => {
               return   h('div',( params.row.useTime?params.row.useTime:0)+' ms')
-            }
+            },
+            width: 100
           },
           {
             title: '详情',
-            slot: 'detail'
+            slot: 'detail',
+            fixed:'right',
+            width: 120
           }
         ],
         data: []

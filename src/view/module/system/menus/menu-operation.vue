@@ -127,14 +127,17 @@
           {
             title: '操作名称',
             slot: 'status',
+             width: 150
           },
           {
             title: '操作编码',
             key: 'operationCode',
+            width: 150
           },
           {
             title: '操作',
             slot: 'operation',
+            fixed:'right',
             width: 150
           }
         ],

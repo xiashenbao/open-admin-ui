@@ -15,13 +15,11 @@
           <Badge v-else="" status="error" />
            {{row.apiName}}
         </template>
-        <template slot="isOpen" slot-scope="{ row }">
-          <Tag color="green" v-if="row.isOpen===1" >已上线</Tag>
-          <Tag v-else="">已下线</Tag>
-        </template>
         <template slot="isAuth" slot-scope="{ row }">
-          <Tag color="green" v-if="row.isAuth===1" >已开启</Tag>
-          <Tag v-else="">未开启</Tag>
+          <Tag color="green" v-if="row.isAuth===1" >身份认证</Tag>
+          <Tag v-else-if="row.isAuth!==1" >无认证</Tag>
+          <Tag color="green" v-if="row.isOpen===1" >开放接口</Tag>
+          <Tag v-else-if="row.isOpen!==1"  >未开放</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
@@ -92,7 +90,7 @@
                 <Radio label="1">是</Radio>
               </RadioGroup>
             </FormItem>
-            <FormItem label="安全认证">
+            <FormItem label="身份认证">
               <RadioGroup v-model="formItem.isAuth">
                 <Radio label="0">否</Radio>
                 <Radio label="1">是</Radio>
@@ -190,7 +188,7 @@
             title: '名称',
             key: 'apiName',
             slot: 'apiName',
-            width: 150,
+            width: 200,
           },
           {
             title: '分类',
@@ -200,28 +198,30 @@
           {
             title: '服务名称',
             key: 'serviceId',
-            width: 150
+            width: 200
           },
           {
-            title: '开放接口',
-            key: 'isOpen',
-            slot: 'isOpen'
-          },
-          {
-            title: '安全认证',
+            title: '接口安全',
             key: 'isAuth',
-            slot: 'isAuth'
+            slot: 'isAuth',
+            width: 200
           },
           {
             title: '最后更新时间',
             key: 'updateTime',
-            width: 200
+            width: 180
+          },
+          {
+            title: '描述',
+            key: 'apiDesc',
+            width: 400
           },
           {
             title: '操作',
             key: '',
             slot: 'action',
-            width: 150
+            fixed:'right',
+            width: 120
           }
         ],
         data: []

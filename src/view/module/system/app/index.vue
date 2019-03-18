@@ -350,11 +350,13 @@
           },
           {
             title: '应用名称',
-            key: 'appName'
+            key: 'appName',
+            width:200
           },
           {
             title: '英文名称',
-            key: 'appNameEn'
+            key: 'appNameEn',
+            width:200
           },
           {
             title: '应用ID',
@@ -363,35 +365,38 @@
           },
           {
             title: '应用类型',
-            key: 'appType'
-          },
-          {
-            title: '开发者',
-            key: 'userId'
+            key: 'appType',
+            width:100
           },
           {
             title: '开发者类型',
             key: 'userType',
-            slot: 'userType'
+            slot: 'userType',
+            width:100
           },
           {
             title: '状态',
             slot: 'status',
             sortable: true,
-            key: 'status'
-          },
-          {
-            title: '描述',
-            key: 'appDesc'
+            key: 'status',
+            width:100
           },
           {
             title: '创建时间',
             sortable: true,
-            key: 'createTime'
+            key: 'createTime',
+            width:180
+          },
+          {
+            title: '描述',
+            key: 'appDesc',
+            width:400
           },
           {
             title: '操作',
-            slot: 'action'
+            slot: 'action',
+            fixed:'right',
+            width: 120
           }
         ],
         data: []

@@ -121,36 +121,45 @@
         columns: [
           {
             title: '路由地址',
-            key: 'path'
+            key: 'path',
+            width: 300
           },
           {
             title: '服务名称',
-            key: 'serviceId'
+            key: 'serviceId',
+            width: 300
           },
           {
             title: '服务地址',
-            key: 'url'
+            key: 'url',
+            width: 300
           },
           {
             title: '忽略前缀',
-            key: 'stripPrefix'
+            key: 'stripPrefix',
+            width: 100
           },
           {
             title: '失败重试',
-            key: 'retryable'
+            key: 'retryable',
+            width: 100
           },
           {
             title: '状态',
             key: 'status',
-            slot:'status'
+            slot:'status',
+            width: 100
           },
           {
             title: '描述',
-            key: 'routeDesc'
+            key: 'routeDesc',
+            width: 300
           },
           {
             title: '操作',
-            slot: 'action'
+            slot: 'action',
+            fixed:'right',
+            width: 120
           }
         ],
         data: []
