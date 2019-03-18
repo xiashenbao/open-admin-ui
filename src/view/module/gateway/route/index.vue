@@ -17,7 +17,7 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
-          <Dropdown ref="dropdown" @on-click="handleClick($event,row)">
+          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
               <Icon type="ios-arrow-down"></Icon>
@@ -193,6 +193,7 @@
         //重置验证
         this.$refs['routeForm'].resetFields()
         this.modalVisible = false
+        this.saving = false
       },
       handleSubmit () {
         this.$refs['routeForm'].validate((valid) => {

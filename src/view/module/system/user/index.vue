@@ -5,15 +5,6 @@
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;添加用户
-
-
-
-
-
-
-
-
-
           </Button>
         </ButtonGroup>
       </div>
