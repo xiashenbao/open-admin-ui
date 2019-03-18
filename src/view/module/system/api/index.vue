@@ -184,12 +184,13 @@
           {
             title: '接口',
             key: 'path',
+            width: 200,
           },
           {
             title: '名称',
             key: 'apiName',
             slot: 'apiName',
-            width: 250,
+            width: 150,
           },
           {
             title: '分类',
@@ -199,19 +200,17 @@
           {
             title: '服务名称',
             key: 'serviceId',
-            width: 200
+            width: 150
           },
           {
             title: '开放接口',
             key: 'isOpen',
-            slot: 'isOpen',
-            width: 100,
+            slot: 'isOpen'
           },
           {
             title: '安全认证',
             key: 'isAuth',
-            slot: 'isAuth',
-            width: 100,
+            slot: 'isAuth'
           },
           {
             title: '最后更新时间',
@@ -221,7 +220,8 @@
           {
             title: '操作',
             key: '',
-            slot: 'action'
+            slot: 'action',
+            width: 150
           }
         ],
         data: []
