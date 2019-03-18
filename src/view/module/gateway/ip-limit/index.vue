@@ -50,10 +50,11 @@
           </Select>
         </FormItem>
         <FormItem label="IP地址" prop="ipAddress">
-          <Input v-model="formItem.ipAddress" type="textarea" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.ipAddress" type="textarea" placeholder="请输入内容"></Input> 多个用;隔开
         </FormItem>
       </Form>
       <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
+        <Alert type="warning" show-icon>请注意：如果API上原来已经绑定了一个策略，则会被本策略覆盖，请慎重选择！</Alert>
         <FormItem label="绑定接口(选填)" prop="authorities">
           <Transfer
             :data="selectApis"
@@ -67,7 +68,7 @@
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="primary"  :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
+        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
       </div>
     </Modal>
@@ -75,8 +76,9 @@
 </template>
 
 <script>
-  import {getIpLimits, addIpLimit, updateIpLimit, removeIpLimit,getIpLimitApis,addIpLimitApis} from '@/api/ipLimit'
+  import {getIpLimits, addIpLimit, updateIpLimit, removeIpLimit, getIpLimitApis, addIpLimitApis} from '@/api/ipLimit'
   import {getApiAuthorityList} from '@/api/authority'
+
   export default {
     name: 'GatewayRoute',
     data () {
@@ -104,15 +106,15 @@
             {required: true, message: '策略类型不能为空', trigger: 'blur'}
           ],
           ipAddress: [
-            {required: true, message: 'IP地址不能为空', trigger: 'blur'}
+            {required: true,message: 'Ip地址不能为空',  trigger: 'blur'}
           ]
         },
         formItem: {
-          policyId:'',
+          policyId: '',
           policyName: '',
           policyType: '0',
           ipAddress: '',
-          apiIds:[],
+          apiIds: [],
         },
         columns: [
           {
@@ -123,17 +125,22 @@
           {
             title: '策略类型',
             width: 300,
-            slot:'policyType'
+            slot: 'policyType'
           },
           {
             title: 'IP地址',
             key: 'ipAddress',
-            width: 750
+            width: 550
+          },
+          {
+            title: '最后修改时间',
+            width: 200,
+            key: 'updateTime'
           },
           {
             title: '操作',
             slot: 'action',
-            fixed:'right',
+            fixed: 'right',
             width: 200
           }
         ],
@@ -149,23 +156,23 @@
           step = this.forms[0]
         }
         if (step === this.forms[0]) {
-          this.modalTitle = data ? '编辑IP策略 - '+this.formItem.policyName : '添加IP策略'
+          this.modalTitle = data ? '编辑IP策略 - ' + this.formItem.policyName : '添加IP策略'
           this.modalVisible = true
         }
         if (step === this.forms[1]) {
-          this.modalTitle = data ? '绑定API - '+ this.formItem.policyName : '绑定API'
-          this.handleIpLimitApi(this.formItem.policyId);
+          this.modalTitle = data ? '绑定API - ' + this.formItem.policyName : '绑定API'
+          this.handleIpLimitApi(this.formItem.policyId)
         }
-        this.formItem.policyType=this.formItem.policyType +''
+        this.formItem.policyType = this.formItem.policyType + ''
         this.current = step
       },
       handleReset () {
         const newData = {
-            policyId:'',
-            policyName: '',
-            policyType: '0',
-            ipAddress: '',
-            apiIds:[]
+          policyId: '',
+          policyName: '',
+          policyType: '0',
+          ipAddress: '',
+          apiIds: []
         }
         this.formItem = newData
         //重置验证
@@ -178,7 +185,7 @@
       },
       handleSubmit () {
         if (this.current === this.forms[0]) {
-          this.$refs[this.current ].validate((valid) => {
+          this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
               if (this.formItem.policyId) {
@@ -188,7 +195,7 @@
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
-                }).finally(() =>{
+                }).finally(() => {
                   this.saving = false
                 })
               } else {
@@ -198,7 +205,7 @@
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
-                }).finally(() =>{
+                }).finally(() => {
                   this.saving = false
                 })
               }
@@ -206,16 +213,16 @@
           })
         }
         if (this.current === this.forms[1]) {
-          this.$refs[this.current ].validate((valid) => {
+          this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              addIpLimitApis({policyId:this.formItem.policyId,apiIds:this.formItem.apiIds}).then(res => {
+              addIpLimitApis({policyId: this.formItem.policyId, apiIds: this.formItem.apiIds}).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('绑定成功')
                 }
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             }
@@ -253,30 +260,30 @@
           }
         })
       },
-    handleIpLimitApi(policyId) {
-      if (!policyId) {
-        return
-      }
-      const that = this
-      const p1 = getApiAuthorityList()
-      const p2 = getIpLimitApis(policyId)
-      Promise.all([p1, p2]).then(function (values) {
-        let res1 = values[0]
-        let res2 = values[1]
-        if (res1.code === 0) {
-          res1.data.map(item => {
-            item.key =  item.apiId
-          })
-          that.selectApis = res1.data
+      handleIpLimitApi (policyId) {
+        if (!policyId) {
+          return
         }
-        if (res2.code === 0) {
-          res2.data.map(item => {
-            that.formItem.apiIds.push(item.apiId)
-          })
-        }
-        that.modalVisible = true
-      })
-    },
+        const that = this
+        const p1 = getApiAuthorityList()
+        const p2 = getIpLimitApis(policyId)
+        Promise.all([p1, p2]).then(function (values) {
+          let res1 = values[0]
+          let res2 = values[1]
+          if (res1.code === 0) {
+            res1.data.map(item => {
+              item.key = item.apiId
+            })
+            that.selectApis = res1.data
+          }
+          if (res2.code === 0) {
+            res2.data.map(item => {
+              that.formItem.apiIds.push(item.apiId)
+            })
+          }
+          that.modalVisible = true
+        })
+      },
       transferRender (item) {
         return `<span  title="${item.apiDesc}">${item.path} - ${item.apiName}`
       },

@@ -180,6 +180,7 @@
             {required: true, message: '用户类型不能为空', trigger: 'blur'}
           ],
           userName: [
+            {required: true,  message: '用户名不能为空', trigger: 'blur'},
             {required: true, validator: validateEn, trigger: 'blur'}
           ],
           password: [

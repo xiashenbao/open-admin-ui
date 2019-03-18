@@ -181,17 +181,17 @@
             width: 100,
           },
           {
-            title: '创建时间',
-            key: 'createTime',
-            width: 180,
-          },
-          {
             title: '描述',
             key: 'roleDesc',
-            width:600
+            width:530
           },
           {
-            title: '角色',
+            title: '最后修改时间',
+            key: 'updateTime',
+            width: 200,
+          },
+          {
+            title: '操作',
             slot: 'action',
             fixed:'right',
             width: 120

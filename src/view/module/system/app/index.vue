@@ -19,6 +19,12 @@
           <Badge v-if="row.status===1" status="success" text="启用"/>
           <Badge v-else="" status="error" text="禁用"/>
         </template>
+        <template slot="appType" slot-scope="{ row }">
+          <Tag color="blue" v-if="row.appType==='server'">服务器应用</Tag>
+          <Tag color="blue" v-else-if="row.appType==='app'">手机应用</Tag>
+          <Tag color="blue" v-else-if="row.appType==='pc'">PC网页应用</Tag>
+          <Tag color="blue" v-else="">手机网页应用</Tag>
+        </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)" :disabled="row.appId === 'gateway' ?true:false">
             编辑</a>&nbsp;
@@ -359,13 +365,13 @@
             width:200
           },
           {
-            title: '应用ID',
+            title: 'AppId',
             key: 'appId',
             width: 200
           },
           {
             title: '应用类型',
-            key: 'appType',
+            slot: 'appType',
             width:100
           },
           {
@@ -382,15 +388,15 @@
             width:100
           },
           {
-            title: '创建时间',
-            sortable: true,
-            key: 'createTime',
-            width:180
-          },
-          {
             title: '描述',
             key: 'appDesc',
-            width:400
+            width:320
+          },
+          {
+            title: '最后修改时间',
+            sortable: true,
+            key: 'updateTime',
+            width:200
           },
           {
             title: '操作',
