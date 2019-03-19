@@ -372,13 +372,13 @@
           {
             title: '应用类型',
             slot: 'appType',
-            width:100
+            width:200
           },
           {
             title: '开发者类型',
             key: 'userType',
             slot: 'userType',
-            width:100
+            width:200
           },
           {
             title: '状态',
@@ -390,13 +390,13 @@
           {
             title: '描述',
             key: 'appDesc',
-            width:320
+            width:200
           },
           {
             title: '最后修改时间',
             sortable: true,
             key: 'updateTime',
-            width:200
+            width:180
           },
           {
             title: '操作',
