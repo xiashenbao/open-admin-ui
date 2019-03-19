@@ -1,5 +1,5 @@
 import directive from './directives'
-
+import store from  '../store'
 const importDirective = Vue => {
   /**
    * 拖拽指令 v-draggable="options"
@@ -14,3 +14,4 @@ const importDirective = Vue => {
 }
 
 export default importDirective
+

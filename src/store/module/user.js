@@ -8,7 +8,7 @@ export default {
     nickName: '',
     avatarImgPath: '',
     token: getToken(),
-    access: '',
+    access: [],
     hasGetInfo: false,
     mobile: '',
     email: '',

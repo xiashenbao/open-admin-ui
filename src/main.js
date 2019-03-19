@@ -42,6 +42,25 @@ Vue.prototype.$config = config
  */
 importDirective(Vue)
 
+/**
+ * 按钮全新控制
+ *authorities 多个用,号隔开
+ * v-show="hasAuthority('operation:systemUserCreate')"
+ * v-show="hasAuthority('operation:systemUserCreate,operation:systemUserUpdate,')"
+ * @param authorities
+ * @returns {boolean}
+ */
+Vue.prototype.hasAuthority = function (authorities) {
+  if (!authorities) {
+    return false
+  }
+  let result = authorities.split(',').some(item => {
+    return store.state.user.access.includes(item)
+  })
+  return result
+}
+
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

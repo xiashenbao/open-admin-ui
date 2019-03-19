@@ -2,8 +2,8 @@
   <div>
     <Card shadow>
       <div class="search-con search-con-top">
-        <ButtonGroup>
-          <Button class="search-btn" type="primary" @click="handleModal()">
+        <ButtonGroup >
+          <Button v-show="hasAuthority('operation:systemUserCreate')" class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;添加用户
           </Button>
         </ButtonGroup>
