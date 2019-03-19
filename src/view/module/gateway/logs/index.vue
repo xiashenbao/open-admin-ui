@@ -64,7 +64,7 @@
           {
             title: '请求地址',
             key: 'path',
-            width: 300
+            width: 220
           },
           {
             title: '请求方式',
@@ -97,17 +97,17 @@
             width: 100
           },
           {
-            title: '请求时间',
-            key: 'requestTime',
-            width: 200
-          },
-          {
             title: '耗时',
             key: 'useTime',
             render:(h,params) => {
               return   h('div',( params.row.useTime?params.row.useTime:0)+' ms')
             },
             width: 100
+          },
+          {
+            title: '请求时间',
+            key: 'requestTime',
+            width: 200
           },
           {
             title: '详情',
