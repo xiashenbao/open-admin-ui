@@ -16,8 +16,8 @@
           <Tag color="blue" v-else="">平台</Tag>
         </template>
         <template slot="status" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success" text="启用"/>
-          <Badge v-else="" status="error" text="禁用"/>
+          <Badge v-if="row.status===1" status="success" text="上线"/>
+          <Badge v-else="" status="error" text="下线"/>
         </template>
         <template slot="appType" slot-scope="{ row }">
           <Tag color="blue" v-if="row.appType==='server'">服务器应用</Tag>
@@ -147,8 +147,8 @@
         </FormItem>
         <FormItem label="状态">
           <RadioGroup v-model="formItem.status">
-            <Radio label="0">禁用</Radio>
-            <Radio label="1">启用</Radio>
+            <Radio label="0">下线</Radio>
+            <Radio label="1">上线</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="描述">
