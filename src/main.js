@@ -54,10 +54,9 @@ Vue.prototype.hasAuthority = function (authorities) {
   if (!authorities) {
     return false
   }
-  let result = authorities.split(',').some(item => {
+  return authorities.split(',').some(item => {
     return store.state.user.access.includes(item)
   })
-  return result
 }
 
 
