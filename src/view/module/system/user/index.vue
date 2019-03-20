@@ -17,13 +17,14 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
+          <a @click="handleModal(row, forms[1])">
+            分配角色</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="grantRole">分配角色</DropdownItem>
               <DropdownItem name="grantMenu">分配特殊权限</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
@@ -264,13 +265,13 @@
           {
             title: '描述',
             key: 'userDesc',
-            width:400
+            width:200
           },
           {
             title: '操作',
             slot: 'action',
             fixed:'right',
-            width: 120
+            width: 200
           }
         ],
         columns2: [
@@ -497,9 +498,6 @@
       },
       handleClick (name, row) {
         switch (name) {
-          case'grantRole':
-            this.handleModal(row, this.forms[1])
-            break
           case'grantMenu':
             this.handleModal(row, this.forms[2])
             break

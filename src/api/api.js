@@ -17,9 +17,11 @@ export const getApis = ({page, limit}) => {
 /**
  * 获取所有接口
  */
-export const getAllApi = () => {
+export const getAllApi = (serviceId) => {
+  const data = {serviceId:serviceId}
   return request({
     url: 'base/api/all',
+    data:data,
     method: 'post'
   })
 }

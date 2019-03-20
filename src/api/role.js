@@ -83,3 +83,37 @@ export const removeRole = (roleId) => {
   })
 }
 
+/**
+ * 获取角色成员
+ * @param roleId
+ * @param userIds
+ */
+export const getRoleUsers = ({roleId}) => {
+  const data = {
+    roleId: roleId
+  }
+  return request({
+    url: 'base/role/users',
+    data,
+    method: 'post'
+  })
+}
+
+/**
+ * 添加角色成员
+ * @param roleId
+ * @param userIds
+ */
+export const addRoleUsers = ({roleId,userIds}) => {
+  const data = {
+    roleId: roleId,
+    userIds:userIds.join(',')
+  }
+  return request({
+    url: 'base/role/users/add',
+    data,
+    method: 'post'
+  })
+}
+
+

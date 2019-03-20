@@ -622,6 +622,7 @@
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key =  item.authorityId
+              item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
             })
             that.selectApis = res1.data
           }
@@ -655,7 +656,7 @@
         })
       },
       transferRender (item) {
-        return `<span  title="${item.apiDesc}">${item.path} - ${item.apiName}`
+        return `<span  title="${item.label}">${item.label}`
       },
       handleTransferChange (newTargetKeys, direction, moveKeys) {
         if (newTargetKeys.indexOf('1') != -1) {

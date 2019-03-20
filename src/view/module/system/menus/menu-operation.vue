@@ -53,7 +53,7 @@
       </Form>
 
       <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="接口授权(选填)" prop="authorities">
+        <FormItem label="绑定接口(选填)" prop="authorities">
           <Transfer
             :data="selectApis"
             :list-style="{width: '300px',height: '500px'}"
@@ -262,6 +262,7 @@
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key =  item.apiId
+              item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
             })
             that.selectApis = res1.data;
           }
@@ -276,7 +277,7 @@
         })
       },
     transferRender (item) {
-      return `<span  title="${item.apiDesc}">${item.path} - ${item.apiName}`
+      return `<span  title="${item.label}">${item.label}`
     },
     handleTransferChange (newTargetKeys, direction, moveKeys) {
       if (newTargetKeys.indexOf('1') != -1) {

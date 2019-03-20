@@ -17,14 +17,15 @@
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">
             编辑</a>&nbsp;
+          <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">
+            分配权限</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">
               更多
-
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="grantMenu">分配权限</DropdownItem>
+              <DropdownItem name="addUser">添加成员</DropdownItem>
               <DropdownItem name="remove">删除角色</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
@@ -83,7 +84,18 @@
           </tree-table>
         </FormItem>
       </Form>
-
+      <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="绑定接口(选填)" prop="authorities">
+          <Transfer
+            :data="selectUsers"
+            :list-style="{width: '300px',height: '500px'}"
+            :titles="['选择用户', '已选择用户']"
+            :render-format="transferRender"
+            :target-keys="formItem.userIds"
+            filterable>
+          </Transfer>
+        </FormItem>
+      </Form>
       <div slot="footer">
         <Button type="primary"  :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
@@ -93,7 +105,8 @@
 </template>
 
 <script>
-  import {getRoles, updateRole, addRole, removeRole} from '@/api/role'
+  import {getRoles, updateRole, addRole, removeRole,getRoleUsers,addRoleUsers} from '@/api/role'
+  import {getAllUsers} from '@/api/user'
   import {
     getMenuAuthorityList,
     getRoleGrantedAuthority,
@@ -127,10 +140,12 @@
         current: 'form1',
         forms: [
           'form1',
-          'form2'
+          'form2',
+          'form3'
         ],
         selectApis: [],
         selectMenus: [],
+        selectUsers:[],
         pageInfo: {
           total: 0,
           page: 1,
@@ -156,7 +171,8 @@
           grantMenus: [],
           grantOperations: [],
           expireTime: '',
-          isExpired:false
+          isExpired:false,
+          userIds:[]
         },
         columns: [
           {
@@ -183,7 +199,7 @@
           {
             title: '描述',
             key: 'roleDesc',
-            width:530
+            width:450
           },
           {
             title: '最后修改时间',
@@ -194,7 +210,7 @@
             title: '操作',
             slot: 'action',
             fixed:'right',
-            width: 120
+            width: 200
           }
         ],
         columns2: [
@@ -248,7 +264,8 @@
           grantMenus: [],
           grantOperations: [],
           expireTime: '',
-          isExpired:false
+          isExpired:false,
+          userIds:[]
         }
         this.formItem = newData
         //重置验证
@@ -390,10 +407,13 @@
           that.modalVisible = true
         })
       },
+      transferRender (item) {
+        return `<span  title="${item.label}">${item.label}`
+      },
       handleClick (name, row) {
         switch (name) {
-          case'grantMenu':
-            this.handleModal(row, this.forms[1])
+          case'addUser':
+            this.handleModal(row, this.forms[2])
             break
           case 'remove':
             this.handleRemove(row)
