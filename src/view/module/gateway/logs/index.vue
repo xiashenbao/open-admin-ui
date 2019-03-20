@@ -18,7 +18,7 @@
       <div slot="header">
         <Badge v-if="currentRow.httpStatus==='200'" status="success"/>
         <Badge v-else="" status="error"/>{{currentRow.httpStatus}}
-        {{currentRow.path}}
+        {{currentRow.path}} -      {{currentRow.serviceId}}
       </div>
       <div>
         <h3>请求头
@@ -78,17 +78,22 @@
           },
           {
             title: '终端',
-            width: 250,
+            width: 100,
             render:(h,params) => {
               return   h('div', readUserAgent(params.row.userAgent).terminal)
             }
           },
           {
             title: '浏览器',
-            width: 250,
+            width: 100,
             render:(h,params) => {
               return   h('div', readUserAgent(params.row.userAgent).browser)
             }
+          },
+          {
+            title: '服务名',
+            key: 'serviceId',
+            width: 200
           },
           {
             title: '响应状态',
