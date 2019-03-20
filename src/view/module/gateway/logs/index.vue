@@ -78,14 +78,14 @@
           },
           {
             title: '终端',
-            width: 100,
+            width: 200,
             render:(h,params) => {
               return   h('div', readUserAgent(params.row.userAgent).terminal)
             }
           },
           {
             title: '浏览器',
-            width: 100,
+            width: 200,
             render:(h,params) => {
               return   h('div', readUserAgent(params.row.userAgent).browser)
             }
