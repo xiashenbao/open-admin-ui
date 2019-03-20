@@ -88,7 +88,7 @@ export const removeRole = (roleId) => {
  * @param roleId
  * @param userIds
  */
-export const getRoleUsers = ({roleId}) => {
+export const getRoleUsers = (roleId) => {
   const data = {
     roleId: roleId
   }

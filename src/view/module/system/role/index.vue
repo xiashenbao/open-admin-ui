@@ -37,7 +37,7 @@
     </Card>
     <Modal v-model="modalVisible"
            :title="modalTitle"
-           width="680"
+           width="800"
            @on-cancel="handleReset">
       <Form  v-show="current == 'form1'" ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="角色标识" prop="roleCode">
@@ -85,13 +85,14 @@
         </FormItem>
       </Form>
       <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="绑定接口(选填)" prop="authorities">
+        <FormItem label="添加成员(选填)" prop="authorities">
           <Transfer
             :data="selectUsers"
             :list-style="{width: '300px',height: '500px'}"
             :titles="['选择用户', '已选择用户']"
             :render-format="transferRender"
             :target-keys="formItem.userIds"
+            @on-change="handleTransferChange"
             filterable>
           </Transfer>
         </FormItem>
@@ -245,6 +246,10 @@
           this.modalTitle = data ? '分配权限 - ' + data.roleName : '分配权限'
           this.handleLoadRoleGranted(this.formItem.roleId)
         }
+        if (step === this.forms[2]) {
+          this.modalTitle = data ? '添加成员 - ' + data.roleName : '添加成员'
+          this.handleLoadRoleUsers(this.formItem.roleId)
+        }
         if (!step) {
           step = this.forms[0]
         }
@@ -320,6 +325,26 @@
               }).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('授权成功')
+                  this.handleReset()
+                }
+                this.handleSearch()
+              }).finally(() => {
+                this.saving = false
+              })
+            }
+          })
+        }
+
+        if (this.current === this.forms[2]) {
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              addRoleUsers({
+                roleId: this.formItem.roleId,
+                userIds: this.formItem.userIds
+              }).then(res => {
+                if (res.code === 0) {
+                  this.$Message.success('保存成功')
                   this.handleReset()
                 }
                 this.handleSearch()
@@ -407,8 +432,36 @@
           that.modalVisible = true
         })
       },
+    handleLoadRoleUsers (roleId) {
+      if (!roleId) {
+        return
+      }
+      const that = this
+      const p1 = getAllUsers()
+      const p2 = getRoleUsers(roleId)
+      Promise.all([p1, p2]).then(function (values) {
+        let res1 = values[0]
+        let res2 = values[1]
+        if (res1.code === 0) {
+          res1.data.map(item => {
+            item.key =  item.userId
+            item.label = `${item.userId} - ${item.userName}(${item.nickName})`
+          })
+          that.selectUsers = res1.data
+        }
+        if (res2.code === 0) {
+          res2.data.map(item => {
+            that.formItem.userIds.push(item.userId)
+          })
+        }
+        that.modalVisible = true
+      })
+    },
       transferRender (item) {
         return `<span  title="${item.label}">${item.label}`
+      },
+      handleTransferChange (newTargetKeys, direction, moveKeys) {
+        this.formItem.userIds = newTargetKeys
       },
       handleClick (name, row) {
         switch (name) {
