@@ -6,7 +6,7 @@ import request from '@/libs/request'
 export const getMenus = () => {
   return request({
     url: 'base/menu/all',
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -69,7 +69,7 @@ export const updateMenu = ({menuId, menuCode, menuName, icon, prefix, path, targ
     status: status,
     parentId: parentId,
     priority: priority,
-    menuDesc: menuName
+    menuDesc: menuDesc
   }
   return request({
     url: 'base/menu/update',

@@ -13,10 +13,10 @@ export const refreshGateway = () => {
 }
 
 export const getAccessLogs = ({page,limit}) => {
-  const data = {page:page,limit:limit}
+  const params = {page:page,limit:limit}
   return request({
     url: 'gateway/access/logs',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }

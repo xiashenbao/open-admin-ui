@@ -5,21 +5,35 @@
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;添加接口
+
+
+
+
           </Button>
         </ButtonGroup>
       </div>
-      <Alert show-icon><Tag color="red">@EnableResourceServer</Tag>自动扫描服务下的API接口。&nbsp;&nbsp;已上线接口 <a><strong>{{openApiCount}}</strong></a> 个可授权 </Alert>
+      <Alert show-icon>
+        <Tag color="red">@EnableResourceServer</Tag>
+        自动扫描服务下的API接口。&nbsp;&nbsp;已上线接口 <a><strong>{{openApiCount}}</strong></a> 个可授权
+
+
+
+      </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="apiName" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success" />
-          <Badge v-else="" status="error" />
-           {{row.apiName}}
+          <Badge v-if="row.status===1" status="success"/>
+          <Badge v-else="" status="error"/>
+          {{row.apiName}}
+
+
+
+
         </template>
         <template slot="isAuth" slot-scope="{ row }">
-          <Tag color="green" v-if="row.isAuth===1" >身份认证</Tag>
-          <Tag v-else-if="row.isAuth!==1" >无认证</Tag>
-          <Tag color="green" v-if="row.isOpen===1" >开放接口</Tag>
-          <Tag v-else-if="row.isOpen!==1"  >未开放</Tag>
+          <Tag color="green" v-if="row.isAuth===1">身份认证</Tag>
+          <Tag v-else-if="row.isAuth!==1">无认证</Tag>
+          <Tag color="green" v-if="row.isOpen===1">开放接口</Tag>
+          <Tag v-else-if="row.isOpen!==1">未开放</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
@@ -27,6 +41,10 @@
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
+
+
+
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -35,7 +53,8 @@
           </Dropdown>
         </template>
       </Table>
-      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator
+            show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
@@ -43,69 +62,70 @@
            :title="modalTitle"
            width="680"
            @on-cancel="handleReset">
-          <Alert show-icon v-if="formItem.apiId?true:false">
-            接口信息部分内容,需要在接口定义时修改。
-
-            <Poptip placement="bottom"  title="示例代码" >
-              <a>示例代码</a>
-              <div slot="content">
-                <div v-highlight>
+      <Alert show-icon v-if="formItem.apiId?true:false">
+        接口信息部分内容,需要在接口定义时修改。
+        <Poptip placement="bottom" title="示例代码">
+          <a>示例代码</a>
+          <div slot="content">
+            <div v-highlight>
                 <pre>
                         // 接口介绍
                         @ApiOperation(value = "接口名称", notes = "接口备注")
                         @PostMapping("/testApi")
+                        // 忽略接口,将不再添加或修改次接口
+                        @ApiIgnore
                         // 方法名为接口标识
                         public ResultBody testApi() {
                            return ResultBody.success();
                         }
                 </pre>
-                </div>
-              </div>
-            </Poptip>
-          </Alert>
-          <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
-            <FormItem label="服务名称" prop="serviceId">
-              <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" filterable clearable>
-                <Option v-for="item in selectServiceList"  :value="item.serviceId" >{{ item.serviceName }}</Option>
-              </Select>
-            </FormItem>
-            <FormItem label="接口分类" prop="apiCategory">
-              <Input v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="接口标识" prop="apiCode">
-              <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="接口名称" prop="apiName">
-              <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiName" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="请求地址" prop="path">
-              <Input :disabled="formItem.apiId?true:false" v-model="formItem.path" placeholder="请输入内容"></Input>
-            </FormItem>
-            <FormItem label="优先级">
-              <InputNumber v-model="formItem.priority"></InputNumber>
-            </FormItem>
-            <FormItem label="开放接口">
-              <RadioGroup v-model="formItem.isOpen">
-                <Radio label="0">否</Radio>
-                <Radio label="1">是</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="身份认证">
-              <RadioGroup v-model="formItem.isAuth">
-                <Radio label="0">否</Radio>
-                <Radio label="1">是</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="状态">
-              <RadioGroup v-model="formItem.status">
-                <Radio label="0">禁用</Radio>
-                <Radio label="1">启用</Radio>
-              </RadioGroup>
-            </FormItem>
-            <FormItem label="描述">
-              <Input v-model="formItem.apiDesc" type="textarea" placeholder="请输入内容"></Input>
-            </FormItem>
-          </Form>
+            </div>
+          </div>
+        </Poptip>
+      </Alert>
+      <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="服务名称" prop="serviceId">
+          <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" filterable clearable>
+            <Option v-for="item in selectServiceList" :value="item.serviceId">{{ item.serviceName }}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="接口分类" prop="apiCategory">
+          <Input v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="接口标识" prop="apiCode">
+          <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="接口名称" prop="apiName">
+          <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiName" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="请求地址" prop="path">
+          <Input :disabled="formItem.apiId?true:false" v-model="formItem.path" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem label="优先级">
+          <InputNumber v-model="formItem.priority"></InputNumber>
+        </FormItem>
+        <FormItem label="开放接口">
+          <RadioGroup v-model="formItem.isOpen">
+            <Radio label="0">否</Radio>
+            <Radio label="1">是</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="身份认证">
+          <RadioGroup v-model="formItem.isAuth">
+            <Radio label="0">否</Radio>
+            <Radio label="1">是</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="状态">
+          <RadioGroup v-model="formItem.status">
+            <Radio label="0">禁用</Radio>
+            <Radio label="1">启用</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem label="描述">
+          <Input v-model="formItem.apiDesc" type="textarea" placeholder="请输入内容"></Input>
+        </FormItem>
+      </Form>
       <div slot="footer">
         <Button type="default" @click="handleReset">取消</Button>&nbsp;
         <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
@@ -128,7 +148,7 @@
           callback(new Error('接口标识不能为空'))
         } else if (value !== '' && !reg.test(value)) {
           callback(new Error('只允许字母、数字、点、下划线'))
-        }  else {
+        } else {
           callback()
         }
       }
@@ -142,8 +162,8 @@
           page: 1,
           limit: 10
         },
-        selectServiceList:[{serviceId:'all',serviceName:'所有'}],
-        openApiCount:0,
+        selectServiceList: [{serviceId: '', serviceName: '无'}],
+        openApiCount: 0,
         formItemRules: {
           serviceId: [
             {required: true, message: '所属服务不能为空', trigger: 'blur'}
@@ -152,7 +172,7 @@
             {required: true, message: '接口分类不能为空', trigger: 'blur'}
           ],
           apiCode: [
-            {required: true,validator: validateEn, trigger: 'blur'}
+            {required: true, validator: validateEn, trigger: 'blur'}
           ],
           apiName: [
             {required: true, message: '接口名称不能为空', trigger: 'blur'}
@@ -220,7 +240,7 @@
             title: '操作',
             key: '',
             slot: 'action',
-            fixed:'right',
+            fixed: 'right',
             width: 120
           }
         ],
@@ -230,14 +250,14 @@
     methods: {
       handleModal (data) {
         if (data) {
-          this.modalTitle = '编辑接口 - '+data.apiName
+          this.modalTitle = '编辑接口 - ' + data.apiName
           this.formItem = Object.assign({}, this.formItem, data)
         } else {
           this.modalTitle = '添加接口'
         }
-        this.formItem.status=this.formItem.status+''
-        this.formItem.isOpen=this.formItem.isOpen+''
-        this.formItem.isAuth=this.formItem.isAuth+''
+        this.formItem.status = this.formItem.status + ''
+        this.formItem.isOpen = this.formItem.isOpen + ''
+        this.formItem.isAuth = this.formItem.isAuth + ''
         this.modalVisible = true
       },
       handleReset () {
@@ -271,7 +291,7 @@
                 }
                 this.handleReset()
                 this.handleSearch()
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             } else {
@@ -281,7 +301,7 @@
                 }
                 this.handleReset()
                 this.handleSearch()
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             }
@@ -308,7 +328,7 @@
           this.data = res.data.list
           this.openApiCount = res.extra.openApiCount
           this.pageInfo.total = parseInt(res.data.total)
-        }).finally(() =>{
+        }).finally(() => {
           this.loading = false
         })
       },
@@ -328,8 +348,8 @@
         }
       },
       handleLoadServiceList(){
-        getServiceList().then(res =>{
-          if(res.code===0){
+        getServiceList().then(res => {
+          if (res.code === 0) {
             this.selectServiceList.push(...res.data)
           }
         })

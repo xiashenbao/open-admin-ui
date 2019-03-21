@@ -6,11 +6,11 @@ import request from '@/libs/request'
  * @param limit
  */
 export const getApis = ({page, limit}) => {
-  const data = {page: page, limit: limit}
+  const params = {page: page, limit: limit}
   return request({
     url: 'base/api',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
@@ -18,11 +18,11 @@ export const getApis = ({page, limit}) => {
  * 获取所有接口
  */
 export const getAllApi = (serviceId) => {
-  const data = {serviceId:serviceId}
+  const params = {serviceId: serviceId}
   return request({
     url: 'base/api/all',
-    data:data,
-    method: 'post'
+    params: params,
+    method: 'get'
   })
 }
 

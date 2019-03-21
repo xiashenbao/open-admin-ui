@@ -5,11 +5,11 @@ import request from '@/libs/request'
  * @param menuId
  */
 export const getOperationsByMenu = (menuId) => {
-  const data = {menuId: menuId}
+  const params = {menuId: menuId}
   return request({
     url: 'base/menu/operation',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
@@ -86,13 +86,13 @@ export const addOperationApi = ({operationId, apiIds}) => {
 
 
 export const getOperationApi = (operationId) => {
-  const data = {
+  const params = {
     operationId: operationId
   }
   return request({
     url: 'base/operation/api',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 

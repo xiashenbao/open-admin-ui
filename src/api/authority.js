@@ -10,13 +10,13 @@ import request from '@/libs/request'
  * @param userId
  */
 export const getUserGrantedAuthority = (userId) => {
-  const data = {
+  const params = {
     userId: userId
   }
   return request({
     url: 'base/authority/granted/user',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
@@ -25,13 +25,13 @@ export const getUserGrantedAuthority = (userId) => {
  * @param roleId
  */
 export const getRoleGrantedAuthority = (roleId) => {
-  const data = {
+  const params = {
     roleId: roleId
   }
   return request({
     url: 'base/authority/granted/role',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
@@ -40,13 +40,13 @@ export const getRoleGrantedAuthority = (roleId) => {
  * @param roleId
  */
 export const getAppGrantedAuthority = (appId) => {
-  const data = {
+  const params = {
     appId: appId
   }
   return request({
     url: 'base/authority/granted/app',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 

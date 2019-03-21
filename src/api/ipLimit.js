@@ -6,11 +6,11 @@ import request from '@/libs/request'
  * @param limit
  */
 export const getIpLimits = ({page, limit}) => {
-  const data = {page: page, limit: limit}
+  const params = {page: page, limit: limit}
   return request({
     url: 'gateway/limit/ip',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
@@ -69,13 +69,13 @@ export const removeIpLimit = (policyId) => {
  * @param policyId
  */
 export const getIpLimitApis = (policyId) => {
-  const data = {
+  const params = {
     policyId: policyId
   }
   return request({
     url: 'gateway/limit/ip/api/list',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 

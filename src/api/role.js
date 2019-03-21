@@ -6,11 +6,11 @@ import request from '@/libs/request'
  * @param limit
  */
 export const getRoles = ({page, limit}) => {
-  const data = {page: page, limit: limit}
+  const params = {page: page, limit: limit}
   return request({
     url: 'base/role',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
@@ -20,7 +20,7 @@ export const getRoles = ({page, limit}) => {
 export const getAllRoles = () => {
   return request({
     url: 'base/role/all',
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -89,13 +89,13 @@ export const removeRole = (roleId) => {
  * @param userIds
  */
 export const getRoleUsers = (roleId) => {
-  const data = {
+  const params = {
     roleId: roleId
   }
   return request({
     url: 'base/role/users',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 

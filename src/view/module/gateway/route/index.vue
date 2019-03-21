@@ -102,7 +102,7 @@
           limit: 10
         },
         selectType:'service',
-        selectServiceList:[{serviceId:'all',serviceName:'所有'}],
+        selectServiceList:[{serviceId:'',serviceName:'无'}],
         formItemRules: {
           path: [
             {required: true, message: '路由地址不能为空', trigger: 'blur'}

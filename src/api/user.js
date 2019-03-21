@@ -43,11 +43,11 @@ export const getUserInfo = () => {
  * @param limit
  */
 export const getUsers = ({page, limit}) => {
-  const data = {page: page, limit: limit}
+  const params = {page: page, limit: limit}
   return request({
     url: 'base/user',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
@@ -67,7 +67,7 @@ export const getMyMenuAuthority = () => {
 export const getAllUsers = () => {
   return request({
     url: 'base/user/all',
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -149,12 +149,12 @@ export const addUserRoles = ({userId, grantRoles}) => {
  * @param userId
  */
 export const getUserRoles = (userId) => {
-  const data = {
+  const params = {
     userId: userId
   }
   return request({
     url: 'base/user/roles',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }

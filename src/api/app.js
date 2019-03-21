@@ -6,11 +6,11 @@ import request from '@/libs/request'
  * @param limit
  */
 export const getApps = ({page, limit}) => {
-  const data = {page: page, limit: limit}
+  const params = {page: page, limit: limit}
   return request({
     url: 'base/app',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 

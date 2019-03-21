@@ -6,11 +6,11 @@ import request from '@/libs/request'
  * @param limit
  */
 export const getRoutes = ({page, limit}) => {
-  const data = {page: page, limit: limit}
+  const params = {page: page, limit: limit}
   return request({
     url: 'gateway/route',
-    data,
-    method: 'post'
+    params,
+    method: 'get'
   })
 }
 
