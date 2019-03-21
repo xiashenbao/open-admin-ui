@@ -4,11 +4,12 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;添加
+            <Icon type="search"/>&nbsp;&nbsp;
+            <span>添加</span>
           </Button>
         </ButtonGroup>
-        <Alert show-icon>谨慎添加或修改路由,如果修改不当,将影响正常访问！&nbsp;<a @click="handleRefreshGateway">手动刷新网关</a></Alert>
       </div>
+      <Alert show-icon>谨慎添加或修改路由,如果修改不当,将影响正常访问！&nbsp;<a @click="handleRefreshGateway">手动刷新网关</a></Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="启用"/>
@@ -18,8 +19,7 @@
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">
-              更多
+            <a href="javascript:void(0)">更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -40,19 +40,21 @@
         <FormItem label="路由地址" prop="path">
           <Input v-model="formItem.path" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="路由方式" >
+        <FormItem label="路由方式">
           <Select v-model="selectType">
             <Option value="service" label="服务名称"></Option>
             <Option value="url" label="服务地址"></Option>
           </Select>
         </FormItem>
-        <FormItem v-if="selectType==='service'" label="服务名称" prop="serviceId" :rules="{required: true, message: '服务名称不能为空', trigger: 'blur'}">
+        <FormItem v-if="selectType==='service'" label="服务名称" prop="serviceId"
+                  :rules="{required: true, message: '服务名称不能为空', trigger: 'blur'}">
           <Select v-model="formItem.serviceId">
-            <Option v-for="item in selectServiceList"  :value="item.serviceId" >{{ item.serviceName }}</Option>
+            <Option v-for="item in selectServiceList" :value="item.serviceId">{{ item.serviceName }}</Option>
           </Select>
         </FormItem>
-        <FormItem v-if="selectType==='url'" label="服务地址" prop="url" :rules="{required: true, message: '服务地址不能为空', trigger: 'blur'}">
-          <Input  v-model="formItem.url" placeholder="请输入内容"></Input>
+        <FormItem v-if="selectType==='url'" label="服务地址" prop="url"
+                  :rules="{required: true, message: '服务地址不能为空', trigger: 'blur'}">
+          <Input v-model="formItem.url" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="状态">
           <RadioGroup v-model="formItem.status">
@@ -77,7 +79,7 @@
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="primary"  :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
+        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
       </div>
     </Modal>
@@ -88,6 +90,7 @@
   import {getRoutes, updateRoute, addRoute, removeRoute} from '@/api/route'
   import {getServiceList} from '@/api/data'
   import {refreshGateway} from '@/api/gateway'
+
   export default {
     name: 'GatewayRoute',
     data () {
@@ -101,15 +104,15 @@
           page: 1,
           limit: 10
         },
-        selectType:'service',
-        selectServiceList:[{serviceId:'',serviceName:'无'}],
+        selectType: 'service',
+        selectServiceList: [{serviceId: '', serviceName: '无'}],
         formItemRules: {
           path: [
             {required: true, message: '路由地址不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
-          routeId:'',
+          routeId: '',
           path: '',
           serviceId: '',
           url: '',
@@ -147,7 +150,7 @@
           {
             title: '状态',
             key: 'status',
-            slot:'status',
+            slot: 'status',
             width: 100
           },
           {
@@ -158,7 +161,7 @@
           {
             title: '操作',
             slot: 'action',
-            fixed:'right',
+            fixed: 'right',
             width: 120
           }
         ],
@@ -173,14 +176,14 @@
         } else {
           this.modalTitle = '添加角色'
         }
-        this.formItem.status=this.formItem.status+''
-        this.formItem.stripPrefix=this.formItem.stripPrefix+''
-        this.formItem.retryable=this.formItem.retryable+''
+        this.formItem.status = this.formItem.status + ''
+        this.formItem.stripPrefix = this.formItem.stripPrefix + ''
+        this.formItem.retryable = this.formItem.retryable + ''
         this.modalVisible = true
       },
       handleReset () {
         const newData = {
-          routeId:'',
+          routeId: '',
           path: '',
           serviceId: '',
           url: '',
@@ -260,9 +263,9 @@
             break
         }
       },
-      handleLoadServiceList(){
-        getServiceList().then(res =>{
-          if(res.code===0){
+      handleLoadServiceList () {
+        getServiceList().then(res => {
+          if (res.code === 0) {
             this.selectServiceList.push(...res.data)
           }
         })

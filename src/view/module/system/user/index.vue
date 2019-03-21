@@ -1,13 +1,36 @@
 <template>
   <div>
     <Card shadow>
+
+      <Form ref="searchForm"
+            :model="pageInfo"
+            inline
+            :label-width="80">
+        <FormItem label="登录名" prop="userName">
+          <Input type="text" v-model="pageInfo.userName" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="手机号" prop="mobile">
+          <Input type="text" v-model="pageInfo.mobile" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="邮箱" prop="email">
+          <Input type="text" v-model="pageInfo.email" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
+          <Button @click="handleResetForm('searchForm')">重置</Button>
+        </FormItem>
+      </Form>
+
       <div class="search-con search-con-top">
-        <ButtonGroup >
-          <Button v-show="hasAuthority('operation:systemUserCreate')" class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;添加用户
+        <ButtonGroup>
+          <Button v-show="hasAuthority('operation:systemUserCreate')" type="primary"
+                  @click="handleModal()">
+            <Icon type="search"/>&nbsp;&nbsp;
+            <span>添加</span>
           </Button>
         </ButtonGroup>
       </div>
+
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="正常"/>
@@ -15,10 +38,8 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">
-            编辑</a>&nbsp;
-          <a @click="handleModal(row, forms[1])">
-            分配角色</a>&nbsp;
+          <a @click="handleModal(row)">编辑</a>&nbsp;
+          <a @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               更多
@@ -30,7 +51,8 @@
           </Dropdown>&nbsp;
         </template>
       </Table>
-      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator
+            show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
@@ -85,7 +107,8 @@
       <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="过期时间(选填)" prop="expireTime">
           <Badge v-if="formItem.isExpired" count="授权已过期">
-            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime" placeholder="设置有效期"></DatePicker>
+            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime"
+                        placeholder="设置有效期"></DatePicker>
           </Badge>
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
@@ -103,7 +126,7 @@
             <template slot="operation" slot-scope="scope">
               <CheckboxGroup v-model="formItem.grantOperations">
                 <Checkbox v-for="item in scope.row.operationList" :label="item.authorityId">
-                  <span  :title="item.operationDesc">{{item.operationName}}</span>
+                  <span :title="item.operationDesc">{{item.operationName}}</span>
                 </Checkbox>
               </CheckboxGroup>
             </template>
@@ -174,14 +197,17 @@
         pageInfo: {
           total: 0,
           page: 1,
-          limit: 10
+          limit: 10,
+          userName: '',
+          email: '',
+          mobile: ''
         },
         formItemRules: {
           userType: [
             {required: true, message: '用户类型不能为空', trigger: 'blur'}
           ],
           userName: [
-            {required: true,  message: '用户名不能为空', trigger: 'blur'},
+            {required: true, message: '用户名不能为空', trigger: 'blur'},
             {required: true, validator: validateEn, trigger: 'blur'}
           ],
           password: [
@@ -218,7 +244,7 @@
           grantOperations: [],
           grantMenus: [],
           expireTime: '',
-          isExpired:false
+          isExpired: false
         },
         columns: [
           {
@@ -227,7 +253,7 @@
             align: 'center'
           },
           {
-            title: '登录名称',
+            title: '登录名',
             key: 'userName',
             width: 200
           },
@@ -239,23 +265,73 @@
           {
             title: '邮箱',
             key: 'email',
-            width: 150
+            width: 200
           },
           {
             title: '手机号',
             key: 'mobile',
-            width: 150
+            width: 200
           },
           {
             title: '状态',
             slot: 'status',
             key: 'status',
-            width: 100
+            width: 100,
+            filters: [
+              {
+                label: '禁用',
+                value: 0
+              },
+              {
+                label: '正常',
+                value: 1
+              },
+              {
+                label: '锁定',
+                value: 2
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.status === 0
+              } else if (value === 1) {
+                return row.status === 1
+              }
+              if (value === 2) {
+                return row.status === 2
+              }
+            }
           },
           {
             title: '用户类型',
             key: 'userType',
-            width: 150
+            width: 150,
+            filters: [
+              {
+                label: '系统用户',
+                value: 0
+              },
+              {
+                label: '服务提供商',
+                value: 1
+              },
+              {
+                label: '自研开发者',
+                value: 2
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.userType === 'platform'
+              } else if (value === 1) {
+                return row.userType === 'isp'
+              }
+              if (value === 2) {
+                return row.userType === 'dev'
+              }
+            }
           },
           {
             title: '注册时间',
@@ -265,12 +341,12 @@
           {
             title: '描述',
             key: 'userDesc',
-            width:200
+            width: 150
           },
           {
             title: '操作',
             slot: 'action',
-            fixed:'right',
+            fixed: 'right',
             width: 200
           }
         ],
@@ -310,8 +386,11 @@
           this.modalTitle = data ? '分配特殊权限 - ' + data.userName : '分配特殊权限'
           this.handleLoadUserGranted(this.formItem.userId)
         }
-        this.formItem.status=this.formItem.status+''
+        this.formItem.status = this.formItem.status + ''
         this.current = step
+      },
+      handleResetForm (form) {
+        this.$refs[form].resetFields()
       },
       handleReset () {
         const newData = {
@@ -331,12 +410,12 @@
           grantMenus: [],
           grantOperations: [],
           expireTime: '',
-          isExpired:false
+          isExpired: false
         }
         this.formItem = newData
         //重置验证
         this.forms.map(form => {
-          this.$refs[this.current].resetFields()
+          this.handleResetForm(form)
         })
         this.current = this.forms[0]
         this.formItem.grantMenus = []
@@ -398,7 +477,7 @@
               this.saving = true
               grantUserAuthority({
                 userId: this.formItem.userId,
-                expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern("yyyy-MM-dd HH:mm:ss") : '',
+                expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern('yyyy-MM-dd HH:mm:ss') : '',
                 authorityIds: authorityIds
               }).then(res => {
                 if (res.code === 0) {
@@ -413,16 +492,19 @@
           })
         }
       },
-      handleSearch () {
+      handleSearch (page) {
+        if(page){
+          this.pageInfo.page = page
+        }
         this.loading = true
-        getUsers({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getUsers(this.pageInfo).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {
           this.loading = false
         })
       },
-      getCheckedAuthorities() {
+      getCheckedAuthorities () {
         const menus = this.$refs['tree'].getCheckedProp('authorityId')
         return menus.concat(this.formItem.grantOperations)
       },
@@ -439,19 +521,19 @@
               parentKey: 'parentId',
               startPid: '0'
             }
-            if (res2.code === 0 && res2.data && res2.data.length>0) {
+            if (res2.code === 0 && res2.data && res2.data.length > 0) {
               res2.data.map(item => {
                 // 菜单权限
-                if (item.authority.indexOf("menu:") != -1) {
+                if (item.authority.indexOf('menu:') != -1) {
                   that.formItem.grantMenus.push(item.authorityId)
                 }
                 // 操作权限
-                if (item.authority.indexOf("operation:") != -1) {
+                if (item.authority.indexOf('operation:') != -1) {
                   that.formItem.grantOperations.push(item.authorityId)
                 }
               })
               // 时间
-              if(res2.data.length>0){
+              if (res2.data.length > 0) {
                 that.formItem.expireTime = res2.data[0].expireTime
                 that.formItem.isExpired = res2.data[0].isExpired
               }
@@ -468,7 +550,9 @@
         })
       },
       handleLoadRoles (userId) {
-         if(!userId){return}
+        if (!userId) {
+          return
+        }
         const that = this
         const p1 = getAllRoles()
         const p2 = getUserRoles(userId)

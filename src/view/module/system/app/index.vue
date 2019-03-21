@@ -4,8 +4,8 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;添加应用
-
+            <Icon type="search"/>&nbsp;&nbsp;
+            <span>添加</span>
           </Button>
         </ButtonGroup>
       </div>
@@ -43,7 +43,8 @@
           </Dropdown>
         </template>
       </Table>
-      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator
+            show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
@@ -198,7 +199,8 @@
       <Form ref="form3" v-show="current=='form3'" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="过期时间(选填)" prop="expireTime">
           <Badge v-if="formItem.isExpired" count="授权已过期">
-            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime" placeholder="设置有效期"></DatePicker>
+            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime"
+                        placeholder="设置有效期"></DatePicker>
           </Badge>
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
@@ -215,7 +217,7 @@
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="primary"  :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
+        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
       </div>
     </Modal>
@@ -293,7 +295,7 @@
           ],
           website: [
             {required: true, message: '官网不能为空', trigger: 'blur'},
-            {type:'url', message: '请输入有效网址', trigger: 'blur'}
+            {type: 'url', message: '请输入有效网址', trigger: 'blur'}
           ],
           appType: [
             {required: true, message: '应用类型不能为空', trigger: 'blur'}
@@ -346,7 +348,7 @@
           accessTokenValidity: 43200,
           refreshTokenValidity: 2592000,
           expireTime: '',
-          isExpired:false
+          isExpired: false
         },
         columns: [
           {
@@ -357,12 +359,12 @@
           {
             title: '应用名称',
             key: 'appName',
-            width:200
+            width: 200
           },
           {
             title: '英文名称',
             key: 'appNameEn',
-            width:200
+            width: 200
           },
           {
             title: 'AppId',
@@ -372,36 +374,36 @@
           {
             title: '应用类型',
             slot: 'appType',
-            width:200
+            width: 200
           },
           {
             title: '开发者类型',
             key: 'userType',
             slot: 'userType',
-            width:200
+            width: 200
           },
           {
             title: '状态',
             slot: 'status',
             sortable: true,
             key: 'status',
-            width:100
+            width: 100
           },
           {
             title: '描述',
             key: 'appDesc',
-            width:200
+            width: 200
           },
           {
             title: '最后修改时间',
             sortable: true,
             key: 'updateTime',
-            width:180
+            width: 180
           },
           {
             title: '操作',
             slot: 'action',
-            fixed:'right',
+            fixed: 'right',
             width: 120
           }
         ],
@@ -428,7 +430,7 @@
           this.modalTitle = data ? '应用功能授权 - ' + data.appName : '应用功能授权'
           this.handleLoadAppGranted(this.formItem.appId)
         }
-        this.formItem.status=this.formItem.status+''
+        this.formItem.status = this.formItem.status + ''
         this.current = step
       },
       handleReset () {
@@ -454,7 +456,7 @@
           accessTokenValidity: 43200,
           refreshTokenValidity: 2592000,
           expireTime: '',
-          isExpired:false
+          isExpired: false
         }
         this.formItem = newData
         this.forms.map(form => {
@@ -518,7 +520,7 @@
               this.saving = true
               grantAppAuthority({
                 appId: this.formItem.appId,
-                expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern("yyyy-MM-dd HH:mm:ss") : '',
+                expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern('yyyy-MM-dd HH:mm:ss') : '',
                 authorityIds: this.formItem.authorities
               }).then(res => {
                 if (res.code === 0) {
@@ -621,7 +623,7 @@
           let res2 = values[1]
           if (res1.code === 0) {
             res1.data.map(item => {
-              item.key =  item.authorityId
+              item.key = item.authorityId
               item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
             })
             that.selectApis = res1.data
@@ -631,7 +633,7 @@
               that.formItem.authorities.push(item.authorityId)
             })
             // 时间
-            if(res2.data.length>0){
+            if (res2.data.length > 0) {
               that.formItem.expireTime = res2.data[0].expireTime
               that.formItem.isExpired = res2.data[0].isExpired
             }
@@ -693,13 +695,13 @@
       }
       ,
       handleMaxSize (file) {
-        this.$Message.warning( '图片大小不能超过2M.')
+        this.$Message.warning('图片大小不能超过2M.')
       }
       ,
       handleBeforeUpload () {
         const check = this.uploadList.length < 1
         if (!check) {
-          this.$Message.warning( '只能上传一张.')
+          this.$Message.warning('只能上传一张.')
         }
         return check
       },

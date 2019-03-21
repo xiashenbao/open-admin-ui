@@ -4,30 +4,20 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;添加接口
-
-
-
-
+            <Icon type="search"/>&nbsp;&nbsp;
+            <span>添加</span>
           </Button>
         </ButtonGroup>
       </div>
       <Alert show-icon>
         <Tag color="red">@EnableResourceServer</Tag>
-        自动扫描服务下的API接口。&nbsp;&nbsp;已上线接口 <a><strong>{{openApiCount}}</strong></a> 个可授权
-
-
-
+        <span>自动扫描服务下的API接口。&nbsp;&nbsp;已上线接口 <a><strong>{{openApiCount}}</strong></a> 个可授权</span>
       </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="apiName" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success"/>
           <Badge v-else="" status="error"/>
-          {{row.apiName}}
-
-
-
-
+          <span>{{row.apiName}}</span>
         </template>
         <template slot="isAuth" slot-scope="{ row }">
           <Tag color="green" v-if="row.isAuth===1">身份认证</Tag>
@@ -39,12 +29,7 @@
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">
-              更多
-
-
-
-
+            <a href="javascript:void(0)">更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -347,7 +332,7 @@
             break
         }
       },
-      handleLoadServiceList(){
+      handleLoadServiceList () {
         getServiceList().then(res => {
           if (res.code === 0) {
             this.selectServiceList.push(...res.data)

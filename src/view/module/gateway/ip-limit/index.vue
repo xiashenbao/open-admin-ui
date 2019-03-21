@@ -4,7 +4,8 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;添加
+            <Icon type="search"/>&nbsp;&nbsp;
+            <span>添加</span>
           </Button>
         </ButtonGroup>
       </div>
@@ -106,7 +107,7 @@
             {required: true, message: '策略类型不能为空', trigger: 'blur'}
           ],
           ipAddress: [
-            {required: true,message: 'Ip地址不能为空',  trigger: 'blur'}
+            {required: true, message: 'Ip地址不能为空', trigger: 'blur'}
           ]
         },
         formItem: {

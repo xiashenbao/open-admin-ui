@@ -1,6 +1,6 @@
 <template >
 
-  <Layout style="height: 100%">
+  <Layout style="height: 100%" class="skin-blue">
     <Layout v-if="layout === 'topeee'" class="main-layout-top">
       <Header class="main-layout-header">
         <div class="main-layout-logo">
@@ -49,7 +49,7 @@
               <fullscreen :screenWidth="screenWidth" v-model="isFullscreen"/>
             </li>
             <li>
-              <Icon @click.native="value1 = true" type="md-settings" :size="23"></Icon>
+              <Icon @click.native="value1 = true" type="md-settings" :size="18"></Icon>
             </li>
             <li>
               <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader"  :has-read="hasReadErrorPage" :count="errorCount"></error-store>
@@ -58,7 +58,7 @@
               <language v-if="$config.useI18n" @on-lang-change="setLocal" style="margin-right: 10px;" :lang="local"/>
             </li>
             <li>
-              <user :user-avatar="userAvatar" :user-name="userName"/>
+              <user :user-avatar="userAvatar" :nick-name="nickName" :user-name="userName"/>
             </li>
           </ul>
         </Header>
@@ -160,8 +160,12 @@
         return this.$store.state.user.avatarImgPath
       },
       userName () {
-        return this.$store.state.user.nickName
+        return this.$store.state.user.userName
       },
+      nickName(){
+        return this.$store.state.user.nickName
+      }
+      ,
       cacheList () {
         return this.tagNavList.length ? this.tagNavList.filter(item => !(item.meta && item.meta.notCache)).map(item => item.name) : []
       },

@@ -1,29 +1,30 @@
 <template>
   <div>
     <Card shadow>
-    <Table :columns="columns" :data="data" :loading="loading">
-      <template slot="httpStatus" slot-scope="{ row }">
-        <Badge v-if="row.httpStatus==='200'" status="success"/>
-        <Badge v-else="" status="error"/>{{row.httpStatus}}
-      </template>
-      <template  slot="detail" slot-scope="{ row }">
-        <a @click="openDrawer(row)">详情</a>
-      </template>
-    </Table>
-    <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
-          show-total
-          @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
+      <Table :columns="columns" :data="data" :loading="loading">
+        <template slot="httpStatus" slot-scope="{ row }">
+          <Badge v-if="row.httpStatus==='200'" status="success"/>
+          <Badge v-else="" status="error"/>
+          <span>{{row.httpStatus}}</span>
+        </template>
+        <template slot="detail" slot-scope="{ row }">
+          <a @click="openDrawer(row)">详情</a>
+        </template>
+      </Table>
+      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator
+            show-sizer
+            show-total
+            @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
     <Drawer width="30" :closable="false" v-model="drawer">
       <div slot="header">
         <Badge v-if="currentRow.httpStatus==='200'" status="success"/>
-        <Badge v-else="" status="error"/>{{currentRow.httpStatus}}
-        {{currentRow.path}} -      {{currentRow.serviceId}}
+        <Badge v-else="" status="error"/>
+        {{currentRow.httpStatus}}
+        {{currentRow.path}} - {{currentRow.serviceId}}
       </div>
       <div>
-        <h3>请求头
-
-        </h3>
+        <h3>请求头</h3>
         <pre>
              {{ currentRow.headers ?  JSON.stringify(JSON.parse(currentRow.headers), null, 2):''}}
         </pre>
@@ -43,12 +44,13 @@
 <script>
   import {getAccessLogs} from '@/api/gateway'
   import {readUserAgent} from '@/libs/util'
+
   export default {
     name: 'GatewayAccessLog',
     data () {
       return {
-        drawer:false,
-        currentRow:{},
+        drawer: false,
+        currentRow: {},
         loading: false,
         pageInfo: {
           total: 0,
@@ -79,15 +81,15 @@
           {
             title: '终端',
             width: 200,
-            render:(h,params) => {
-              return   h('div', readUserAgent(params.row.userAgent).terminal)
+            render: (h, params) => {
+              return h('div', readUserAgent(params.row.userAgent).terminal)
             }
           },
           {
             title: '浏览器',
             width: 200,
-            render:(h,params) => {
-              return   h('div', readUserAgent(params.row.userAgent).browser)
+            render: (h, params) => {
+              return h('div', readUserAgent(params.row.userAgent).browser)
             }
           },
           {
@@ -104,8 +106,8 @@
           {
             title: '耗时',
             key: 'useTime',
-            render:(h,params) => {
-              return   h('div',( params.row.useTime?params.row.useTime:0)+' ms')
+            render: (h, params) => {
+              return h('div', (params.row.useTime ? params.row.useTime : 0) + ' ms')
             },
             width: 100
           },
@@ -117,7 +119,7 @@
           {
             title: '详情',
             slot: 'detail',
-            fixed:'right',
+            fixed: 'right',
             width: 120
           }
         ],
@@ -125,7 +127,7 @@
       }
     },
     methods: {
-      openDrawer(data){
+      openDrawer (data) {
         this.currentRow = data
         this.drawer = true
       },
@@ -134,15 +136,15 @@
         getAccessLogs({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
-        }).finally(() =>{
+        }).finally(() => {
           this.loading = false
         })
       },
-      handlePage(current){
-        this.pageInfo.page = current;
+      handlePage (current) {
+        this.pageInfo.page = current
         this.handleSearch()
       },
-      handlePageSize(size){
+      handlePageSize (size) {
         this.pageInfo.limit = size
         this.handleSearch()
       }

@@ -4,8 +4,8 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;添加角色
-
+            <Icon type="search"/>&nbsp;&nbsp;
+            <span>添加</span>
           </Button>
         </ButtonGroup>
       </div>
@@ -15,13 +15,10 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">
-            编辑</a>&nbsp;
-          <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">
-            分配权限</a>&nbsp;
+          <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">编辑</a>&nbsp;
+          <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配权限</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">
-              更多
+            <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">更多
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -31,7 +28,8 @@
           </Dropdown>&nbsp;
         </template>
       </Table>
-      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
+      <Page transfer :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator
+            show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
@@ -39,7 +37,7 @@
            :title="modalTitle"
            width="800"
            @on-cancel="handleReset">
-      <Form  v-show="current == 'form1'" ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
+      <Form v-show="current == 'form1'" ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="角色标识" prop="roleCode">
           <Input v-model="formItem.roleCode" placeholder="请输入内容"></Input>
         </FormItem>
@@ -59,7 +57,8 @@
       <Form v-show="current == 'form2'" ref="form2" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="过期时间(选填)" prop="expireTime">
           <Badge v-if="formItem.isExpired" count="授权已过期">
-            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime" placeholder="设置有效期"></DatePicker>
+            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime"
+                        placeholder="设置有效期"></DatePicker>
           </Badge>
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
@@ -98,7 +97,7 @@
         </FormItem>
       </Form>
       <div slot="footer">
-        <Button type="primary"  :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
+        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
       </div>
     </Modal>
@@ -106,7 +105,7 @@
 </template>
 
 <script>
-  import {getRoles, updateRole, addRole, removeRole,getRoleUsers,addRoleUsers} from '@/api/role'
+  import {getRoles, updateRole, addRole, removeRole, getRoleUsers, addRoleUsers} from '@/api/role'
   import {getAllUsers} from '@/api/user'
   import {
     getMenuAuthorityList,
@@ -129,7 +128,7 @@
         }
       }
       return {
-        titles: ["选择接口", "已选择接口"],
+        titles: ['选择接口', '已选择接口'],
         listStyle: {
           width: '240px',
           height: '500px'
@@ -146,7 +145,7 @@
         ],
         selectApis: [],
         selectMenus: [],
-        selectUsers:[],
+        selectUsers: [],
         pageInfo: {
           total: 0,
           page: 1,
@@ -154,7 +153,7 @@
         },
         formItemRules: {
           roleCode: [
-            {required: true,validator: validateEn, trigger: 'blur'}
+            {required: true, validator: validateEn, trigger: 'blur'}
           ],
           roleName: [
             {required: true, message: '角色名称不能为空', trigger: 'blur'}
@@ -172,8 +171,8 @@
           grantMenus: [],
           grantOperations: [],
           expireTime: '',
-          isExpired:false,
-          userIds:[]
+          isExpired: false,
+          userIds: []
         },
         columns: [
           {
@@ -200,7 +199,7 @@
           {
             title: '描述',
             key: 'roleDesc',
-            width:450
+            width: 450
           },
           {
             title: '最后修改时间',
@@ -210,7 +209,7 @@
           {
             title: '操作',
             slot: 'action',
-            fixed:'right',
+            fixed: 'right',
             width: 200
           }
         ],
@@ -253,7 +252,7 @@
         if (!step) {
           step = this.forms[0]
         }
-        this.formItem.status=this.formItem.status+''
+        this.formItem.status = this.formItem.status + ''
         this.current = step
       },
       handleReset () {
@@ -269,8 +268,8 @@
           grantMenus: [],
           grantOperations: [],
           expireTime: '',
-          isExpired:false,
-          userIds:[]
+          isExpired: false,
+          userIds: []
         }
         this.formItem = newData
         //重置验证
@@ -320,7 +319,7 @@
               this.saving = true
               grantRoleAuthority({
                 roleId: this.formItem.roleId,
-                expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern("yyyy-MM-dd HH:mm:ss") : '',
+                expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern('yyyy-MM-dd HH:mm:ss') : '',
                 authorityIds: authorityIds
               }).then(res => {
                 if (res.code === 0) {
@@ -386,12 +385,14 @@
           }
         })
       },
-      getCheckedAuthorities() {
+      getCheckedAuthorities () {
         const menus = this.$refs['tree'].getCheckedProp('authorityId')
         return menus.concat(this.formItem.grantOperations)
       },
       handleLoadRoleGranted (roleId) {
-        if(!roleId){return}
+        if (!roleId) {
+          return
+        }
         const that = this
         const p1 = getMenuAuthorityList()
         const p2 = getRoleGrantedAuthority(roleId)
@@ -404,19 +405,19 @@
               parentKey: 'parentId',
               startPid: '0'
             }
-            if (res2.code === 0 && res2.data && res2.data.length>0) {
+            if (res2.code === 0 && res2.data && res2.data.length > 0) {
               res2.data.map(item => {
                 // 菜单权限
-                if (item.authority.indexOf("menu:") != -1) {
+                if (item.authority.indexOf('menu:') != -1) {
                   that.formItem.grantMenus.push(item.authorityId)
                 }
                 // 操作权限
-                if (item.authority.indexOf("operation:") != -1) {
+                if (item.authority.indexOf('operation:') != -1) {
                   that.formItem.grantOperations.push(item.authorityId)
                 }
               })
               // 时间
-              if(res2.data.length>0){
+              if (res2.data.length > 0) {
                 that.formItem.expireTime = res2.data[0].expireTime
                 that.formItem.isExpired = res2.data[0].isExpired
               }
@@ -432,31 +433,31 @@
           that.modalVisible = true
         })
       },
-    handleLoadRoleUsers (roleId) {
-      if (!roleId) {
-        return
-      }
-      const that = this
-      const p1 = getAllUsers()
-      const p2 = getRoleUsers(roleId)
-      Promise.all([p1, p2]).then(function (values) {
-        let res1 = values[0]
-        let res2 = values[1]
-        if (res1.code === 0) {
-          res1.data.map(item => {
-            item.key =  item.userId
-            item.label = `${item.userId} - ${item.userName}(${item.nickName})`
-          })
-          that.selectUsers = res1.data
+      handleLoadRoleUsers (roleId) {
+        if (!roleId) {
+          return
         }
-        if (res2.code === 0) {
-          res2.data.map(item => {
-            that.formItem.userIds.push(item.userId)
-          })
-        }
-        that.modalVisible = true
-      })
-    },
+        const that = this
+        const p1 = getAllUsers()
+        const p2 = getRoleUsers(roleId)
+        Promise.all([p1, p2]).then(function (values) {
+          let res1 = values[0]
+          let res2 = values[1]
+          if (res1.code === 0) {
+            res1.data.map(item => {
+              item.key = item.userId
+              item.label = `${item.userId} - ${item.userName}(${item.nickName})`
+            })
+            that.selectUsers = res1.data
+          }
+          if (res2.code === 0) {
+            res2.data.map(item => {
+              that.formItem.userIds.push(item.userId)
+            })
+          }
+          that.modalVisible = true
+        })
+      },
       transferRender (item) {
         return `<span  title="${item.label}">${item.label}`
       },

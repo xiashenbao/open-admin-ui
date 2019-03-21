@@ -42,8 +42,8 @@ export const getUserInfo = () => {
  * @param page
  * @param limit
  */
-export const getUsers = ({page, limit}) => {
-  const params = {page: page, limit: limit}
+export const getUsers = ({page, limit,userName,mobile,email}) => {
+  const params = {page: page, limit: limit,userName:userName,mobile:mobile,email:email}
   return request({
     url: 'base/user',
     params,

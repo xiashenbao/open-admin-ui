@@ -1,8 +1,8 @@
 <template>
   <div>
-      <Row :gutter="8">
-        <Col :xs="8" :sm="8" :md="8" :lg="6">
-          <Card shadow>
+    <Row :gutter="8">
+      <Col :xs="8" :sm="8" :md="8" :lg="6">
+        <Card shadow>
           <tree-table max-height="780"
                       expand-key="menuName"
                       @radio-click="rowClick"
@@ -13,16 +13,15 @@
                       :columns="columns"
                       :data="data">
             <template slot="status" slot-scope="scope">
-              <Badge v-if="scope.row.status===1" status="success" />
-              <Badge v-else="" status="error" />
-              <Icon :type="scope.row.icon" size="20" />
+              <Badge v-if="scope.row.status===1" status="success"/>
+              <Badge v-else="" status="error"/>
+              <Icon :type="scope.row.icon" size="20"/>
             </template>
           </tree-table>
-          </Card>
-        </Col>
-
-        <Col :xs="16" :sm="16" :md="16" :lg="12">
-          <Card shadow>
+        </Card>
+      </Col>
+      <Col :xs="16" :sm="16" :md="16" :lg="12">
+        <Card shadow>
           <div class="search-con search-con-top">
             <ButtonGroup>
               <Button type="primary" @click="setEnabled(true)">添加</Button>
@@ -35,7 +34,6 @@
               @on-ok="handleRemove">
               确定删除,菜单资源【{{formItem.menuName}}】吗?{{formItem.children && formItem.children.length > 0 ?
               '存在子菜单,将一起删除.是否继续?' : ''}}
-
             </Modal>
           </div>
           <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
@@ -52,7 +50,7 @@
             <FormItem label="菜单名称" prop="menuName">
               <Input :disabled="disabled" v-model="formItem.menuName" placeholder="请输入内容"></Input>
             </FormItem>
-            <FormItem  label="请求地址" prop="path">
+            <FormItem label="请求地址" prop="path">
               <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
                 <Select :disabled="disabled" v-model="formItem.prefix" slot="prepend" style="width: 80px">
                   <Option value="/">/</Option>
@@ -67,26 +65,25 @@
             </FormItem>
             <FormItem label="图标">
               <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容">
-                <Icon size="20" :type="formItem.icon" slot="prepend" />
-                  <Poptip  width="600" slot="append" placement="left">
-                    <Button :disabled="disabled" icon="ios-search"></Button>
-                    <div slot="content">
-                      <ul class="icons">
-                        <li class="icons-item"  :title="item" @click="onIconClick(item)" v-for="item in selectIcons">
-                          <Icon :type="item" size="28" />
-                          <p>{{item}}</p>
-                        </li>
-                      </ul>
-                    </div>
-                  </Poptip>
+                <Icon size="20" :type="formItem.icon" slot="prepend"/>
+                <Poptip width="600" slot="append" placement="left">
+                  <Button :disabled="disabled" icon="ios-search"></Button>
+                  <div slot="content">
+                    <ul class="icons">
+                      <li class="icons-item" :title="item" @click="onIconClick(item)" v-for="item in selectIcons">
+                        <Icon :type="item" size="28"/>
+                        <p>{{item}}</p>
+                      </li>
+                    </ul>
+                  </div>
+                </Poptip>
               </Input>
-
             </FormItem>
             <FormItem label="优先级">
               <InputNumber :disabled="disabled" v-model="formItem.priority"></InputNumber>
             </FormItem>
             <FormItem label="状态">
-              <RadioGroup  v-model="formItem.status">
+              <RadioGroup v-model="formItem.status">
                 <Radio :disabled="disabled" label="0">禁用</Radio>
                 <Radio :disabled="disabled" label="1">启用</Radio>
               </RadioGroup>
@@ -99,14 +96,14 @@
               <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
             </FormItem>
           </Form>
-          </Card>
-        </Col>
-        <Col :xs="16" :sm="16" :md="16" :lg="6">
-          <Card shadow>
+        </Card>
+      </Col>
+      <Col :xs="16" :sm="16" :md="16" :lg="6">
+        <Card shadow>
           <menu-operation :value="formItem"></menu-operation>
-          </Card>
-        </Col>
-      </Row>
+        </Card>
+      </Col>
+    </Row>
   </div>
 </template>
 
@@ -128,7 +125,7 @@
           callback(new Error('菜单标识不能为空'))
         } else if (value !== '' && !reg.test(value)) {
           callback(new Error('只允许字母、数字、下划线'))
-        }  else {
+        } else {
           callback()
         }
       }
@@ -136,8 +133,8 @@
         confirmModal: false,
         disabled: true,
         saving: false,
-        visible:false,
-        selectIcons:icons,
+        visible: false,
+        selectIcons: icons,
         selectTreeData: [{
           menuId: 0,
           menuName: '无'
@@ -147,7 +144,7 @@
             {required: true, message: '上级菜单', trigger: 'blur'}
           ],
           menuCode: [
-            {required: true,validator: validateEn, trigger: 'blur'}
+            {required: true, validator: validateEn, trigger: 'blur'}
           ],
           menuName: [
             {required: true, message: '菜单名称不能为空', trigger: 'blur'}
@@ -202,10 +199,11 @@
       },
       rowClick (data) {
         this.disabled = true
+        this.handleReset()
         if (data) {
           this.formItem = Object.assign({}, data.row)
         }
-        this.formItem.status=this.formItem.status+''
+        this.formItem.status = this.formItem.status + ''
       },
       handleReset () {
         const newData = {
@@ -236,7 +234,7 @@
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             } else {
@@ -246,7 +244,7 @@
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             }
@@ -262,7 +260,7 @@
           }
         })
       },
-      onIconClick(item){
+      onIconClick (item) {
         this.formItem.icon = item
       },
       handleSearch () {
@@ -283,13 +281,13 @@
   }
 </script>
 <style>
-  .icons{
+  .icons {
     overflow: auto;
     zoom: 1;
     height: 300px;
   }
 
-  .icons-item{
+  .icons-item {
     float: left;
     margin: 6px;
     width: 60px;
@@ -301,7 +299,8 @@
     position: relative;
   }
 
-  .icons-item p{
-    word-break:break-all;  overflow:hidden;
+  .icons-item p {
+    word-break: break-all;
+    overflow: hidden;
   }
 </style>

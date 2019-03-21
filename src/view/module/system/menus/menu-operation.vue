@@ -3,15 +3,16 @@
     <div class="search-con search-con-top">
       <ButtonGroup>
         <Button :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="handleModal()">
-          <Icon type="search"/>&nbsp;&nbsp;添加操作
+          <Icon type="search"/>&nbsp;&nbsp;
+          <span>添加操作</span>
         </Button>
       </ButtonGroup>
     </div>
     <Table :columns="columns" :data="data" :loading="loading">
       <template slot="status" slot-scope="{ row }">
         <Badge v-if="row.status===1" status="success"/>
-        <Badge v-else="" status="error" />
-        {{row.operationName}}
+        <Badge v-else="" status="error"/>
+        <span>{{row.operationName}}</span>
       </template>
       <template slot="operation" slot-scope="{ row }">
         <a @click="handleModal(row)">编辑</a> &nbsp;
@@ -51,7 +52,6 @@
           <Input v-model="formItem.operationDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
-
       <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="绑定接口(选填)" prop="authorities">
           <Transfer
@@ -74,7 +74,14 @@
 </template>
 
 <script>
-  import {getOperationsByMenu, updateOperation, addOperation, removeOperation,addOperationApi,getOperationApi} from '@/api/operation'
+  import {
+    getOperationsByMenu,
+    updateOperation,
+    addOperation,
+    removeOperation,
+    addOperationApi,
+    getOperationApi
+  } from '@/api/operation'
   import {getAllApi} from '@/api/api'
 
   export default {
@@ -89,7 +96,7 @@
           callback(new Error('操作标识不能为空'))
         } else if (value !== '' && !reg.test(value)) {
           callback(new Error('只允许字母、数字、下划线'))
-        }  else {
+        } else {
           callback()
         }
       }
@@ -104,10 +111,10 @@
         ],
         modalTitle: '',
         confirmModal: false,
-        selectApis:[],
+        selectApis: [],
         formItemRules: {
           operationCode: [
-            {required: true,validator: validateEn, message: '操作编码不能为空', trigger: 'blur'}
+            {required: true, validator: validateEn, message: '操作编码不能为空', trigger: 'blur'}
           ],
           operationName: [
             {required: true, message: '操作名称不能为空', trigger: 'blur'}
@@ -117,7 +124,7 @@
           operationId: '',
           operationCode: '',
           operationName: '',
-          apiIds:[],
+          apiIds: [],
           status: 1,
           menuId: '',
           priority: 0,
@@ -127,7 +134,7 @@
           {
             title: '操作名称',
             slot: 'status',
-             width: 150
+            width: 150
           },
           {
             title: '操作编码',
@@ -137,7 +144,7 @@
           {
             title: '操作',
             slot: 'operation',
-            fixed:'right',
+            fixed: 'right',
             width: 150
           }
         ],
@@ -153,22 +160,22 @@
           step = this.forms[0]
         }
         if (step === this.forms[0]) {
-          this.modalTitle = data ? '编辑操作 - '+this.value.menuName + ' > '  + data.operationName : '添加操作 - '+this.value.menuName
+          this.modalTitle = data ? '编辑操作 - ' + this.value.menuName + ' > ' + data.operationName : '添加操作 - ' + this.value.menuName
           this.modalVisible = true
         }
         if (step === this.forms[1]) {
-          this.modalTitle = data ? '绑定API - '+this.value.menuName + ' > ' + data.operationName : '绑定API'
+          this.modalTitle = data ? '绑定API - ' + this.value.menuName + ' > ' + data.operationName : '绑定API'
           this.handleLoadOperationApi(this.formItem.operationId)
         }
         this.current = step
-        this.formItem.status=this.formItem.status+''
+        this.formItem.status = this.formItem.status + ''
       },
       handleReset () {
         const newData = {
           operationId: '',
           operationCode: '',
           operationName: '',
-          apiIds:[],
+          apiIds: [],
           status: 1,
           menuId: '',
           priority: 0,
@@ -195,7 +202,7 @@
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
-                }).finally(() =>{
+                }).finally(() => {
                   this.saving = false
                 })
               } else {
@@ -205,7 +212,7 @@
                   if (res.code === 0) {
                     this.$Message.success('保存成功')
                   }
-                }).finally(() =>{
+                }).finally(() => {
                   this.saving = false
                 })
               }
@@ -216,13 +223,13 @@
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              addOperationApi({operationId:this.formItem.operationId,apiIds:this.formItem.apiIds}).then(res => {
+              addOperationApi({operationId: this.formItem.operationId, apiIds: this.formItem.apiIds}).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
                   this.$Message.success('绑定成功')
                 }
-              }).finally(() =>{
+              }).finally(() => {
                 this.saving = false
               })
             }
@@ -234,7 +241,7 @@
         if (!this.value) {
           return
         }
-        this.formItem.menuId = this.value.menuId;
+        this.formItem.menuId = this.value.menuId
         this.loading = true
         getOperationsByMenu(this.formItem.menuId).then(res => {
           this.data = res.data
@@ -252,7 +259,9 @@
         })
       },
       handleLoadOperationApi (operationId) {
-        if(!operationId){return}
+        if (!operationId) {
+          return
+        }
         const that = this
         const p1 = getAllApi()
         const p2 = getOperationApi(operationId)
@@ -261,31 +270,31 @@
           let res2 = values[1]
           if (res1.code === 0) {
             res1.data.map(item => {
-              item.key =  item.apiId
+              item.key = item.apiId
               item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
             })
-            that.selectApis = res1.data;
+            that.selectApis = res1.data
           }
           if (res2.code === 0) {
-              const  result = []
-              res2.data.map(item =>{
-                result.push(item.apiId);
-              })
-              that.formItem.apiIds = result;
+            const result = []
+            res2.data.map(item => {
+              result.push(item.apiId)
+            })
+            that.formItem.apiIds = result
           }
           that.modalVisible = true
         })
       },
-    transferRender (item) {
-      return `<span  title="${item.label}">${item.label}`
-    },
-    handleTransferChange (newTargetKeys, direction, moveKeys) {
-      if (newTargetKeys.indexOf('1') != -1) {
-        this.formItem.apiIds = ['1']
-      } else {
-        this.formItem.apiIds = newTargetKeys
-      }
-    },
+      transferRender (item) {
+        return `<span  title="${item.label}">${item.label}`
+      },
+      handleTransferChange (newTargetKeys, direction, moveKeys) {
+        if (newTargetKeys.indexOf('1') != -1) {
+          this.formItem.apiIds = ['1']
+        } else {
+          this.formItem.apiIds = newTargetKeys
+        }
+      },
     },
     watch: {
       value (val) {
