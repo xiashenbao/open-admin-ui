@@ -49,9 +49,6 @@
               <fullscreen :screenWidth="screenWidth" v-model="isFullscreen"/>
             </li>
             <li>
-              <Icon @click.native="value1 = true" type="md-settings" :size="18"></Icon>
-            </li>
-            <li>
               <error-store v-if="$config.plugin['error-store'] && $config.plugin['error-store'].showInHeader"  :has-read="hasReadErrorPage" :count="errorCount"></error-store>
             </li>
             <li>
@@ -59,6 +56,9 @@
             </li>
             <li>
               <user :user-avatar="userAvatar" :nick-name="nickName" :user-name="userName"/>
+            </li>
+            <li>
+              <Icon @click.native="value1 = true" type="md-settings" :size="18"></Icon>
             </li>
           </ul>
         </Header>
