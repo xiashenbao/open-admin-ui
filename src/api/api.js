@@ -5,8 +5,8 @@ import request from '@/libs/request'
  * @param page
  * @param limit
  */
-export const getApis = ({page, limit}) => {
-  const params = {page: page, limit: limit}
+export const getApis = ({page, limit, path, apiName, apiCode, serviceId}) => {
+  const params = {page: page, limit: limit, path: path, apiName: apiName, apiCode: apiCode, serviceId: serviceId}
   return request({
     url: 'base/api',
     params,

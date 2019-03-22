@@ -1,6 +1,18 @@
 <template>
   <div>
     <Card shadow>
+      <Form ref="searchForm"
+            :model="pageInfo"
+            inline
+            :label-width="80">
+        <FormItem label="策略名称" prop="policyName">
+          <Input type="text" v-model="pageInfo.policyName" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
+          <Button @click="handleResetForm('searchForm')">重置</Button>
+        </FormItem>
+      </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
@@ -91,7 +103,8 @@
         pageInfo: {
           total: 0,
           page: 1,
-          limit: 10
+          limit: 10,
+          policyName:''
         },
         current: 'form1',
         forms: [
@@ -126,8 +139,27 @@
           {
             title: '策略类型',
             width: 300,
-            slot: 'policyType'
+            slot: 'policyType',
+            filters: [
+              {
+                label: '拒绝-黑名单',
+                value: 0
+              },
+              {
+                label: '允许-白名单',
+                value: 1
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.policyType === 0
+              } else if (value === 1) {
+                return row.policyType === 1
+              }
+            }
           },
+
           {
             title: 'IP地址',
             key: 'ipAddress',
@@ -167,6 +199,9 @@
         this.formItem.policyType = this.formItem.policyType + ''
         this.current = step
       },
+      handleResetForm (form) {
+        this.$refs[form].resetFields()
+      },
       handleReset () {
         const newData = {
           policyId: '',
@@ -178,7 +213,7 @@
         this.formItem = newData
         //重置验证
         this.forms.map(form => {
-          this.$refs[form].resetFields()
+          this.handleResetForm(form)
         })
         this.current = this.forms[0]
         this.modalVisible = false
@@ -230,9 +265,12 @@
           })
         }
       },
-      handleSearch () {
+      handleSearch (page) {
+        if(page){
+          this.pageInfo.page = page
+        }
         this.loading = true
-        getIpLimits({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getIpLimits(this.pageInfo).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {

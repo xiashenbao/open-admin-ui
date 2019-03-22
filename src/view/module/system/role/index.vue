@@ -1,6 +1,21 @@
 <template>
   <div>
     <Card shadow>
+      <Form ref="searchForm"
+            :model="pageInfo"
+            inline
+            :label-width="80">
+        <FormItem label="角色名称" prop="roleName">
+          <Input type="text" v-model="pageInfo.roleName" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="角色编码" prop="roleCode">
+          <Input type="text" v-model="pageInfo.roleCode" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
+          <Button @click="handleResetForm('searchForm')">重置</Button>
+        </FormItem>
+      </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
@@ -19,6 +34,8 @@
           <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配权限</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">更多
+
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -149,7 +166,9 @@
         pageInfo: {
           total: 0,
           page: 1,
-          limit: 10
+          limit: 10,
+          roleCode: '',
+          roleName: ''
         },
         formItemRules: {
           roleCode: [
@@ -195,6 +214,24 @@
             slot: 'status',
             key: 'status',
             width: 100,
+            filters: [
+              {
+                label: '禁用',
+                value: 0
+              },
+              {
+                label: '启用',
+                value: 1
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.status === 0
+              } else if (value === 1) {
+                return row.status === 1
+              }
+            }
           },
           {
             title: '描述',
@@ -255,6 +292,9 @@
         this.formItem.status = this.formItem.status + ''
         this.current = step
       },
+      handleResetForm (form) {
+        this.$refs[form].resetFields()
+      },
       handleReset () {
         const newData = {
           roleId: '',
@@ -274,7 +314,7 @@
         this.formItem = newData
         //重置验证
         this.forms.map(form => {
-          this.$refs[form].resetFields()
+          this.handleResetForm(form)
         })
         this.current = this.forms[0]
         this.formItem.grantMenus = []
@@ -354,9 +394,12 @@
           })
         }
       },
-      handleSearch () {
+      handleSearch (page) {
+        if (!page) {
+          this.pageInfo.page = page
+        }
         this.loading = true
-        getRoles({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getRoles(this.pageInfo).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {

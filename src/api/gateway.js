@@ -5,15 +5,15 @@ export const refreshGateway = () => {
   return request({
     url: 'actuator/refresh-gateway',
     data,
-    headers:{
+    headers: {
       'Content-Type': 'application/json;charset=UTF-8'
     },
     method: 'post'
   })
 }
 
-export const getAccessLogs = ({page,limit}) => {
-  const params = {page:page,limit:limit}
+export const getAccessLogs = ({page, limit, path, ip, serviceId}) => {
+  const params = {page: page, limit: limit, path: path, ip: ip, serviceId: serviceId}
   return request({
     url: 'gateway/access/logs',
     params,

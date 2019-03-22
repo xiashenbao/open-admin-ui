@@ -5,8 +5,8 @@ import request from '@/libs/request'
  * @param page
  * @param limit
  */
-export const getApps = ({page, limit}) => {
-  const params = {page: page, limit: limit}
+export const getApps = ({page, limit, appId, appName, appNameEn}) => {
+  const params = {page: page, limit: limit, appId: appId, appName: appName, appNameEn: appNameEn}
   return request({
     url: 'base/app',
     params,

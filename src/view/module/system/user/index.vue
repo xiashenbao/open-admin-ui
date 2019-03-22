@@ -327,8 +327,7 @@
                 return row.userType === 'platform'
               } else if (value === 1) {
                 return row.userType === 'isp'
-              }
-              if (value === 2) {
+              } else if (value === 2) {
                 return row.userType === 'dev'
               }
             }

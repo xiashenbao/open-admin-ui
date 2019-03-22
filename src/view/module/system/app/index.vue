@@ -1,6 +1,24 @@
 <template>
   <div>
     <Card shadow>
+      <Form ref="searchForm"
+            :model="pageInfo"
+            inline
+            :label-width="80">
+        <FormItem label="AppId" prop="appId">
+          <Input type="text" v-model="pageInfo.appId" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="中文名称" prop="appName">
+          <Input type="text" v-model="pageInfo.appName" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="英文名称" prop="appName">
+          <Input type="text" v-model="pageInfo.appNameEn" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
+          <Button @click="handleResetForm('searchForm')">重置</Button>
+        </FormItem>
+      </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
@@ -32,6 +50,8 @@
             <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">
               更多
 
+
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -54,8 +74,12 @@
            width="800">
       <Alert v-if="formItem.appId?true:false" show-icon>
         重要信息,请妥善保管：AppId：
+
+
         <Tag color="red">{{formItem.appId}}</Tag>
         AppSecret：
+
+
         <Tag color="red">{{formItem.appSecret}}</Tag>&nbsp;&nbsp;
         <Poptip
           confirm
@@ -188,9 +212,13 @@
         </FormItem>
         <FormItem label="访问令牌有效期" prop="accessTokenValidity">
           <InputNumber :max="43200" :min="900" v-model="formItem.accessTokenValidity"></InputNumber>&nbsp;&nbsp;秒
+
+
         </FormItem>
         <FormItem label="刷新令牌有效期" prop="refreshTokenValidity">
           <InputNumber :max="2592000" :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>&nbsp;&nbsp;秒
+
+
         </FormItem>
         <FormItem label="第三方授权回掉地址" prop="redirectUrls">
           <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
@@ -273,7 +301,10 @@
         pageInfo: {
           total: 0,
           page: 1,
-          limit: 10
+          limit: 10,
+          appId: '',
+          appName: '',
+          appNameEn: ''
         },
         defaultList: [
           {
@@ -328,7 +359,6 @@
         formItem: {
           appId: '',
           appSecret: '',
-          appCode: '',
           appName: '',
           appNameEn: '',
           appType: 'server',
@@ -357,6 +387,11 @@
             align: 'center'
           },
           {
+            title: 'AppId',
+            key: 'appId',
+            width: 200
+          },
+          {
             title: '应用名称',
             key: 'appName',
             width: 200
@@ -367,27 +402,70 @@
             width: 200
           },
           {
-            title: 'AppId',
-            key: 'appId',
-            width: 200
-          },
-          {
             title: '应用类型',
             slot: 'appType',
-            width: 200
+            width: 180,
+            filters: [
+              {
+                label: '服务器应用',
+                value: 0
+              },
+              {
+                label: '手机应用',
+                value: 1
+              },
+              {
+                label: 'PC网页应用',
+                value: 2
+              },
+              {
+                label: '手机网页应用',
+                value: 3
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.appType === 'server'
+              } else if (value === 1) {
+                return row.appType === 'app'
+              } else if (value === 2) {
+                return row.appType === 'pc'
+              } else if (value === 3) {
+                return row.appType === 'wap'
+              }
+            }
           },
           {
             title: '开发者类型',
             key: 'userType',
             slot: 'userType',
-            width: 200
+            width: 180
           },
           {
             title: '状态',
             slot: 'status',
             sortable: true,
             key: 'status',
-            width: 100
+            width: 100,
+            filters: [
+              {
+                label: '下线',
+                value: 0
+              },
+              {
+                label: '上线',
+                value: 1
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.status === 0
+              } else if (value === 1) {
+                return row.status === 1
+              }
+            }
           },
           {
             title: '描述',
@@ -433,12 +511,14 @@
         this.formItem.status = this.formItem.status + ''
         this.current = step
       },
+      handleResetForm (form) {
+        this.$refs[form].resetFields()
+      },
       handleReset () {
         //重置验证
         const newData = {
           appId: '',
           appSecret: '',
-          appCode: '',
           appName: '',
           appNameEn: '',
           appType: 'server',
@@ -460,7 +540,7 @@
         }
         this.formItem = newData
         this.forms.map(form => {
-          this.$refs[form].resetFields()
+            this.handleResetForm(form)
         })
         this.current = this.forms[0]
         this.modalVisible = false
@@ -535,9 +615,12 @@
           })
         }
       },
-      handleSearch () {
+      handleSearch (page) {
+        if (!page) {
+          this.pageInfo.page = page
+        }
         this.loading = true
-        getApps({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getApps(this.pageInfo).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {

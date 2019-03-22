@@ -1,6 +1,25 @@
 <template>
   <div>
     <Card shadow>
+      <Form ref="searchForm"
+            :model="pageInfo"
+            inline
+            :label-width="80">
+        <FormItem label="请求路径" prop="path">
+          <Input type="text" v-model="pageInfo.path" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="IP" prop="ip">
+          <Input type="text" v-model="pageInfo.ip" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="服务名" prop="serviceId">
+          <Input type="text" v-model="pageInfo.serviceId" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
+          <Button @click="handleResetForm('searchForm')">重置</Button>
+        </FormItem>
+      </Form>
+
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="httpStatus" slot-scope="{ row }">
           <Badge v-if="row.httpStatus==='200'" status="success"/>
@@ -22,11 +41,12 @@
         <Badge v-else="" status="error"/>
         {{currentRow.httpStatus}}
         {{currentRow.path}} - {{currentRow.serviceId}}
+
       </div>
       <div>
         <h3>请求头</h3>
         <pre>
-             {{ currentRow.headers ?  JSON.stringify(JSON.parse(currentRow.headers), null, 2):''}}
+             {{ currentRow.headers ? JSON.stringify(JSON.parse(currentRow.headers), null, 2) : ''}}
         </pre>
         <h3>请求参数</h3>
         <pre>
@@ -55,7 +75,10 @@
         pageInfo: {
           total: 0,
           page: 1,
-          limit: 10
+          limit: 10,
+          path: '',
+          ip: '',
+          serviceId: ''
         },
         columns: [
           {
@@ -71,7 +94,43 @@
           {
             title: '请求方式',
             key: 'method',
-            width: 100
+            width: 100,
+            filters: [
+              {
+                label: 'POST',
+                value: 0
+              },
+              {
+                label: 'GET',
+                value: 1
+              },
+              {
+                label: 'DELETE',
+                value: 2
+              },
+              {
+                label: 'OPTIONS',
+                value: 3
+              },
+              {
+                label: 'PATCH',
+                value: 4
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.method === 'POST'
+              } else if (value === 1) {
+                return row.method === 'GET'
+              } else if (value === 2) {
+                return row.method === 'DELETE'
+              } else if (value === 3) {
+                return row.method === 'OPTIONS'
+              } else if (value === 4) {
+                return row.method === 'PATCH'
+              }
+            }
           },
           {
             title: 'IP',
@@ -131,14 +190,20 @@
         this.currentRow = data
         this.drawer = true
       },
-      handleSearch () {
+      handleSearch (page) {
+        if (page) {
+          this.pageInfo.page = page
+        }
         this.loading = true
-        getAccessLogs({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getAccessLogs(this.pageInfo).then(res => {
           this.data = res.data.list
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {
           this.loading = false
         })
+      },
+      handleResetForm (form) {
+        this.$refs[form].resetFields()
       },
       handlePage (current) {
         this.pageInfo.page = current

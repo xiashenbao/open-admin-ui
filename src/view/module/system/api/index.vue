@@ -1,6 +1,27 @@
 <template>
   <div>
     <Card shadow>
+      <Form ref="searchForm"
+            :model="pageInfo"
+            inline
+            :label-width="80">
+        <FormItem label="请求路径" prop="path">
+          <Input type="text" v-model="pageInfo.path" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="接口名称" prop="apiName">
+          <Input type="text" v-model="pageInfo.apiName" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="接口编码" prop="apiCode">
+          <Input type="text" v-model="pageInfo.apiCode" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem label="服务名" prop="serviceId">
+          <Input type="text" v-model="pageInfo.serviceId" placeholder="请输入关键字"/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
+          <Button @click="handleResetForm('searchForm')">重置</Button>
+        </FormItem>
+      </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button class="search-btn" type="primary" @click="handleModal()">
@@ -30,6 +51,7 @@
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">更多
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -49,6 +71,7 @@
            @on-cancel="handleReset">
       <Alert show-icon v-if="formItem.apiId?true:false">
         接口信息部分内容,需要在接口定义时修改。
+
         <Poptip placement="bottom" title="示例代码">
           <a>示例代码</a>
           <div slot="content">
@@ -145,7 +168,11 @@
         pageInfo: {
           total: 0,
           page: 1,
-          limit: 10
+          limit: 10,
+          path: '',
+          apiName: '',
+          apiCode: '',
+          serviceId: ''
         },
         selectServiceList: [{serviceId: '', serviceName: '无'}],
         openApiCount: 0,
@@ -194,6 +221,24 @@
             key: 'apiName',
             slot: 'apiName',
             width: 200,
+            filters: [
+              {
+                label: '禁用',
+                value: 0
+              },
+              {
+                label: '启用',
+                value: 1
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.status === 0
+              } else if (value === 1) {
+                return row.status === 1
+              }
+            }
           },
           {
             title: '分类',
@@ -209,7 +254,25 @@
             title: '接口安全',
             key: 'isAuth',
             slot: 'isAuth',
-            width: 200
+            width: 200,
+            filters: [
+              {
+                label: '未开放',
+                value: 0
+              },
+              {
+                label: '开放接口',
+                value: 1
+              }
+            ],
+            filterMultiple: false,
+            filterMethod (value, row) {
+              if (value === 0) {
+                return row.isOpen === 0
+              } else if (value === 1) {
+                return row.isOpen === 1
+              }
+            }
           },
           {
             title: '最后更新时间',
@@ -245,6 +308,9 @@
         this.formItem.isAuth = this.formItem.isAuth + ''
         this.modalVisible = true
       },
+      handleResetForm (form) {
+        this.$refs[form].resetFields()
+      },
       handleReset () {
         const newData = {
           apiId: '',
@@ -261,7 +327,7 @@
         }
         this.formItem = newData
         //重置验证
-        this.$refs['form1'].resetFields()
+        this.handleResetForm('form1')
         this.modalVisible = false
         this.saving = false
       },
@@ -309,7 +375,7 @@
       },
       handleSearch () {
         this.loading = true
-        getApis({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getApis(this.pageInfo).then(res => {
           this.data = res.data.list
           this.openApiCount = res.extra.openApiCount
           this.pageInfo.total = parseInt(res.data.total)

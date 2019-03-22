@@ -5,8 +5,8 @@ import request from '@/libs/request'
  * @param page
  * @param limit
  */
-export const getIpLimits = ({page, limit}) => {
-  const params = {page: page, limit: limit}
+export const getIpLimits = ({page, limit, policyName}) => {
+  const params = {page: page, limit: limit, policyName: policyName}
   return request({
     url: 'gateway/limit/ip',
     params,
@@ -33,9 +33,9 @@ export const addIpLimit = ({policyName, policyType, ipAddress}) => {
  * @param policyType
  * @param ipAddress
  */
-export const updateIpLimit = ({policyId,policyName, policyType, ipAddress}) => {
+export const updateIpLimit = ({policyId, policyName, policyType, ipAddress}) => {
   const data = {
-    policyId:policyId,
+    policyId: policyId,
     policyName: policyName,
     policyType: policyType,
     ipAddress: ipAddress
@@ -84,10 +84,10 @@ export const getIpLimitApis = (policyId) => {
  * @param policyId
  * @param apiIds
  */
-export const addIpLimitApis = ({policyId,apiIds}) => {
+export const addIpLimitApis = ({policyId, apiIds}) => {
   const data = {
     policyId: policyId,
-    apiIds:apiIds.join(',')
+    apiIds: apiIds.join(',')
   }
   return request({
     url: 'gateway/limit/ip/api/add',
