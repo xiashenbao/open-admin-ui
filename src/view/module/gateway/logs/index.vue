@@ -135,7 +135,7 @@
           {
             title: 'IP',
             key: 'ip',
-            width: 200
+            width: 150
           },
           {
             title: '区域',
