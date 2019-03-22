@@ -5,10 +5,10 @@ import {forEach, hasOneOf, objEqual} from '@/libs/tools'
 
 export const TOKEN_KEY = 'token'
 
-export const setToken = (token,auto) => {
-  if(auto){
+export const setToken = (token, auto) => {
+  if (auto) {
     Cookies.set(TOKEN_KEY, token, {expires: config.cookieExpires || 1})
-  }else {
+  } else {
     Cookies.set(TOKEN_KEY, token)
   }
 }
@@ -205,7 +205,7 @@ export const canTurnTo = (name, access, routes) => {
  */
 export const getParams = url => {
   let paramObj = {}
-  if (url.indexOf("?") != -1) {
+  if (url.indexOf('?') != -1) {
     const keyValueArr = url.split('?')[1].split('&')
     keyValueArr.forEach(item => {
       const keyValue = item.split('=')
@@ -466,8 +466,8 @@ export const formatRouters = (array, access) => {
 
 export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
-      let path = startWith(item.path,"/") ? item.path.substring(1) :item.path;
-      let url =  item.prefix+item.path
+      let path = startWith(item.path, '/') ? item.path.substring(1) : item.path
+      let url = item.prefix + item.path
       let router = {
         //使用菜单id不使用menuCode防止修改后,刷新后缓存的页面无法找到
         name: `router${item.menuId}`,
@@ -560,21 +560,21 @@ export const listConvertTree = (array, opt) => {
 
 export const listConvertGroup = (array, groupKey) => {
   var map = {},
-    dest = [];
+    dest = []
   for (var i = 0; i < array.length; i++) {
-    var ai = array[i];
+    var ai = array[i]
     if (!map[ai[groupKey]]) {
       const obj = {}
       obj[groupKey] = ai[groupKey]
       obj['children'] = [ai]
-      dest.push(obj);
-      map[ai[groupKey]] = ai;
+      dest.push(obj)
+      map[ai[groupKey]] = ai
     } else {
       for (var j = 0; j < dest.length; j++) {
-        var dj = dest[j];
+        var dj = dest[j]
         if (dj[groupKey] == ai[groupKey]) {
-          dj['children'].push(ai);
-          break;
+          dj['children'].push(ai)
+          break
         }
       }
     }
@@ -640,66 +640,51 @@ export const endWith = (str, suffix) => {
   return reg.test(str)
 }
 
-
 /**
  * 判断终端以及浏览器
  * userAgent string User-Agent信息
  */
-export const  readUserAgent =(userAgent)=> {
+export const readUserAgent = (ua) => {
   let data = {
-    terminal: "",
-    browser: ""
-  };
-  let regs = {};
-  let terminal = {
-    'windows nt 10'      : 'Windows 10',
-    'windows nt 6.3'     : 'Windows 8.1',
-    'windows nt 6.2'     : 'Windows 8',
-    'windows nt 6.1'     : 'Windows 7',
-    'windows nt 6.0'     : 'Windows Vista',
-    'windows nt 5.2'     : 'Windows Server 2003XP x64',
-    'windows nt 5.1'     : 'Windows XP',
-    'windows xp'         : 'Windows XP',
-    'windows nt 5.0'     : 'Windows 2000',
-    'windows me'         : 'Windows ME',
-    'win98'              : 'Windows 98',
-    'win95'              : 'Windows 95',
-    'win16'              : 'Windows 3.11',
-    'macintosh|mac os x' : 'Mac OS X',
-    'mac_powerpc'        : 'Mac OS 9',
-    'linux'              : 'Linux',
-    'ubuntu'             : 'Ubuntu',
-    'phone'              : 'iPhone',
-    'pod'                : 'iPod',
-    'pad'                : 'iPad',
-    'android'            : 'Android',
-    'blackberry'         : 'BlackBerry',
-    'webos'              : 'Mobile',
-    'freebsd'            : 'FreeBSD',
-    'sunos'              : 'Solaris'
-  };
-  for (let key in terminal) {
-    if (new RegExp(key).test(userAgent.toLowerCase())) {
-      data.terminal = terminal[key];
-      break;
-    }
+    terminal: '',
+    browser: '',
+    terminalType: {},
   }
-
-  if (regs = userAgent.match(/MSIE\s(\d+)\..*/)) {
-    // ie 除11
-    data.browser = 'ie ' + regs['1'];
-  } else if (regs = userAgent.match(/FireFox\/(\d+)\..*/)) {
-    data.browser = 'firefox ' + regs['1'];
-  } else if (regs = userAgent.match(/Opera[\s|\/](\d+)\..*/)) {
-    data.browser = 'opera ' + regs['1'];
-  } else if (regs = userAgent.match(/Chrome\/(\d+)\..*/)) {
-    data.browser = 'chrome ' + regs['1'];
-  } else if (regs = userAgent.match(/Safari\/(\d+)\..*$/)) {
-    // chrome浏览器都声明了safari
-    data.browser = 'safari ' + regs['1'];
-  } else if (regs = userAgent.match(/rv:(\d+)\..*/)) {
-    // ie 11
-    data.browser = 'ie ' + regs['1'];
+  data.terminalType = {
+    trident: ua.indexOf('Trident') > -1, //IE内核
+    presto: ua.indexOf('Presto') > -1, //opera内核
+    webKit: ua.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+    gecko: ua.indexOf('Gecko') > -1 && ua.indexOf('KHTML') == -1, //火狐内核
+    mobile: !!ua.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+    ios: !!ua.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+    android: ua.indexOf('Android') > -1 || ua.indexOf('Adr') > -1, //android终端
+    iPhone: ua.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+    iPad: ua.indexOf('iPad') > -1, //是否iPad
+    webApp: ua.indexOf('Safari') == -1, //是否web应该程序，没有头部与底部
+    weixin: ua.indexOf('MicroMessenger') > -1, //是否微信 （2015-01-22新增）
+    qq: ua.match(/\sQQ/i) == ' qq' //是否QQ
   }
-  return data;
+  if (data.terminalType.ios || data.terminalType.iPhone || data.terminalType.iPad) {
+    data.terminal = '苹果'
+  } else if (data.terminalType.android) {
+    data.terminal = '安卓'
+  } else {
+    data.terminal = 'PC'
+  }
+  if (/msie/i.test(ua) && !/opera/.test(ua)) {
+    data.browser = 'IE'
+  } else if (/firefox/i.test(ua)) {
+    data.browser = 'Firefox'
+  } else if (/chrome/i.test(ua) && /webkit/i.test(ua) && /mozilla/i.test(ua)) {
+    data.browser = 'Chrome'
+  } else if (/opera/i.test(ua)) {
+    data.browser = 'Opera'
+  } else if (/iPad/i.test(ua)) {
+    data.browser = 'iPad'
+  } else if (/webkit/i.test(ua) && !(/chrome/i.test(ua) && /webkit/i.test(ua) && /mozilla/i.test(ua))) {
+    data.browser = 'Safari'
+  } else {
+    data.browser = 'unKnow'
+  }
+  return data
 }
