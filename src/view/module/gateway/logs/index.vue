@@ -140,18 +140,18 @@
           {
             title: '区域',
             key: 'region',
-            width: 150
+            width: 200
           },
           {
             title: '终端',
-            width: 150,
+            width: 100,
             render: (h, params) => {
               return h('div', readUserAgent(params.row.userAgent).terminal)
             }
           },
           {
             title: '浏览器',
-            width: 150,
+            width: 100,
             render: (h, params) => {
               return h('div', readUserAgent(params.row.userAgent).browser)
             }
