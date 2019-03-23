@@ -684,7 +684,7 @@ export const readUserAgent = (ua) => {
   } else if (/webkit/i.test(ua) && !(/chrome/i.test(ua) && /webkit/i.test(ua) && /mozilla/i.test(ua))) {
     data.browser = 'Safari'
   } else {
-    data.browser = 'unKnow'
+    data.browser = '未知'
   }
   return data
 }

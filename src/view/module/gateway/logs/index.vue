@@ -41,7 +41,6 @@
         <Badge v-else="" status="error"/>
         {{currentRow.httpStatus}}
         {{currentRow.path}} - {{currentRow.serviceId}}
-
       </div>
       <div>
         <h3>请求头</h3>
@@ -51,6 +50,10 @@
         <h3>请求参数</h3>
         <pre>
               {{ currentRow.params ? JSON.stringify(JSON.parse(currentRow.params), null, 2) : ''}}
+        </pre>
+        <h3>错误信息</h3>
+        <pre>
+          {{currentRow.error}}
         </pre>
         <h3>认证信息</h3>
         <pre>
