@@ -25,7 +25,7 @@
               <a href="#" style="float: right">忘记密码</a>
             </FormItem>
             <FormItem>
-              <Button @click="handleSubmit" :loading="loading" type="success" long>登录</Button>
+              <Button @click="handleSubmit" :loading="loading" type="primary"  long>登录</Button>
             </FormItem>
           </Form>
           <p class="login-tip">其他登录方式

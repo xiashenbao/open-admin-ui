@@ -10,6 +10,7 @@ export default {
     token: getToken(),
     access: [],
     hasGetInfo: false,
+    userDesc: '',
     mobile: '',
     email: '',
     menus: [],// 用户菜单
@@ -45,6 +46,9 @@ export default {
     },
     setEmail (state, email) {
       state.email = email
+    },
+    setUserDesc (state, userDesc) {
+      state.userDesc = userDesc
     }
   },
   actions: {
@@ -92,6 +96,7 @@ export default {
             commit('setUserId', res.data.userId)
             commit('setEmail', res.data.email)
             commit('setMobile', res.data.mobile)
+            commit('setUserDesc',res.data.userDesc)
             const  access = []
             if(res.data.authorities){
               res.data.authorities.map(item =>{

@@ -12,7 +12,7 @@
         </Menu>
       </div>
       <div class="account-setting-con view-con">
-        <Form v-if="currentSelect==='profile'" ref="userForm" :model="profile">
+        <Form v-if="currentSelect==='profile'" ref="userForm" :rules="formItemRules"  :model="profile">
           <h3>
             <span>基本信息</span>
           </h3>
@@ -26,13 +26,13 @@
             </FormItem>
             </Col>
             <Col span="8">
-            <FormItem label="头像" prop="nickName">
-              <Avatar  style="height: 128px;width: 128px;border-radius: 50%;" src="https://i.loli.net/2017/08/21/599a521472424.jpg" size="large" />
+            <FormItem label="头像" prop="avatar">
+              <Avatar  style="height: 128px;width: 128px;border-radius: 50%;" src="https://o5wwk8baw.qnssl.com/7eb99afb9d5f317c912f08b5212fd69a/avatar" size="large" />
             </FormItem>
             </Col>
           </Row>
           <FormItem>
-            <Button type="primary" @click="handleSubmit">保存</Button>
+            <Button type="primary" @click="handleSubmit('userForm')">保存</Button>
           </FormItem>
         </Form>
 
@@ -67,17 +67,37 @@
 </template>
 
 <script>
+  import {updateMyUserInfo} from '@/api/user'
   export default {
     name: 'message_page',
     data () {
       return {
         currentSelect: 'profile',
+        formItemRules: {
+          nickName: [
+            {required: true, message: '昵称不能为空', trigger: 'blur'}
+          ]
+        },
         profile: this.$store.state.user,
       }
     },
     methods: {
-      handleSubmit(){
-          console.log(JSON.stringify(this.profile))
+      handleSubmit(form){
+        if (form === 'userForm') {
+          this.$refs['userForm'].validate((valid) => {
+            if (valid) {
+              updateMyUserInfo(this.profile).then(res => {
+                if (res.code === 0) {
+                  this.$Message.success('修改成功')
+                  this.$store.commit("setAvatar",this.profile.avatar)
+                  this.$store.commit("setNickName",this.profile.nickName)
+                }
+              }).finally(() => {
+                this.saving = false
+              })
+            }
+          })
+        }
       },
       handleSelect (name) {
         this.currentSelect = name

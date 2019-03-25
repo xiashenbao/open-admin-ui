@@ -47,6 +47,8 @@
             </a>
             <DropdownMenu slot="list">
               <DropdownItem name="grantMenu">分配特殊权限</DropdownItem>
+              <DropdownItem name="updatePassword">修改密码</DropdownItem>
+              <DropdownItem v-if="row.email?true:false" name="sendToEmail">发送到密保邮箱</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -133,6 +135,17 @@
           </tree-table>
         </FormItem>
       </Form>
+      <Form v-show="current == 'form4'" ref="form4" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="登录名" prop="userName">
+          <Input :disabled="formItem.userId?true:false" v-model="formItem.userName" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem  label="登录密码" prop="password">
+          <Input type="password" v-model="formItem.password" placeholder="请输入内容"></Input>
+        </FormItem>
+        <FormItem  label="再次确认密码" prop="passwordConfirm">
+          <Input type="password" v-model="formItem.passwordConfirm" placeholder="请输入内容"></Input>
+        </FormItem>
+      </Form>
       <div slot="footer">
         <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
         <Button type="default" @click="handleReset">取消</Button>
@@ -142,7 +155,7 @@
 </template>
 
 <script>
-  import {getUsers, updateUser, addUser, getUserRoles, addUserRoles} from '@/api/user'
+  import {getUsers, updateUser, addUser, getUserRoles, addUserRoles, updatePassword} from '@/api/user'
   import {getAllRoles} from '@/api/role'
   import {startWith, listConvertTree} from '@/libs/util'
   import {
@@ -190,7 +203,8 @@
         forms: [
           'form1',
           'form2',
-          'form3'
+          'form3',
+          'form4'
         ],
         selectMenus: [],
         selectRoles: [],
@@ -214,7 +228,7 @@
             {required: true, message: '登录密码不能为空', trigger: 'blur'}
           ],
           passwordConfirm: [
-            {validator: validatePassConfirm, trigger: 'blur'}
+            {required: true,validator: validatePassConfirm, trigger: 'blur'}
           ],
           nickName: [
             {required: true, message: '昵称不能为空', trigger: 'blur'}
@@ -385,6 +399,10 @@
           this.modalTitle = data ? '分配特殊权限 - ' + data.userName : '分配特殊权限'
           this.handleLoadUserGranted(this.formItem.userId)
         }
+        if (step === this.forms[3]) {
+          this.modalTitle = data ? '修改密码 - ' + data.userName : '修改密码'
+          this.modalVisible =true
+        }
         this.formItem.status = this.formItem.status + ''
         this.current = step
       },
@@ -490,9 +508,29 @@
             }
           })
         }
+
+        if (this.current === this.forms[3] && this.formItem.userId) {
+          this.$refs[this.current].validate((valid) => {
+            if (valid) {
+              this.saving = true
+              updatePassword({
+                userId: this.formItem.userId,
+                password: this.formItem.password
+              }).then(res => {
+                if (res.code === 0) {
+                  this.$Message.success('修改成功')
+                  this.handleReset()
+                }
+                this.handleSearch()
+              }).finally(() => {
+                this.saving = false
+              })
+            }
+          })
+        }
       },
       handleSearch (page) {
-        if(page){
+        if (page) {
           this.pageInfo.page = page
         }
         this.loading = true
@@ -583,6 +621,12 @@
         switch (name) {
           case'grantMenu':
             this.handleModal(row, this.forms[2])
+            break
+          case'updatePassword':
+            this.handleModal(row, this.forms[3])
+            break
+          case'sendToEmail':
+            this.$Message.warning("发送至密保邮箱,开发中...")
             break
         }
       }

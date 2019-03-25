@@ -158,3 +158,37 @@ export const getUserRoles = (userId) => {
     method: 'get'
   })
 }
+
+/**
+ * 修改密码
+ * @param userId
+ * @param oldPassword
+ * @param newPassword
+ */
+export const updatePassword = ({userId, password}) => {
+  const data = {
+    userId: userId,
+    password: password
+  }
+  return request({
+    url: 'base/user/update/password',
+    data,
+    method: 'post'
+  })
+}
+export const updateMyUserInfo = ({ nickName,userDesc,avatar}) => {
+  const data = {
+    nickName: nickName,
+    userDesc: userDesc,
+    avatar:avatar
+  }
+  return request({
+    url: 'base/user/me/update',
+    data,
+    method: 'post'
+  })
+}
+
+
+
+
