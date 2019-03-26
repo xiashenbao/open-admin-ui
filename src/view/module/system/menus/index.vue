@@ -15,7 +15,7 @@
             <template slot="status" slot-scope="scope">
               <Badge v-if="scope.row.status===1" status="success"/>
               <Badge v-else="" status="error"/>
-              <Icon :type="scope.row.icon" size="20"/>
+              <Icon :type="scope.row.icon" size="16"/>
             </template>
           </tree-table>
         </Card>
@@ -65,7 +65,7 @@
             </FormItem>
             <FormItem label="图标">
               <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容">
-                <Icon size="20" :type="formItem.icon" slot="prepend"/>
+                <Icon size="16" :type="formItem.icon" slot="prepend"/>
                 <Poptip width="600" slot="append" placement="left">
                   <Button :disabled="disabled" icon="ios-search"></Button>
                   <div slot="content">
