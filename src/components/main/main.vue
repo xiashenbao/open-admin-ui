@@ -1,15 +1,16 @@
 <template >
 
   <Layout style="height: 100%" class="skin-blue">
-    <Layout v-if="layout === 'topeee'" class="main-layout-top">
+    <Layout v-if="layout === 'toptest'" class="main-layout-top">
       <Header class="main-layout-header">
         <div class="main-layout-logo">
-
+          <img v-show="!collapsed" class="max-logo" :src="maxLogo"  key="max-logo" />
+          <img v-show="collapsed" class="min-logo" :src="minLogo" key="min-logo" />
         </div>
         <side-menu accordion ref="sideMenu"  mode="horizontal" :active-name="$route.name"  @on-select="turnToPage"
                    :menu-list="menuList"></side-menu>
       </Header>
-        <Content :class="mainClass" :style="{margin: '80px 20px 0', background: '#fff', minHeight: '500px'}">
+        <Content :class="mainClass" :style="{margin: '70px 20px', background: '#fff', minHeight: '500px'}">
           <Layout class="main-layout-content-wrapper">
             <custom-bread-crumb class="main-layout-bread-crumb" v-show="screenWidth>768" show-icon :list="breadCrumbList"></custom-bread-crumb>
             <div class="main-layout-tag-nav-wrapper">
@@ -29,8 +30,8 @@
       <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider"
              :style="{overflow: 'hidden'}">
         <div class="main-layout-logo">
-          <p v-show="!collapsed" class="logo-text" style="font-size: 20px">运营后台</p>
-          <p v-show="collapsed" class="logo-text" style="font-size:12px">运营后台</p>
+          <img v-show="!collapsed" class="max-logo" :src="maxLogo"  key="max-logo" />
+          <img v-show="collapsed" class="min-logo" :src="minLogo" key="min-logo" />
         </div>
         <side-menu accordion ref="sideMenu" :active-name="$route.name" :collapsed="collapsed" @on-select="turnToPage"
                    :menu-list="menuList">
@@ -77,7 +78,6 @@
         </Content>
       </Layout>
     </Layout>
-
     <Drawer :closable="false" width="300" v-model="value1">
       <h3>导航布局</h3>
       <div>
@@ -102,8 +102,8 @@
   import customBreadCrumb from './components/header-bar/custom-bread-crumb'
   import {mapMutations, mapActions, mapGetters} from 'vuex'
   import {getNewTagList, getNextRoute, routeEqual} from '@/libs/util'
-  import minLogo from '@/assets/images/logo-min.jpg'
-  import maxLogo from '@/assets/images/logo.jpg'
+  import minLogo from '@/assets/images/logo-min.png'
+  import maxLogo from '@/assets/images/logo.png'
   import './main.less'
   import Layout from "../../../node_modules/iview/src/components/layout/layout";
   export default {
@@ -212,6 +212,7 @@
           layout = 'left'
         }
         localStorage.setItem("layout",layout);
+        this.$Message.info("选择布局:"+layout)
         this.layout = layout
       },
       handleCollapsedChange (state) {

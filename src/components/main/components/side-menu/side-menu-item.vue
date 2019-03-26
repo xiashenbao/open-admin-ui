@@ -1,5 +1,5 @@
 <template>
-  <Submenu :name="`${parentName}`">
+  <Submenu  :name="`${parentName}`">
     <template slot="title">
       <common-icon :type="parentItem.icon || ''"/>
       <span>{{ showTitle(parentItem) }}</span>

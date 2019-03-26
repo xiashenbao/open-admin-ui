@@ -455,7 +455,10 @@
       }
     },
     mounted() {
-      this.draw();
+      const  that = this
+      setTimeout(function () {
+        that.draw();
+      },200)
     },
     created() {
 
