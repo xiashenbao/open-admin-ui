@@ -145,7 +145,7 @@ export const restApp = ({appId}) => {
  */
 export const getAppInfo = ({appId}) => {
   return request({
-    url: `base/app/${appId}`,
+    url: `base/app/${appId}/info`,
     method: 'get'
   })
 }
@@ -156,7 +156,7 @@ export const getAppInfo = ({appId}) => {
  */
 export const getAppClientInfo = ({appId}) => {
   return request({
-    url: `base/app/client/${appId}`,
+    url: `base/app/client/${appId}/info`,
     method: 'get'
   })
 }
