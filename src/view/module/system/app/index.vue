@@ -155,7 +155,7 @@
             <Option value="wap">手机网页应用</Option>
           </Select>
         </FormItem>
-        <FormItem v-if="current==1 && formItem.appType === 'app'" prop="appOs" label="操作系统">
+        <FormItem v-if="formItem.appType === 'app'" prop="appOs" label="操作系统">
           <RadioGroup v-model="formItem.appOs">
             <Radio label="ios">
               <Icon type="logo-apple"></Icon>
