@@ -272,6 +272,7 @@
             res1.data.map(item => {
               item.key = item.apiId
               item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
+              item.disabled = item.path === '/**'
             })
             that.selectApis = res1.data
           }
