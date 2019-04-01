@@ -35,8 +35,6 @@
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">更多
 
-
-              <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
               <DropdownItem name="addUser">添加成员</DropdownItem>

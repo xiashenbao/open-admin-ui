@@ -214,7 +214,7 @@
           path: '',
           prefix: '/',
           target: '_self',
-          status: 1,
+          status: '1',
           parentId: '0',
           priority: 0,
           menuDesc: ''
