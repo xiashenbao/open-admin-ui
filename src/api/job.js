@@ -1,6 +1,20 @@
 import request from '@/libs/request'
 
 /**
+ * 任务执行日志
+ * @param page
+ * @param limit
+ */
+export const getJobLogs = ({page, limit,jobName}) => {
+  const params = {page: page, limit: limit,jobName:jobName}
+  return request({
+    url: 'scheduler/job/logs',
+    params,
+    method: 'get'
+  })
+}
+
+/**
  * 获取任务列表
  * @param page
  * @param limit

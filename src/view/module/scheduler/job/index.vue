@@ -10,6 +10,10 @@
         </ButtonGroup>
       </div>
       <Table :columns="columns" :data="data" :loading="loading">
+        <template slot="status" slot-scope="{ row }">
+          <Badge v-if="row.jobStatus==='NORMAL'" status="success" text="正常"/>
+          <Badge v-else="" status="error" text="暂停"/>
+        </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
@@ -135,6 +139,7 @@
           {
             title: '状态',
             key: 'jobStatus',
+            slot: 'status',
             width: 150
           },
           {
