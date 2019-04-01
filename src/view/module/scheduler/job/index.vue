@@ -120,7 +120,7 @@
           {
             title: '任务描述',
             key: 'jobDescription',
-            width: 350
+            width: 200
           },
           {
             title: 'cron表达式',
@@ -140,7 +140,7 @@
           {
             title: '任务参数',
             key: 'data',
-            width: 300
+            width: 450
           },
           {
             title: '操作',
