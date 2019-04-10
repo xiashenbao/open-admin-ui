@@ -470,7 +470,7 @@ export const filterRouter = (array, access, routers) => {
       let url = item.prefix + item.path
       let router = {
         //使用菜单id不使用menuCode防止修改后,刷新后缓存的页面无法找到
-        name: `router${item.menuId}`,
+        name: `${item.menuCode}`,
         path: url,
         meta: {
           access: access,
