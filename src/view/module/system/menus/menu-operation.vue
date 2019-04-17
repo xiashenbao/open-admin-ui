@@ -238,7 +238,7 @@
 
       },
       handleSearch () {
-        if (!this.value) {
+        if (!this.value || !this.value.menuId) {
           return
         }
         this.formItem.menuId = this.value.menuId
