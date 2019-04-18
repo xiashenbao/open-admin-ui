@@ -46,7 +46,6 @@ router.beforeEach((to, from, next) => {
       name: LOGIN_PAGE_NAME // 跳转到登录页
     })
   } else if (!token && permitList.includes(to.name)) {
-    // 无需登录的页面
     next() // 跳转
   } else if (token && to.name === LOGIN_PAGE_NAME) {
     // 已登录且要跳转的页面是登录页
@@ -66,7 +65,6 @@ router.beforeEach((to, from, next) => {
         }
         turnTo(to, store.state.user.access, next)
       }).catch(err => {
-        console.error(err)
         setToken('')
         next({
           name: 'login'

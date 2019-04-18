@@ -223,7 +223,10 @@
           })
         }
       },
-      handleSearch () {
+      handleSearch (page) {
+        if (page) {
+          this.pageInfo.page = page
+        }
         this.loading = true
         getIpLimits({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list

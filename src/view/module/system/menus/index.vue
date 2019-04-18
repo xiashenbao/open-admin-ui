@@ -20,7 +20,7 @@
           </tree-table>
         </Card>
       </Col>
-      <Col :xs="16" :sm="16" :md="16" :lg="12">
+      <Col :xs="16" :sm="16" :md="16" :lg="10">
         <Card shadow>
           <div class="search-con search-con-top">
             <ButtonGroup>
@@ -98,7 +98,7 @@
           </Form>
         </Card>
       </Col>
-      <Col :xs="16" :sm="16" :md="16" :lg="6">
+      <Col :xs="16" :sm="16" :md="16" :lg="8">
         <Card shadow>
           <menu-operation :value="formItem"></menu-operation>
         </Card>

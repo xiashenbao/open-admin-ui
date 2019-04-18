@@ -393,7 +393,7 @@
         }
       },
       handleSearch (page) {
-        if (!page) {
+        if (page) {
           this.pageInfo.page = page
         }
         this.loading = true

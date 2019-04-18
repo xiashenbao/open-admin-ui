@@ -20,8 +20,9 @@ service.interceptors.request.use((config) => {
     config.method === 'post'
       ? config.data = qs.stringify({...config.data})
       : config.params = {...config.params}
-    if (getToken()) {
-      config.headers['Authorization'] = 'Bearer ' + getToken()
+    const  token = getToken()
+    if (token) {
+      config.headers['Authorization'] = 'Bearer ' + token
     }
     return config
   }

@@ -373,7 +373,10 @@
           }
         })
       },
-      handleSearch () {
+      handleSearch (page) {
+        if (page) {
+          this.pageInfo.page = page
+        }
         this.loading = true
         getApis(this.pageInfo).then(res => {
           this.data = res.data.list

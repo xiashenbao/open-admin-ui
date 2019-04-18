@@ -301,7 +301,7 @@
         pageInfo: {
           total: 0,
           page: 1,
-          limit: 10,
+          limit: 1,
           appId: '',
           appName: '',
           appNameEn: ''
@@ -615,8 +615,8 @@
           })
         }
       },
-      handleSearch (page) {
-        if (!page) {
+      handleSearch(page) {
+        if (page) {
           this.pageInfo.page = page
         }
         this.loading = true

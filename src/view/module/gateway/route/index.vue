@@ -226,7 +226,10 @@
           }
         })
       },
-      handleSearch () {
+      handleSearch (page) {
+        if (page) {
+          this.pageInfo.page = page
+        }
         this.loading = true
         getRoutes({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.list

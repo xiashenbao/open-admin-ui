@@ -15,7 +15,7 @@ export const setToken = (token, auto) => {
 
 export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY)
-  if (token) {
+  if (token  &&  token !== 'undefined') {
     return token
   } else {
     return false
