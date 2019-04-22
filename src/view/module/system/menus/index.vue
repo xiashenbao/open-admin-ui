@@ -3,7 +3,7 @@
     <Row :gutter="8">
       <Col :xs="8" :sm="8" :md="8" :lg="6">
         <Card shadow>
-          <tree-table max-height="780"
+          <tree-table  style="max-height:700px;overflow: auto"
                       expand-key="menuName"
                       @radio-click="rowClick"
                       :expand-type="false"
