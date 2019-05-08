@@ -232,7 +232,7 @@
         }
         this.loading = true
         getRoutes({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
-          this.data = res.data.list
+          this.data = res.data.records
           this.pageInfo.total = parseInt(res.data.total)
           this.loading = false
         })

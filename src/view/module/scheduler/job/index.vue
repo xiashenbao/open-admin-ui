@@ -272,7 +272,7 @@
         }
         this.loading = true
         getJobs(this.pageInfo).then(res => {
-          this.data = res.data.list
+          this.data = res.data.records
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {
           this.loading = false

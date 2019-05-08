@@ -17,6 +17,13 @@
         <FormItem label="服务名" prop="serviceId">
           <Input type="text" v-model="pageInfo.serviceId" placeholder="请输入关键字"/>
         </FormItem>
+        <FormItem label="开放接口" prop="isOpen">
+          <Select v-model="pageInfo.isOpen" filterable clearable>
+            <Option value="" label="全部"></Option>
+            <Option value="1" label="开放接口"></Option>
+            <Option value="0" label="未开放"></Option>
+          </Select>
+        </FormItem>
         <FormItem>
           <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
           <Button @click="handleResetForm('searchForm')">重置</Button>
@@ -172,7 +179,8 @@
           path: '',
           apiName: '',
           apiCode: '',
-          serviceId: ''
+          serviceId: '',
+          isOpen:'',
         },
         selectServiceList: [{serviceId: '', serviceName: '无'}],
         openApiCount: 0,
@@ -212,11 +220,6 @@
             align: 'center'
           },
           {
-            title: '接口',
-            key: 'path',
-            width: 200,
-          },
-          {
             title: '名称',
             key: 'apiName',
             slot: 'apiName',
@@ -239,6 +242,11 @@
                 return row.status === 1
               }
             }
+          },
+          {
+            title: '地址',
+            key: 'path',
+            width: 200,
           },
           {
             title: '分类',
@@ -379,7 +387,7 @@
         }
         this.loading = true
         getApis(this.pageInfo).then(res => {
-          this.data = res.data.list
+          this.data = res.data.records
           this.openApiCount = res.extra.openApiCount
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {

@@ -8,7 +8,7 @@ import request from '@/libs/request'
 export const getRoutes = ({page, limit}) => {
   const params = {page: page, limit: limit}
   return request({
-    url: 'gateway/route',
+    url: 'base/gateway/route',
     params,
     method: 'get'
   })
@@ -38,7 +38,7 @@ export const addRoute = ({path, serviceId, url, stripPrefix, retryable, status, 
     routeDesc: routeDesc
   }
   return request({
-    url: 'gateway/route/add',
+    url: 'base/gateway/route/add',
     data,
     method: 'post'
   })
@@ -70,7 +70,7 @@ export const updateRoute = ({routeId,path, serviceId, url, stripPrefix, retryabl
     routeDesc: routeDesc
   }
   return request({
-    url: 'gateway/route/update',
+    url: 'base/gateway/route/update',
     data,
     method: 'post'
   })
@@ -85,7 +85,7 @@ export const removeRoute = (routeId) => {
     routeId: routeId
   }
   return request({
-    url: 'gateway/route/remove',
+    url: 'base/gateway/route/remove',
     data,
     method: 'post'
   })
