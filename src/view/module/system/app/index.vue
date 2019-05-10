@@ -402,6 +402,11 @@
             width: 200
           },
           {
+            title: '用户',
+            key: 'userName',
+            width: 200
+          },
+          {
             title: '应用类型',
             slot: 'appType',
             width: 180,

@@ -42,8 +42,7 @@ export const getUserInfo = () => {
  * @param page
  * @param limit
  */
-export const getUsers = ({page, limit,userName,mobile,email}) => {
-  const params = {page: page, limit: limit,userName:userName,mobile:mobile,email:email}
+export const getUsers = (params) => {
   return request({
     url: 'base/user',
     params,
@@ -85,9 +84,9 @@ export const getAllUsers = () => {
  */
 export const addUser = ({userName, password, nickName, status, userType, email, mobile, userDesc, avatar}) => {
   const data = {
-    userName:userName,
+    userName: userName,
     nickName: nickName,
-    password:password,
+    password: password,
     status: status,
     userType: userType,
     email: email,
@@ -176,11 +175,11 @@ export const updatePassword = ({userId, password}) => {
     method: 'post'
   })
 }
-export const updateMyUserInfo = ({ nickName,userDesc,avatar}) => {
+export const updateMyUserInfo = ({nickName, userDesc, avatar}) => {
   const data = {
     nickName: nickName,
     userDesc: userDesc,
-    avatar:avatar
+    avatar: avatar
   }
   return request({
     url: 'base/user/me/update',

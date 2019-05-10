@@ -31,7 +31,7 @@
         </ButtonGroup>
       </div>
 
-      <Table :columns="columns" :data="data" :loading="loading">
+      <Table :columns="columns" border :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="正常"/>
           <Badge v-else-if="row.status===2" status="success" text="锁定"/>
@@ -139,10 +139,10 @@
         <FormItem label="登录名" prop="userName">
           <Input :disabled="formItem.userId?true:false" v-model="formItem.userName" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem  label="登录密码" prop="password">
+        <FormItem label="登录密码" prop="password">
           <Input type="password" v-model="formItem.password" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem  label="再次确认密码" prop="passwordConfirm">
+        <FormItem label="再次确认密码" prop="passwordConfirm">
           <Input type="password" v-model="formItem.passwordConfirm" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
@@ -166,7 +166,7 @@
 
   export default {
     name: 'SystemUser',
-    data () {
+    data() {
       const validateEn = (rule, value, callback) => {
         let reg = /^[_a-zA-Z0-9]+$/
         if (value === '') {
@@ -209,12 +209,10 @@
         selectMenus: [],
         selectRoles: [],
         pageInfo: {
-          total: 0,
-          page: 1,
-          limit: 10,
-          userName: '',
-          email: '',
-          mobile: ''
+          pageNumber: 1,
+          pageSize: 10,
+          sort: "createTime",
+          order: "desc"
         },
         formItemRules: {
           userType: [
@@ -228,7 +226,7 @@
             {required: true, message: '登录密码不能为空', trigger: 'blur'}
           ],
           passwordConfirm: [
-            {required: true,validator: validatePassConfirm, trigger: 'blur'}
+            {required: true, validator: validatePassConfirm, trigger: 'blur'}
           ],
           nickName: [
             {required: true, message: '昵称不能为空', trigger: 'blur'}
@@ -306,7 +304,7 @@
               }
             ],
             filterMultiple: false,
-            filterMethod (value, row) {
+            filterMethod(value, row) {
               if (value === 0) {
                 return row.status === 0
               } else if (value === 1) {
@@ -336,7 +334,7 @@
               }
             ],
             filterMultiple: false,
-            filterMethod (value, row) {
+            filterMethod(value, row) {
               if (value === 0) {
                 return row.userType === 'platform'
               } else if (value === 1) {
@@ -380,7 +378,7 @@
       }
     },
     methods: {
-      handleModal (data, step) {
+      handleModal(data, step) {
         if (data) {
           this.formItem = Object.assign({}, this.formItem, data)
         }
@@ -401,15 +399,15 @@
         }
         if (step === this.forms[3]) {
           this.modalTitle = data ? '修改密码 - ' + data.userName : '修改密码'
-          this.modalVisible =true
+          this.modalVisible = true
         }
         this.formItem.status = this.formItem.status + ''
         this.current = step
       },
-      handleResetForm (form) {
+      handleResetForm(form) {
         this.$refs[form].resetFields()
       },
-      handleReset () {
+      handleReset() {
         const newData = {
           userId: '',
           userName: '',
@@ -440,7 +438,7 @@
         this.modalVisible = false
         this.saving = false
       },
-      handleSubmit () {
+      handleSubmit() {
         if (this.current === this.forms[0]) {
           this.$refs[this.current].validate((valid) => {
             if (valid) {
@@ -529,7 +527,7 @@
           })
         }
       },
-      handleSearch (page) {
+      handleSearch(page) {
         if (page) {
           this.pageInfo.page = page
         }
@@ -541,11 +539,11 @@
           this.loading = false
         })
       },
-      getCheckedAuthorities () {
+      getCheckedAuthorities() {
         const menus = this.$refs['tree'].getCheckedProp('authorityId')
         return menus.concat(this.formItem.grantOperations)
       },
-      handleLoadUserGranted (userId) {
+      handleLoadUserGranted(userId) {
         const that = this
         const p1 = getMenuAuthorityList()
         const p2 = getUserGrantedAuthority(userId)
@@ -586,7 +584,7 @@
           that.modalVisible = true
         })
       },
-      handleLoadRoles (userId) {
+      handleLoadRoles(userId) {
         if (!userId) {
           return
         }
@@ -609,15 +607,15 @@
           that.modalVisible = true
         })
       },
-      handlePage (current) {
+      handlePage(current) {
         this.pageInfo.page = current
         this.handleSearch()
       },
-      handlePageSize (size) {
+      handlePageSize(size) {
         this.pageInfo.limit = size
         this.handleSearch()
       },
-      handleClick (name, row) {
+      handleClick(name, row) {
         switch (name) {
           case'grantMenu':
             this.handleModal(row, this.forms[2])
