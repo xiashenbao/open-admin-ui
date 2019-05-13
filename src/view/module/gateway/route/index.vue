@@ -37,6 +37,9 @@
            width="680"
            @on-cancel="handleReset">
       <Form ref="routeForm" :model="formItem" :rules="formItemRules" :label-width="100">
+        <FormItem label="路由名称" prop="routeName">
+          <Input v-model="formItem.routeName" placeholder="请输入内容"></Input>
+        </FormItem>
         <FormItem label="路由地址" prop="path">
           <Input v-model="formItem.path" placeholder="请输入内容"></Input>
         </FormItem>
@@ -74,9 +77,6 @@
             <Radio label="1">是</Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="描述">
-          <Input v-model="formItem.routeDesc" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
       </Form>
       <div slot="footer">
         <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
@@ -107,6 +107,9 @@
         selectType: 'service',
         selectServiceList: [{serviceId: '', serviceName: '无'}],
         formItemRules: {
+          routeName: [
+            {required: true, message: '路由名称不能为空', trigger: 'blur'}
+          ],
           path: [
             {required: true, message: '路由地址不能为空', trigger: 'blur'}
           ]
@@ -119,9 +122,14 @@
           stripPrefix: 1,
           retryable: 0,
           status: 1,
-          routeDesc: ''
+          routeName: ''
         },
         columns: [
+          {
+            title: '路由名称',
+            key: 'routeName',
+            width: 300
+          },
           {
             title: '路由地址',
             key: 'path',
@@ -152,11 +160,6 @@
             key: 'status',
             slot: 'status',
             width: 100
-          },
-          {
-            title: '描述',
-            key: 'routeDesc',
-            width: 300
           },
           {
             title: '操作',
@@ -190,7 +193,7 @@
           stripPrefix: 1,
           retryable: 0,
           status: 1,
-          routeDesc: ''
+          routeName: ''
         }
         this.formItem = newData
         //重置验证
@@ -234,6 +237,7 @@
         getRoutes({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.records
           this.pageInfo.total = parseInt(res.data.total)
+        }).finally(() => {
           this.loading = false
         })
       },

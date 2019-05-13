@@ -43,6 +43,7 @@ service.interceptors.response.use(
     }
   }, error => {
     let message = ''
+    console.log(error)
     if (error && error.response) {
       switch (error.response.status) {
         case 401:

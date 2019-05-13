@@ -52,6 +52,8 @@
 
 
 
+
+
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -76,8 +78,12 @@
         重要信息,请妥善保管：AppId：
 
 
+
+
         <Tag color="red">{{formItem.appId}}</Tag>
         AppSecret：
+
+
 
 
         <Tag color="red">{{formItem.appSecret}}</Tag>&nbsp;&nbsp;
@@ -210,12 +216,18 @@
             </Checkbox>
           </CheckboxGroup>
         </FormItem>
-        <FormItem label="访问令牌有效期" prop="accessTokenValidity">
+        <FormItem label="令牌有效期" prop="accessTokenValidity">
+          <RadioGroup v-model="formItem.tokenValidity">
+            <Radio label="0">不限制时长</Radio>
+            <Radio label="1">设置有效期</Radio>
+          </RadioGroup>
+        </FormItem>
+        <FormItem v-show="formItem.tokenValidity === '1'" label="访问令牌有效期" prop="accessTokenValidity">
           <InputNumber :max="43200" :min="900" v-model="formItem.accessTokenValidity"></InputNumber>&nbsp;&nbsp;秒
 
 
         </FormItem>
-        <FormItem label="刷新令牌有效期" prop="refreshTokenValidity">
+        <FormItem v-show="formItem.tokenValidity === '1'" label="刷新令牌有效期" prop="refreshTokenValidity">
           <InputNumber :max="2592000" :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>&nbsp;&nbsp;秒
 
 
@@ -378,7 +390,8 @@
           accessTokenValidity: 43200,
           refreshTokenValidity: 2592000,
           expireTime: '',
-          isExpired: false
+          isExpired: false,
+          tokenValidity: '1'
         },
         columns: [
           {
@@ -541,11 +554,12 @@
           accessTokenValidity: 43200,
           refreshTokenValidity: 2592000,
           expireTime: '',
-          isExpired: false
+          isExpired: false,
+          tokenValidity: '1'
         }
         this.formItem = newData
         this.forms.map(form => {
-            this.handleResetForm(form)
+          this.handleResetForm(form)
         })
         this.current = this.forms[0]
         this.modalVisible = false
@@ -586,6 +600,10 @@
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
+              if (this.formItem.tokenValidity === '0') {
+                this.formItem.accessTokenValidity = -1
+                this.formItem.refreshTokenValidity = -1
+              }
               updateAppClientInfo(this.formItem).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('保存成功')

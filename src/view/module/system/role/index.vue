@@ -487,7 +487,7 @@
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key = item.userId
-              item.label = `${item.userId} - ${item.userName}(${item.nickName})`
+              item.label = `${item.userName}(${item.nickName}) - ${item.userId}`
             })
             that.selectUsers = res1.data
           }
