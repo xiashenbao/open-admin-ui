@@ -22,7 +22,7 @@ export const login = ({username, password}) => {
  */
 export const logout = () => {
   return request({
-    url: 'logout',
+    url: 'admin/logout',
     method: 'get'
   })
 }

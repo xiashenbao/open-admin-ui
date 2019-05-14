@@ -3,11 +3,8 @@ import request from '@/libs/request'
 export const refreshGateway = () => {
   const data = {}
   return request({
-    url: 'actuator/refresh-base/gateway',
+    url: 'actuator/open/refresh',
     data,
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    },
     method: 'post'
   })
 }
