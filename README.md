@@ -10,6 +10,15 @@
 
 ##### 请随手给个Star! 感谢支持！
 
+
+#### 按钮权限控制
+ 全局函数
+ hasAuthority('权限标识1,权限标识2') 多个用,号隔开  
+ ```html
+ <Button v-show="hasAuthority('ACTION_systemUserCreate')" type="primary"
+                   @click="handleModal()">
+ ```
+
 <a target="_blank" href="https://gitee.com/liuyadu">服务端源码-码云</a>  
 
 <a target="_blank" href="https://github.com/liuyadu/">服务端源码-Github</a>  

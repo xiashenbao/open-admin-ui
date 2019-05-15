@@ -218,17 +218,17 @@
         </FormItem>
         <FormItem label="令牌有效期" prop="accessTokenValidity">
           <RadioGroup v-model="formItem.tokenValidity">
-            <Radio label="0">不限制时长</Radio>
             <Radio label="1">设置有效期</Radio>
+            <Radio label="0">不限制</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem v-show="formItem.tokenValidity === '1'" label="访问令牌有效期" prop="accessTokenValidity">
-          <InputNumber :max="43200" :min="900" v-model="formItem.accessTokenValidity"></InputNumber>&nbsp;&nbsp;秒
+          <InputNumber  :min="900" v-model="formItem.accessTokenValidity"></InputNumber>&nbsp;&nbsp;秒
 
 
         </FormItem>
         <FormItem v-show="formItem.tokenValidity === '1'" label="刷新令牌有效期" prop="refreshTokenValidity">
-          <InputNumber :max="2592000" :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>&nbsp;&nbsp;秒
+          <InputNumber  :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>&nbsp;&nbsp;秒
 
 
         </FormItem>
@@ -362,10 +362,10 @@
             {required: true, type: 'array', min: 1, message: '用户授权范围不能为空', trigger: 'blur'}
           ],
           accessTokenValidity: [
-            {required: true, type: 'integer', max: 43200, min: 900, message: '访问令牌有效期900-43200', trigger: 'blur'}
+            {required: true, type: 'integer', min: 900, message: '访问令牌有效期不能少于900', trigger: 'blur'}
           ],
           refreshTokenValidity: [
-            {required: true, type: 'integer', max: 2592000, min: 900, message: '刷新令牌有效期900-2592000', trigger: 'blur'}
+            {required: true, type: 'integer',  min: 900, message: '刷新令牌有效期不能少于900', trigger: 'blur'}
           ],
         },
         formItem: {
@@ -415,7 +415,7 @@
             width: 200
           },
           {
-            title: '用户',
+            title: '开发者',
             key: 'userName',
             width: 200
           },
@@ -760,6 +760,7 @@
             this.formItem.accessTokenValidity = res.data.access_token_validity
             this.formItem.refreshTokenValidity = res.data.refresh_token_validity
             this.formItem.autoApproveScopes = res.data.autoapprove ? res.data.autoapprove : []
+            this.formItem.tokenValidity = this.formItem.accessTokenValidity === -1 ? '0':'1';
           }
           this.modalVisible = true
         })

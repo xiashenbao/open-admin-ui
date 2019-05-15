@@ -23,7 +23,7 @@
 
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('operation:systemUserCreate')" type="primary"
+          <Button v-show="hasAuthority('ACTION_systemUserCreate')" type="primary"
                   @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
@@ -559,11 +559,11 @@
             if (res2.code === 0 && res2.data && res2.data.length > 0) {
               res2.data.map(item => {
                 // 菜单权限
-                if (item.authority.indexOf('menu:') != -1) {
+                if (item.authority.indexOf('MENU_') != -1) {
                   that.formItem.grantMenus.push(item.authorityId)
                 }
                 // 操作权限
-                if (item.authority.indexOf('operation:') != -1) {
+                if (item.authority.indexOf('ACTION_') != -1) {
                   that.formItem.grantOperations.push(item.authorityId)
                 }
               })

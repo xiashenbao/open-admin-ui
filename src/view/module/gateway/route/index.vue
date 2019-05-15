@@ -105,7 +105,7 @@
           limit: 10
         },
         selectType: 'service',
-        selectServiceList: [{serviceId: '', serviceName: '无'}],
+        selectServiceList: [],
         formItemRules: {
           routeName: [
             {required: true, message: '路由名称不能为空', trigger: 'blur'}
