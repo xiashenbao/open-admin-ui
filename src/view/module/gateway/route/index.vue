@@ -51,9 +51,7 @@
         </FormItem>
         <FormItem v-if="selectType==='service'" label="服务名称" prop="serviceId"
                   :rules="{required: true, message: '服务名称不能为空', trigger: 'blur'}">
-          <Select v-model="formItem.serviceId">
-            <Option v-for="item in selectServiceList" :value="item.serviceId">{{ item.serviceName }}</Option>
-          </Select>
+          <Input v-model="formItem.serviceId" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem v-if="selectType==='url'" label="服务地址" prop="url"
                   :rules="{required: true, message: '服务地址不能为空', trigger: 'blur'}">
@@ -88,7 +86,6 @@
 
 <script>
   import {getRoutes, updateRoute, addRoute, removeRoute} from '@/api/route'
-  import {getServiceList} from '@/api/data'
   import {refreshGateway} from '@/api/gateway'
 
   export default {
@@ -174,10 +171,10 @@
     methods: {
       handleModal (data) {
         if (data) {
-          this.modalTitle = '编辑角色'
+          this.modalTitle = '编辑路由'
           this.formItem = Object.assign({}, this.formItem, data)
         } else {
-          this.modalTitle = '添加角色'
+          this.modalTitle = '添加路由'
         }
         this.formItem.status = this.formItem.status + ''
         this.formItem.stripPrefix = this.formItem.stripPrefix + ''
@@ -270,13 +267,6 @@
             break
         }
       },
-      handleLoadServiceList () {
-        getServiceList().then(res => {
-          if (res.code === 0) {
-            this.selectServiceList.push(...res.data)
-          }
-        })
-      },
       handleRefreshGateway () {
         this.$Modal.confirm({
           title: '提示',
@@ -293,7 +283,6 @@
     },
     mounted: function () {
       this.handleSearch()
-      this.handleLoadServiceList()
     }
   }
 </script>
