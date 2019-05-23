@@ -38,15 +38,6 @@ npm run dev
 npm run build
 ```
 
-### 将package.json中的依赖包版本号更新为最新版本。
-    安装：
-    npm install -g npm-check-updates
-    使用：
-    检查package.json中dependencies的最新版本：
-    ncu
-    更新dependencies到新版本：
-    ncu -u
-
 ### 功能预览
 
 <table>
