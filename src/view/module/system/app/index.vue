@@ -48,12 +48,7 @@
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">
-              更多
-
-
-
-
-
+              <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -75,17 +70,9 @@
            @on-cancel="handleReset"
            width="800">
       <Alert v-if="formItem.appId?true:false" show-icon>
-        重要信息,请妥善保管：AppId：
-
-
-
-
+        <span>重要信息,请妥善保管：AppId：</span>
         <Tag color="red">{{formItem.appId}}</Tag>
-        AppSecret：
-
-
-
-
+        <span>AppSecret：</span>
         <Tag color="red">{{formItem.appSecret}}</Tag>&nbsp;&nbsp;
         <Poptip
           confirm
@@ -223,14 +210,12 @@
           </RadioGroup>
         </FormItem>
         <FormItem v-show="formItem.tokenValidity === '1'" label="访问令牌有效期" prop="accessTokenValidity">
-          <InputNumber  :min="900" v-model="formItem.accessTokenValidity"></InputNumber>&nbsp;&nbsp;秒
-
-
+          <InputNumber :min="900" v-model="formItem.accessTokenValidity"></InputNumber>
+          <span>&nbsp;&nbsp;秒</span>
         </FormItem>
         <FormItem v-show="formItem.tokenValidity === '1'" label="刷新令牌有效期" prop="refreshTokenValidity">
-          <InputNumber  :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>&nbsp;&nbsp;秒
-
-
+          <InputNumber :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>
+          <span>&nbsp;&nbsp;秒</span>
         </FormItem>
         <FormItem label="第三方授权回掉地址" prop="redirectUrls">
           <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
@@ -365,7 +350,7 @@
             {required: true, type: 'integer', min: 900, message: '访问令牌有效期不能少于900', trigger: 'blur'}
           ],
           refreshTokenValidity: [
-            {required: true, type: 'integer',  min: 900, message: '刷新令牌有效期不能少于900', trigger: 'blur'}
+            {required: true, type: 'integer', min: 900, message: '刷新令牌有效期不能少于900', trigger: 'blur'}
           ],
         },
         formItem: {
@@ -760,7 +745,7 @@
             this.formItem.accessTokenValidity = res.data.access_token_validity
             this.formItem.refreshTokenValidity = res.data.refresh_token_validity
             this.formItem.autoApproveScopes = res.data.autoapprove ? res.data.autoapprove : []
-            this.formItem.tokenValidity = this.formItem.accessTokenValidity === -1 ? '0':'1';
+            this.formItem.tokenValidity = this.formItem.accessTokenValidity === -1 ? '0' : '1';
           }
           this.modalVisible = true
         })

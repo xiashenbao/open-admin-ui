@@ -15,10 +15,10 @@
           <Badge v-else="" status="error" text="暂停"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">
-            编辑</a>&nbsp;
+          <a @click="handleModal(row)">编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">更多
+            <a href="javascript:void(0)">
+              <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -100,7 +100,7 @@
           ]
         },
         formItem: {
-          newData:true,
+          newData: true,
           jobName: '',
           jobDescription: '',
           cron: '',
@@ -169,7 +169,7 @@
           this.formItem.method = data.data.method
           this.formItem.contentType = data.data.contentType
           this.formItem.alarmMail = data.data.alarmMail
-          this.formItem.newData= false
+          this.formItem.newData = false
         } else {
           this.modalTitle = '添加任务'
         }
@@ -180,7 +180,7 @@
       },
       handleReset () {
         const newData = {
-          newData:true,
+          newData: true,
           jobName: '',
           jobDescription: '',
           cron: '',
@@ -294,7 +294,7 @@
       },
       handleOnSelectChange(value){
         let api = {}
-         this.selectApis.some(item => {
+        this.selectApis.some(item => {
           if (item.path === value) {
             api = item
             return true
@@ -306,7 +306,7 @@
         this.formItem.method = api.requestMethod
       },
       handleClick(name, row) {
-          console.log(name)
+        console.log(name)
         switch (name) {
           case 'pause':
             this.handlePause(row)

@@ -1,7 +1,6 @@
 <template>
   <div>
     <Card shadow>
-
       <Form ref="searchForm"
             :model="pageInfo"
             inline
@@ -42,7 +41,7 @@
           <a @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
-              更多
+              <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">

@@ -57,8 +57,8 @@
           <a @click="handleModal(row)">
             编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">更多
-
+            <a href="javascript:void(0)">
+              <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
@@ -77,8 +77,7 @@
            width="680"
            @on-cancel="handleReset">
       <Alert show-icon v-if="formItem.apiId?true:false">
-        接口信息部分内容,需要在接口定义时修改。
-
+        <span>接口信息部分内容,需要在接口定义时修改。</span>
         <Poptip placement="bottom" title="示例代码">
           <a>示例代码</a>
           <div slot="content">

@@ -33,9 +33,7 @@
           <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">编辑</a>&nbsp;
           <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配权限</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">更多
-
-            </a>
+            <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">更多</a>
             <DropdownMenu slot="list">
               <DropdownItem name="addUser">添加成员</DropdownItem>
               <DropdownItem name="remove">删除角色</DropdownItem>
