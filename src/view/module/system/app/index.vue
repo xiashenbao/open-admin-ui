@@ -21,7 +21,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('systemAppCreate')"  class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -52,10 +52,10 @@
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="clientInfo">开发配置</DropdownItem>
-              <DropdownItem name="grantApi">接口授权</DropdownItem>
-              <DropdownItem name="resetSecret">重置密钥</DropdownItem>
-              <DropdownItem name="remove">删除应用</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemAppCreate,systemAppEdit')" name="clientInfo">开发配置</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemAppCreate,systemAppEdit')" name="grantApi">接口授权</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemAppCreate,systemAppEdit')" name="resetSecret">重置密钥</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemAppRemove')" name="remove">删除应用</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>
@@ -74,13 +74,7 @@
         <Tag color="red">{{formItem.appId}}</Tag>
         <span>AppSecret：</span>
         <Tag color="red">{{formItem.appSecret}}</Tag>&nbsp;&nbsp;
-        <Poptip
-          confirm
-          placement="left"
-          title="重置后将无法恢复,并影响应用正常使用.确定继续吗？"
-          @on-ok="handleResetSecret(formItem)">
-          <a>重置密钥</a>
-        </Poptip>
+        <a @click="handleResetSecret(formItem)">重置密钥</a>
       </Alert>
       <Form ref="form1" v-show="current=='form1'" :model="formItem" :rules="formItemRules" :label-width="135">
         <FormItem label="应用图标">
@@ -127,13 +121,6 @@
             </Option>
           </Select>
         </FormItem>
-        <FormItem label="开发者类型" prop="userType">
-          <RadioGroup v-model="formItem.userType">
-            <Radio disabled label="platform">平台</Radio>
-            <Radio disabled label="isp">服务提供商</Radio>
-            <Radio disabled label="dev">自研开发者</Radio>
-          </RadioGroup>
-        </FormItem>
         <FormItem label="应用名称" prop="appName">
           <Input v-model="formItem.appName" placeholder="请输入内容"></Input>
         </FormItem>
@@ -160,7 +147,7 @@
             </Radio>
           </RadioGroup>
         </FormItem>
-        <FormItem label="官网" prop="website">
+        <FormItem label="应用官网" prop="website">
           <Input v-model="formItem.website" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="状态">
@@ -217,8 +204,9 @@
           <InputNumber :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>
           <span>&nbsp;&nbsp;秒</span>
         </FormItem>
-        <FormItem label="第三方授权回掉地址" prop="redirectUrls">
+        <FormItem label="第三方登陆回掉地址" prop="redirectUrls">
           <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
+          <span>多个地址使用,逗号隔开</span>
         </FormItem>
       </Form>
       <Form ref="form3" v-show="current=='form3'" :model="formItem" :rules="formItemRules" :label-width="100">
@@ -229,7 +217,8 @@
           </Badge>
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
-        <FormItem label="接口授权(选填)" prop="authorities">
+        <FormItem label="开放接口(选填)" prop="authorities">
+          <Alert type="warning" show-icon>请注意：由于客户端模式可以直接调用接口，为保证接口安全只能选择开放接口资源&nbsp;&nbsp;<a @click="handleGoApi()">开放更多接口</a></Alert>
           <Transfer
             :data="selectApis"
             :list-style="{width: '300px',height: '500px'}"
@@ -798,6 +787,9 @@
         }
         return check
       },
+      handleGoApi(){
+        this.$router.push({name:'systemApi'})
+      }
     },
     mounted: function () {
       this.handleSearch()

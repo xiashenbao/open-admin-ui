@@ -13,9 +13,9 @@
 
 #### 按钮权限控制
  全局函数
- hasAuthority('权限标识1,权限标识2') 多个用,号隔开  
+ hasAuthority('功能编码,功能编码2') 多个用,号隔开  
  ```html
- <Button v-show="hasAuthority('ACTION_systemUserCreate')" type="primary"
+ <Button v-show="hasAuthority('systemUserCreate')" type="primary"
                    @click="handleModal()">
  ```
 

@@ -2,9 +2,9 @@
   <div>
     <div class="search-con search-con-top">
       <ButtonGroup>
-        <Button :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="handleModal()">
+        <Button v-show="hasAuthority('systemMenuCreate')" :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;
-          <span>添加操作</span>
+          <span>添加功能</span>
         </Button>
       </ButtonGroup>
     </div>
@@ -15,13 +15,13 @@
         <span>{{row.operationName}}</span>
       </template>
       <template slot="operation" slot-scope="{ row }">
-        <a @click="handleModal(row)">编辑</a> &nbsp;
-        <a @click="handleModal(row,forms[1])">绑定API</a> &nbsp;
+        <a v-show="hasAuthority('systemMenuEdit')" @click="handleModal(row)">编辑</a> &nbsp;
+        <a v-show="hasAuthority('systemMenuCreate,systemMenuEdit')" @click="handleModal(row,forms[1])">接口授权</a> &nbsp;
         <Poptip
           confirm
           title="确定删除吗?"
           @on-ok="handleRemove(row)">
-          <a>删除</a>
+          <a v-show="hasAuthority('systemMenuRemove')">删除</a>
         </Poptip>
       </template>
     </Table>
@@ -33,10 +33,10 @@
         <FormItem label="所属菜单">
           <Input disabled v-model="value.menuName"></Input>
         </FormItem>
-        <FormItem label="操作标识" prop="operationCode">
+        <FormItem label="功能标识" prop="operationCode">
           <Input v-model="formItem.operationCode" placeholder="请输入内容"></Input>
         </FormItem>
-        <FormItem label="操作名称" prop="operationName">
+        <FormItem label="功能名称" prop="operationName">
           <Input v-model="formItem.operationName" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="优先级">
@@ -53,7 +53,8 @@
         </FormItem>
       </Form>
       <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="绑定接口(选填)" prop="authorities">
+        <Alert type="warning" show-icon>请注意：功能需绑定相关操作接口,请求服务器时将验证接口访问权限！</Alert>
+        <FormItem label="接口资源(选填)" prop="authorities">
           <Transfer
             :data="selectApis"
             :list-style="{width: '300px',height: '500px'}"
@@ -93,7 +94,7 @@
       const validateEn = (rule, value, callback) => {
         let reg = /^[_a-zA-Z0-9]+$/
         if (value === '') {
-          callback(new Error('操作标识不能为空'))
+          callback(new Error('功能标识不能为空'))
         } else if (value !== '' && !reg.test(value)) {
           callback(new Error('只允许字母、数字、下划线'))
         } else {
@@ -114,10 +115,10 @@
         selectApis: [],
         formItemRules: {
           operationCode: [
-            {required: true, validator: validateEn, message: '操作编码不能为空', trigger: 'blur'}
+            {required: true, validator: validateEn, message: '功能编码不能为空', trigger: 'blur'}
           ],
           operationName: [
-            {required: true, message: '操作名称不能为空', trigger: 'blur'}
+            {required: true, message: '功能名称不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -132,12 +133,12 @@
         },
         columns: [
           {
-            title: '操作名称',
+            title: '功能名称',
             slot: 'status',
             width: 200
           },
           {
-            title: '操作编码',
+            title: '功能编码',
             key: 'operationCode',
             width: 150
           },
@@ -160,11 +161,11 @@
           step = this.forms[0]
         }
         if (step === this.forms[0]) {
-          this.modalTitle = data ? '编辑操作 - ' + this.value.menuName + ' > ' + data.operationName : '添加操作 - ' + this.value.menuName
+          this.modalTitle = data ? '编辑功能 - ' + this.value.menuName + ' > ' + data.operationName : '添加功能 - ' + this.value.menuName
           this.modalVisible = true
         }
         if (step === this.forms[1]) {
-          this.modalTitle = data ? '绑定API - ' + this.value.menuName + ' > ' + data.operationName : '绑定API'
+          this.modalTitle = data ? '接口授权 - ' + this.value.menuName + ' > ' + data.operationName : '接口授权'
           this.handleLoadOperationApi(this.formItem.operationId)
         }
         this.current = step

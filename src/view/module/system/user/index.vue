@@ -22,7 +22,7 @@
 
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('ACTION_systemUserCreate')" type="primary"
+          <Button v-show="hasAuthority('systemUserCreate')" type="primary"
                   @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
@@ -30,24 +30,24 @@
         </ButtonGroup>
       </div>
 
-      <Table :columns="columns" border :data="data" :loading="loading">
+      <Table :columns="columns"  :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="正常"/>
           <Badge v-else-if="row.status===2" status="success" text="锁定"/>
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">编辑</a>&nbsp;
-          <a @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
+          <a v-show="hasAuthority('systemUserEdit')"  @click="handleModal(row)">编辑</a>&nbsp;
+          <a v-show="hasAuthority('systemUserCreate,systemUserEdit')"  @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="grantMenu">分配特殊权限</DropdownItem>
-              <DropdownItem name="updatePassword">修改密码</DropdownItem>
-              <DropdownItem v-if="row.email?true:false" name="sendToEmail">发送到密保邮箱</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemUserCreate,systemUserEdit')"  name="grantMenu">分配私人菜单</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemUserCreate,systemUserEdit')"  name="updatePassword">修改密码</DropdownItem>
+              <DropdownItem v-if="row.email && hasAuthority('systemUserCreate,systemUserEdit')?true:false" name="sendToEmail">发送到密保邮箱</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -113,7 +113,8 @@
           </Badge>
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
-        <FormItem label="分配权限(选填)" prop="grantMenus">
+        <FormItem label="功能菜单(选填)" prop="grantMenus">
+          <Alert type="warning" show-icon>请注意：用户可以分配除所属角色下以外的菜单功能！ 可以判断 owner='role' 禁止勾选,这里的插件有有问题没法做到！</Alert>
           <tree-table
             ref="tree"
             style="max-height:500px;overflow: auto"
@@ -393,7 +394,7 @@
           this.handleLoadRoles(this.formItem.userId)
         }
         if (step === this.forms[2]) {
-          this.modalTitle = data ? '分配特殊权限 - ' + data.userName : '分配特殊权限'
+          this.modalTitle = data ? '分配私人菜单 - ' + data.userName : '分配私人菜单'
           this.handleLoadUserGranted(this.formItem.userId)
         }
         if (step === this.forms[3]) {

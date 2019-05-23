@@ -18,7 +18,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('systemRoleCreate')" class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -31,12 +31,12 @@
         </template>
         <template slot="action" slot-scope="{ row }">
           <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">编辑</a>&nbsp;
-          <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配权限</a>&nbsp;
+          <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配菜单</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">更多</a>
             <DropdownMenu slot="list">
-              <DropdownItem name="addUser">添加成员</DropdownItem>
-              <DropdownItem name="remove">删除角色</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemRoleCreate,systemRoleEdit')" name="addUser">添加成员</DropdownItem>
+              <DropdownItem v-show="hasAuthority('systemRoleRemove')" name="remove">删除角色</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -75,7 +75,7 @@
           </Badge>
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
-        <FormItem label="分配权限(选填)" prop="grantMenus">
+        <FormItem label="功能菜单(选填)" prop="grantMenus">
           <tree-table
             ref="tree"
             style="max-height:500px;overflow: auto"
@@ -485,7 +485,7 @@
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key = item.userId
-              item.label = `${item.userName}(${item.nickName}) - ${item.userId}`
+              item.label = `${item.userName}(${item.nickName})`
             })
             that.selectUsers = res1.data
           }

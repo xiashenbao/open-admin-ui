@@ -24,9 +24,9 @@
         <Card shadow>
           <div class="search-con search-con-top">
             <ButtonGroup>
-              <Button type="primary" @click="setEnabled(true)">添加</Button>
-              <Button type="primary" :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
-              <Button type="primary" :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
+              <Button type="primary" v-show="hasAuthority('systemMenuCreate')"  @click="setEnabled(true)">添加</Button>
+              <Button type="primary" v-show="hasAuthority('systemMenuEdit')"  :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
+              <Button type="primary" v-show="hasAuthority('systemMenuRemove')"  :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
             </ButtonGroup>
             <Modal
               v-model="confirmModal"
@@ -92,7 +92,7 @@
               <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem>
-              <Button :disabled="disabled" @click="handleSubmit" :loading="saving" type="primary">保存</Button>
+              <Button :disabled="disabled" @click="handleSubmit"  :loading="saving" type="primary">保存</Button>
               <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
             </FormItem>
           </Form>

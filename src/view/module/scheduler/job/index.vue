@@ -3,7 +3,7 @@
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('jobIndexCreate')" class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -15,16 +15,16 @@
           <Badge v-else="" status="error" text="暂停"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">编辑</a>&nbsp;
+          <a  v-show="hasAuthority('jobIndexEdit')" @click="handleModal(row)">编辑</a>&nbsp;
           <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">
+            <a  href="javascript:void(0)">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem v-if="row.jobStatus ==='NORMAL'" name="pause">暂停任务</DropdownItem>
-              <DropdownItem v-if="row.jobStatus ==='PAUSED'" name="resume">恢复任务</DropdownItem>
-              <DropdownItem name="remove">删除任务</DropdownItem>
+              <DropdownItem v-if="row.jobStatus ==='NORMAL' && hasAuthority('jobIndexCreate.jobIndexEdit')?true:false" name="pause">暂停任务</DropdownItem>
+              <DropdownItem v-if="row.jobStatus ==='PAUSED'  && hasAuthority('jobIndexCreate.jobIndexEdit')?true:false" name="resume">恢复任务</DropdownItem>
+              <DropdownItem v-show="hasAuthority('jobIndexRemove')" name="remove">删除任务</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>

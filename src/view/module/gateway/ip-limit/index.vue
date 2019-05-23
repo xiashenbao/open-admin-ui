@@ -15,7 +15,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('gatewayIpLimitCreate')"  class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -27,9 +27,9 @@
           <Tag color="red" v-else="">拒绝-黑名单</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)">
+          <a v-show="hasAuthority('gatewayIpLimitCreate,gatewayIpLimitEdit')" @click="handleModal(row)">
             编辑</a>&nbsp;
-          <a @click="handleModal(row,forms[1])">
+          <a v-show="hasAuthority('gatewayIpLimitCreate,gatewayIpLimitEdit')" @click="handleModal(row,forms[1])">
             绑定API
           </a>
           &nbsp;
@@ -39,7 +39,7 @@
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem name="remove">删除</DropdownItem>
+              <DropdownItem v-show="hasAuthority('gatewayIpLimitRemove')" name="remove">删除</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>
