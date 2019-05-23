@@ -52,6 +52,9 @@ service.interceptors.response.use(
         case 403:
           message = error.response.data.path + ',' + error.response.data.message
           break
+        case 502:
+          message = '连接服务器失败'
+          break
         default:
           message = error.response.data.message ? error.response.data.message : '服务器错误'
           break
