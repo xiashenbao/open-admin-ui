@@ -8,7 +8,7 @@
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
           <Form ref="loginForm" :model="form" :rules="rules" @keydown.enter.native="handleSubmit">
-            <FormItem prop="userName">
+            <FormItem prop="username">
               <Input v-model="form.username" placeholder="请输入用户名\手机号\邮箱"/>
               <span slot="prepend">
                 <Icon :size="16" type="ios-person"></Icon>
