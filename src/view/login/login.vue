@@ -67,8 +67,8 @@
       return {
         loading:false,
         form: {
-          username: 'admin',
-          password: '123456',
+          username: '',
+          password: '',
           auto: true,
         },
         config: {}
