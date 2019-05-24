@@ -67,7 +67,7 @@
 </template>
 
 <script>
-  import {updateMyUserInfo} from '@/api/user'
+  import {updateCurrentUserInfo} from '@/api/user'
   export default {
     name: 'message_page',
     data () {
@@ -86,7 +86,7 @@
         if (form === 'userForm') {
           this.$refs['userForm'].validate((valid) => {
             if (valid) {
-              updateMyUserInfo(this.profile).then(res => {
+              updateCurrentUserInfo(this.profile).then(res => {
                 if (res.code === 0) {
                   this.$Message.success('修改成功')
                   this.$store.commit("setAvatar",this.profile.avatar)

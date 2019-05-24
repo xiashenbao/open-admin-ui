@@ -31,7 +31,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemApiCreate')" class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('systemApiEdit')" class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -54,15 +54,15 @@
           <Tag v-else-if="row.isOpen!==1">未开放</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('systemApiCreate,systemApiEdit')"  @click="handleModal(row)">
+          <a v-show="hasAuthority('systemApiEdit')"  @click="handleModal(row)">
             编辑</a>&nbsp;
-          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
+          <Dropdown v-show="hasAuthority('systemApiEdit')"  transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem v-show="hasAuthority('systemApiRemove')"  name="remove">删除接口</DropdownItem>
+              <DropdownItem  name="remove">删除接口</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>

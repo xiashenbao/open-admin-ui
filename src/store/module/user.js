@@ -1,4 +1,4 @@
-import {login, logout, getUserInfo, getMyMenuAuthority} from '@/api/user'
+import {login, logout, getUserInfo, getCurrentUserMenu} from '@/api/user'
 import {setToken, getToken} from '@/libs/util'
 
 export default {
@@ -108,7 +108,7 @@ export default {
             // 转换权限
             commit('setAccess',access)
             commit('setHasGetInfo', true)
-            getMyMenuAuthority().then(res => {
+            getCurrentUserMenu().then(res => {
               if (res.code === 0) {
                 commit('setUserMenus', res.data)
                 resolve(state)

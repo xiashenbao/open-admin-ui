@@ -21,7 +21,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemAppCreate')"  class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('systemAppEdit')"  class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -44,18 +44,18 @@
           <Tag color="blue" v-else="">手机网页应用</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)" :disabled="row.appId === 'gateway' ?true:false">
+          <a v-show="hasAuthority('systemAppEdit')" @click="handleModal(row)" :disabled="row.appId === 'gateway' ?true:false">
             编辑</a>&nbsp;
-          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
+          <Dropdown v-show="hasAuthority('systemAppEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem v-show="hasAuthority('systemAppCreate,systemAppEdit')" name="clientInfo">开发配置</DropdownItem>
-              <DropdownItem v-show="hasAuthority('systemAppCreate,systemAppEdit')" name="grantApi">接口授权</DropdownItem>
-              <DropdownItem v-show="hasAuthority('systemAppCreate,systemAppEdit')" name="resetSecret">重置密钥</DropdownItem>
-              <DropdownItem v-show="hasAuthority('systemAppRemove')" name="remove">删除应用</DropdownItem>
+              <DropdownItem  name="clientInfo">开发配置</DropdownItem>
+              <DropdownItem  name="grantApi">接口授权</DropdownItem>
+              <DropdownItem  name="resetSecret">重置密钥</DropdownItem>
+              <DropdownItem  name="remove">删除应用</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>
@@ -221,7 +221,7 @@
           <Alert type="warning" show-icon>请注意：由于客户端模式可以直接调用接口，为保证接口安全只能选择开放接口资源&nbsp;&nbsp;<a @click="handleGoApi()">开放更多接口</a></Alert>
           <Transfer
             :data="selectApis"
-            :list-style="{width: '300px',height: '500px'}"
+            :list-style="{width: '300px',height: '450px'}"
             :titles="['选择接口', '已选择接口']"
             :render-format="transferRender"
             :target-keys="formItem.authorities"
@@ -243,9 +243,9 @@
   import {getAllUsers} from '@/api/user'
   import {startWith, listConvertGroup} from '@/libs/util'
   import {
-    getApiAuthorityList,
-    getAppGrantedAuthority,
-    grantAppAuthority
+    getAuthorityApi,
+    getAuthorityApp,
+    grantAuthorityApp
   } from '@/api/authority'
 
   export default {
@@ -595,7 +595,7 @@
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              grantAppAuthority({
+              grantAuthorityApp({
                 appId: this.formItem.appId,
                 expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern('yyyy-MM-dd HH:mm:ss') : '',
                 authorityIds: this.formItem.authorities
@@ -696,15 +696,15 @@
           return
         }
         const that = this
-        const p1 = getApiAuthorityList()
-        const p2 = getAppGrantedAuthority(appId)
+        const p1 = getAuthorityApi('',1)
+        const p2 = getAuthorityApp(appId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
           let res2 = values[1]
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key = item.authorityId
-              item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
+              item.label = `${item.prefix.replace('/**','')}${item.path} - ${item.apiName}`
               item.disabled = item.path === '/**'
             })
             that.selectApis = res1.data
@@ -740,7 +740,7 @@
         })
       },
       transferRender (item) {
-        return `<span  title="${item.label}">${item.label}`
+        return `<span  title="${item.label}">${item.label}</span>`
       },
       handleTransferChange (newTargetKeys, direction, moveKeys) {
         if (newTargetKeys.indexOf('1') != -1) {

@@ -18,7 +18,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemRoleCreate')" class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('systemRoleEdit')" class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -30,13 +30,15 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">编辑</a>&nbsp;
-          <a @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配菜单</a>&nbsp;
-          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">更多</a>
+          <a v-show="hasAuthority('systemRoleEdit')" @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">编辑</a>&nbsp;
+          <a v-show="hasAuthority('systemRoleEdit')" @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配菜单</a>&nbsp;
+          <Dropdown v-show="hasAuthority('systemRoleEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
+            <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">
+              <span>更多</span>
+              <Icon type="ios-arrow-down"></Icon></a>
             <DropdownMenu slot="list">
-              <DropdownItem v-show="hasAuthority('systemRoleCreate,systemRoleEdit')" name="addUser">添加成员</DropdownItem>
-              <DropdownItem v-show="hasAuthority('systemRoleRemove')" name="remove">删除角色</DropdownItem>
+              <DropdownItem  name="addUser">添加成员</DropdownItem>
+              <DropdownItem  name="remove">删除角色</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -87,9 +89,9 @@
             :columns="columns2"
             :data="selectMenus">
             <template slot="operation" slot-scope="scope">
-              <CheckboxGroup v-model="formItem.grantOperations">
-                <Checkbox v-for="item in scope.row.operationList" :label="item.authorityId">
-                  <span :title="item.operationDesc">{{item.operationName}}</span>
+              <CheckboxGroup v-model="formItem.grantActions">
+                <Checkbox v-for="item in scope.row.actionList" :label="item.authorityId">
+                  <span :title="item.actionDesc">{{item.actionName}}</span>
                 </Checkbox>
               </CheckboxGroup>
             </template>
@@ -121,9 +123,9 @@
   import {getRoles, updateRole, addRole, removeRole, getRoleUsers, addRoleUsers} from '@/api/role'
   import {getAllUsers} from '@/api/user'
   import {
-    getMenuAuthorityList,
-    getRoleGrantedAuthority,
-    grantRoleAuthority
+    getAuthorityMenu,
+    getAuthorityRole,
+    grantAuthorityRole
   } from '@/api/authority'
   import {startWith, listConvertTree} from '@/libs/util'
 
@@ -184,7 +186,7 @@
           priority: 0,
           roleDesc: '',
           grantMenus: [],
-          grantOperations: [],
+          grantActions: [],
           expireTime: '',
           isExpired: false,
           userIds: []
@@ -302,7 +304,7 @@
           priority: 0,
           roleDesc: '',
           grantMenus: [],
-          grantOperations: [],
+          grantActions: [],
           expireTime: '',
           isExpired: false,
           userIds: []
@@ -314,7 +316,7 @@
         })
         this.current = this.forms[0]
         this.formItem.grantMenus = []
-        this.formItem.grantOperations = []
+        this.formItem.grantActions = []
         this.modalVisible = false
         this.saving = false
       },
@@ -353,7 +355,7 @@
             if (valid) {
               const authorityIds = this.getCheckedAuthorities()
               this.saving = true
-              grantRoleAuthority({
+              grantAuthorityRole({
                 roleId: this.formItem.roleId,
                 expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern('yyyy-MM-dd HH:mm:ss') : '',
                 authorityIds: authorityIds
@@ -426,15 +428,15 @@
       },
       getCheckedAuthorities () {
         const menus = this.$refs['tree'].getCheckedProp('authorityId')
-        return menus.concat(this.formItem.grantOperations)
+        return menus.concat(this.formItem.grantActions)
       },
       handleLoadRoleGranted (roleId) {
         if (!roleId) {
           return
         }
         const that = this
-        const p1 = getMenuAuthorityList()
-        const p2 = getRoleGrantedAuthority(roleId)
+        const p1 = getAuthorityMenu()
+        const p2 = getAuthorityRole(roleId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
           let res2 = values[1]
@@ -452,7 +454,7 @@
                 }
                 // 操作权限
                 if (item.authority.indexOf('ACTION_') != -1) {
-                  that.formItem.grantOperations.push(item.authorityId)
+                  that.formItem.grantActions.push(item.authorityId)
                 }
               })
               // 时间
@@ -498,7 +500,7 @@
         })
       },
       transferRender (item) {
-        return `<span  title="${item.label}">${item.label}`
+        return `<span  title="${item.label}">${item.label}</span>`
       },
       handleTransferChange (newTargetKeys, direction, moveKeys) {
         this.formItem.userIds = newTargetKeys

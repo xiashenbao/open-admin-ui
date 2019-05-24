@@ -3,7 +3,7 @@
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('gatewayRouteCreate')"  class="search-btn" type="primary" @click="handleModal()">
+          <Button v-show="hasAuthority('gatewayRouteEdit')"  class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -16,15 +16,15 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('gatewayRouteCreate,gatewayRouteEdit')"  @click="handleModal(row)">
+          <a v-show="hasAuthority('gatewayRouteEdit')"  @click="handleModal(row)">
             编辑</a>&nbsp;
-          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
+          <Dropdown v-show="hasAuthority('gatewayRouteEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem v-show="hasAuthority('gatewayRouteRemove')"  name="remove">删除</DropdownItem>
+              <DropdownItem  name="remove">删除</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>

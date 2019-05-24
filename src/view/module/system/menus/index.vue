@@ -24,9 +24,9 @@
         <Card shadow>
           <div class="search-con search-con-top">
             <ButtonGroup>
-              <Button type="primary" v-show="hasAuthority('systemMenuCreate')"  @click="setEnabled(true)">添加</Button>
-              <Button type="primary" v-show="hasAuthority('systemMenuEdit')"  :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
-              <Button type="primary" v-show="hasAuthority('systemMenuRemove')"  :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
+              <Button type="primary"  @click="setEnabled(true)">添加</Button>
+              <Button type="primary"  :disabled="formItem.menuId?false:true" @click="setEnabled(false)">编辑</Button>
+              <Button type="primary"  :disabled="formItem.menuId?false:true" @click="confirmModal = true">删除</Button>
             </ButtonGroup>
             <Modal
               v-model="confirmModal"
@@ -50,7 +50,7 @@
             <FormItem label="菜单名称" prop="menuName">
               <Input :disabled="disabled" v-model="formItem.menuName" placeholder="请输入内容"></Input>
             </FormItem>
-            <FormItem label="请求地址" prop="path">
+            <FormItem label="页面地址" prop="path">
               <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
                 <Select :disabled="disabled" v-model="formItem.prefix" slot="prepend" style="width: 80px">
                   <Option value="/">/</Option>
@@ -62,6 +62,7 @@
                   <Option value="_blank">新窗口打开</Option>
                 </Select>
               </Input>
+              <span>前端组件所在位置：/view/module/{{formItem.path}}.vue</span>
             </FormItem>
             <FormItem label="图标">
               <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容">
@@ -100,7 +101,7 @@
       </Col>
       <Col :xs="16" :sm="16" :md="16" :lg="8">
         <Card shadow>
-          <menu-operation :value="formItem"></menu-operation>
+          <menu-action :value="formItem"></menu-action>
         </Card>
       </Col>
     </Row>
@@ -110,13 +111,13 @@
 <script>
   import {listConvertTree, updateTreeNode} from '@/libs/util'
   import {getMenus, updateMenu, addMenu, removeMenu} from '@/api/menu'
-  import MenuOperation from './menu-operation'
+  import MenuAction from './menu-action.vue'
   import icons from './icons'
 
   export default {
     name: 'SystemMenu',
     components: {
-      MenuOperation
+      MenuAction
     },
     data () {
       const validateEn = (rule, value, callback) => {

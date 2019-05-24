@@ -22,7 +22,7 @@
 
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemUserCreate')" type="primary"
+          <Button v-show="hasAuthority('systemUserEdit')" type="primary"
                   @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
@@ -38,16 +38,16 @@
         </template>
         <template slot="action" slot-scope="{ row }">
           <a v-show="hasAuthority('systemUserEdit')"  @click="handleModal(row)">编辑</a>&nbsp;
-          <a v-show="hasAuthority('systemUserCreate,systemUserEdit')"  @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
-          <Dropdown transfer ref="dropdown" @on-click="handleClick($event,row)">
+          <a v-show="hasAuthority('systemUserEdit')"  @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
+          <Dropdown v-show="hasAuthority('systemUserEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem v-show="hasAuthority('systemUserCreate,systemUserEdit')"  name="grantMenu">分配私人菜单</DropdownItem>
-              <DropdownItem v-show="hasAuthority('systemUserCreate,systemUserEdit')"  name="updatePassword">修改密码</DropdownItem>
-              <DropdownItem v-if="row.email && hasAuthority('systemUserCreate,systemUserEdit')?true:false" name="sendToEmail">发送到密保邮箱</DropdownItem>
+              <DropdownItem   name="grantMenu">分配私人菜单</DropdownItem>
+              <DropdownItem   name="updatePassword">修改密码</DropdownItem>
+              <DropdownItem   name="sendToEmail">发送到密保邮箱</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -114,7 +114,7 @@
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
         <FormItem label="功能菜单(选填)" prop="grantMenus">
-          <Alert type="warning" show-icon>请注意：用户可以分配除所属角色下以外的菜单功能！ 可以判断 owner='role' 禁止勾选,这里的插件有有问题没法做到！</Alert>
+          <Alert type="warning" show-icon>请注意：用户可以分配除所属角色下以外的菜单功能！ 可以判断 owner='role' 禁止勾选,这里的插件有问题没法做到！</Alert>
           <tree-table
             ref="tree"
             style="max-height:500px;overflow: auto"
@@ -126,9 +126,9 @@
             :columns="columns2"
             :data="selectMenus">
             <template slot="operation" slot-scope="scope">
-              <CheckboxGroup v-model="formItem.grantOperations">
-                <Checkbox v-for="item in scope.row.operationList" :label="item.authorityId">
-                  <span :title="item.operationDesc">{{item.operationName}}</span>
+              <CheckboxGroup v-model="formItem.grantActions">
+                <Checkbox v-for="item in scope.row.actionList" :label="item.authorityId">
+                  <span :title="item.actionDesc">{{item.actionName}}</span>
                 </Checkbox>
               </CheckboxGroup>
             </template>
@@ -159,9 +159,9 @@
   import {getAllRoles} from '@/api/role'
   import {startWith, listConvertTree} from '@/libs/util'
   import {
-    getMenuAuthorityList,
-    getUserGrantedAuthority,
-    grantUserAuthority
+    getAuthorityMenu,
+    getAuthorityUser,
+    grantAuthorityUser
   } from '@/api/authority'
 
   export default {
@@ -253,7 +253,7 @@
           userDesc: '',
           avatar: '',
           grantRoles: [],
-          grantOperations: [],
+          grantActions: [],
           grantMenus: [],
           expireTime: '',
           isExpired: false
@@ -423,7 +423,7 @@
           avatar: '',
           grantRoles: [],
           grantMenus: [],
-          grantOperations: [],
+          grantActions: [],
           expireTime: '',
           isExpired: false
         }
@@ -434,7 +434,7 @@
         })
         this.current = this.forms[0]
         this.formItem.grantMenus = []
-        this.formItem.grantOperations = []
+        this.formItem.grantActions = []
         this.modalVisible = false
         this.saving = false
       },
@@ -490,7 +490,7 @@
             if (valid) {
               const authorityIds = this.getCheckedAuthorities()
               this.saving = true
-              grantUserAuthority({
+              grantAuthorityUser({
                 userId: this.formItem.userId,
                 expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern('yyyy-MM-dd HH:mm:ss') : '',
                 authorityIds: authorityIds
@@ -541,12 +541,12 @@
       },
       getCheckedAuthorities() {
         const menus = this.$refs['tree'].getCheckedProp('authorityId')
-        return menus.concat(this.formItem.grantOperations)
+        return menus.concat(this.formItem.grantActions)
       },
       handleLoadUserGranted(userId) {
         const that = this
-        const p1 = getMenuAuthorityList()
-        const p2 = getUserGrantedAuthority(userId)
+        const p1 = getAuthorityMenu()
+        const p2 = getAuthorityUser(userId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
           let res2 = values[1]
@@ -564,7 +564,7 @@
                 }
                 // 操作权限
                 if (item.authority.indexOf('ACTION_') != -1) {
-                  that.formItem.grantOperations.push(item.authorityId)
+                  that.formItem.grantActions.push(item.authorityId)
                 }
               })
               // 时间

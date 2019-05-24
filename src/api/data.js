@@ -17,7 +17,7 @@ export const saveErrorLogger = info => {
  */
 export const loginConfig = () => {
   return request({
-    url: 'auth/login/other/config',
+    url: 'auth/login/config',
     method: 'get'
   })
 }

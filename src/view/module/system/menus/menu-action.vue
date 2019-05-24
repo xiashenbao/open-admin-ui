@@ -2,9 +2,9 @@
   <div>
     <div class="search-con search-con-top">
       <ButtonGroup>
-        <Button v-show="hasAuthority('systemMenuCreate')" :disabled="value.menuId?false:true" class="search-btn" type="primary" @click="handleModal()">
+        <Button :disabled="value.menuId && value.menuId!=='0' && !value.hasChild?false:true" class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;
-          <span>添加功能</span>
+          <span>添加功能权限</span>
         </Button>
       </ButtonGroup>
     </div>
@@ -12,16 +12,16 @@
       <template slot="status" slot-scope="{ row }">
         <Badge v-if="row.status===1" status="success"/>
         <Badge v-else="" status="error"/>
-        <span>{{row.operationName}}</span>
+        <span>{{row.actionName}}</span>
       </template>
-      <template slot="operation" slot-scope="{ row }">
-        <a v-show="hasAuthority('systemMenuEdit')" @click="handleModal(row)">编辑</a> &nbsp;
-        <a v-show="hasAuthority('systemMenuCreate,systemMenuEdit')" @click="handleModal(row,forms[1])">接口授权</a> &nbsp;
+      <template slot="action" slot-scope="{ row }">
+        <a  @click="handleModal(row)">编辑</a> &nbsp;
+        <a  @click="handleModal(row,forms[1])">接口授权</a> &nbsp;
         <Poptip
           confirm
           title="确定删除吗?"
           @on-ok="handleRemove(row)">
-          <a v-show="hasAuthority('systemMenuRemove')">删除</a>
+          <a >删除</a>
         </Poptip>
       </template>
     </Table>
@@ -33,11 +33,12 @@
         <FormItem label="所属菜单">
           <Input disabled v-model="value.menuName"></Input>
         </FormItem>
-        <FormItem label="功能标识" prop="operationCode">
-          <Input v-model="formItem.operationCode" placeholder="请输入内容"></Input>
+        <FormItem label="功能标识" prop="actionCode">
+          <Input v-model="formItem.actionCode"  placeholder="请输入内容"></Input>
+          <span>菜单标识+自定义标识.默认后缀：View、Edit</span>
         </FormItem>
-        <FormItem label="功能名称" prop="operationName">
-          <Input v-model="formItem.operationName" placeholder="请输入内容"></Input>
+        <FormItem label="功能名称" prop="actionName">
+          <Input v-model="formItem.actionName" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="优先级">
           <InputNumber v-model="formItem.priority"></InputNumber>
@@ -49,18 +50,18 @@
           </RadioGroup>
         </FormItem>
         <FormItem label="描述">
-          <Input v-model="formItem.operationDesc" type="textarea" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.actionDesc" type="textarea" placeholder="请输入内容"></Input>
         </FormItem>
       </Form>
       <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <Alert type="warning" show-icon>请注意：功能需绑定相关操作接口,请求服务器时将验证接口访问权限！</Alert>
+        <Alert type="warning" show-icon>请注意：某一功能可能涉及到很多请求,需绑定相关接口资源,请求服务器时将验证接口访问权限！</Alert>
         <FormItem label="接口资源(选填)" prop="authorities">
           <Transfer
             :data="selectApis"
             :list-style="{width: '300px',height: '500px'}"
             :titles="['选择接口', '已选择接口']"
             :render-format="transferRender"
-            :target-keys="formItem.apiIds"
+            :target-keys="formItem.authorityIds"
             @on-change="handleTransferChange"
             filterable>
           </Transfer>
@@ -76,17 +77,19 @@
 
 <script>
   import {
-    getOperationsByMenu,
-    updateOperation,
-    addOperation,
-    removeOperation,
-    addOperationApi,
-    getOperationApi
-  } from '@/api/operation'
-  import {getAllApi} from '@/api/api'
+    getActionsByMenu,
+    updateAction,
+    addAction,
+    removeAction,
+  } from '@/api/action'
+  import {
+      getAuthorityApi,
+      getAuthorityAction,
+      grantAuthorityAction
+  } from '@/api/authority'
 
   export default {
-    name: 'MenuOperation',
+    name: 'MenuAction',
     props: {
       value: Object
     },
@@ -114,22 +117,22 @@
         confirmModal: false,
         selectApis: [],
         formItemRules: {
-          operationCode: [
+          actionCode: [
             {required: true, validator: validateEn, message: '功能编码不能为空', trigger: 'blur'}
           ],
-          operationName: [
+          actionName: [
             {required: true, message: '功能名称不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
-          operationId: '',
-          operationCode: '',
-          operationName: '',
-          apiIds: [],
+          actionId: '',
+          actionCode: '',
+          actionName: '',
+          authorityIds: [],
           status: 1,
           menuId: '',
           priority: 0,
-          operationDesc: ''
+          actionDesc: ''
         },
         columns: [
           {
@@ -139,12 +142,12 @@
           },
           {
             title: '功能编码',
-            key: 'operationCode',
+            key: 'actionCode',
             width: 150
           },
           {
             title: '操作',
-            slot: 'operation',
+            slot: 'action',
             fixed: 'right',
             width: 150
           }
@@ -161,26 +164,27 @@
           step = this.forms[0]
         }
         if (step === this.forms[0]) {
-          this.modalTitle = data ? '编辑功能 - ' + this.value.menuName + ' > ' + data.operationName : '添加功能 - ' + this.value.menuName
+          this.modalTitle = data ? '编辑功能 - ' + this.value.menuName + ' > ' + data.actionName : '添加功能 - ' + this.value.menuName
           this.modalVisible = true
+          this.formItem.actionCode =  this.formItem.actionId ?this.formItem.actionCode:this.value.menuCode
         }
         if (step === this.forms[1]) {
-          this.modalTitle = data ? '接口授权 - ' + this.value.menuName + ' > ' + data.operationName : '接口授权'
-          this.handleLoadOperationApi(this.formItem.operationId)
+          this.modalTitle = data ? '接口授权 - ' + this.value.menuName + ' > ' + data.actionName : '接口授权'
+          this.handleLoadActionApi(this.formItem.actionId)
         }
         this.current = step
         this.formItem.status = this.formItem.status + ''
       },
       handleReset () {
         const newData = {
-          operationId: '',
-          operationCode: '',
-          operationName: '',
-          apiIds: [],
+          actionId: '',
+          actionCode: '',
+          actionName: '',
+          authorityIds: [],
           status: 1,
           menuId: '',
           priority: 0,
-          operationDesc: ''
+          actionDesc: ''
         }
         this.formItem = newData
         //重置验证
@@ -196,8 +200,8 @@
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              if (this.formItem.operationId) {
-                updateOperation(this.formItem).then(res => {
+              if (this.formItem.actionId) {
+                updateAction(this.formItem).then(res => {
                   this.handleReset()
                   this.handleSearch()
                   if (res.code === 0) {
@@ -207,7 +211,7 @@
                   this.saving = false
                 })
               } else {
-                addOperation(this.formItem).then(res => {
+                addAction(this.formItem).then(res => {
                   this.handleReset()
                   this.handleSearch()
                   if (res.code === 0) {
@@ -224,7 +228,7 @@
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              addOperationApi({operationId: this.formItem.operationId, apiIds: this.formItem.apiIds}).then(res => {
+              grantAuthorityAction({actionId: this.formItem.actionId, authorityIds: this.formItem.authorityIds}).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
@@ -244,14 +248,14 @@
         }
         this.formItem.menuId = this.value.menuId
         this.loading = true
-        getOperationsByMenu(this.formItem.menuId).then(res => {
+        getActionsByMenu(this.formItem.menuId).then(res => {
           this.data = res.data
         }).finally(() => {
           this.loading = false
         })
       },
       handleRemove (data) {
-        removeOperation(data.operationId).then(res => {
+        removeAction(data.actionId).then(res => {
           this.handleSearch()
           if (res.code === 0) {
             this.pageInfo.page = 1
@@ -259,20 +263,20 @@
           }
         })
       },
-      handleLoadOperationApi (operationId) {
-        if (!operationId) {
+      handleLoadActionApi (actionId) {
+        if (!actionId) {
           return
         }
         const that = this
-        const p1 = getAllApi()
-        const p2 = getOperationApi(operationId)
+        const p1 = getAuthorityApi('','')
+        const p2 = getAuthorityAction(actionId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
           let res2 = values[1]
           if (res1.code === 0) {
             res1.data.map(item => {
-              item.key = item.apiId
-              item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
+              item.key = item.authorityId
+              item.label = `${item.prefix.replace('/**','')}${item.path} - ${item.apiName}`
               item.disabled = item.path === '/**'
             })
             that.selectApis = res1.data
@@ -280,21 +284,21 @@
           if (res2.code === 0) {
             const result = []
             res2.data.map(item => {
-              result.push(item.apiId)
+              result.push(item.authorityId)
             })
-            that.formItem.apiIds = result
+            that.formItem.authorityIds = result
           }
           that.modalVisible = true
         })
       },
       transferRender (item) {
-        return `<span  title="${item.label}">${item.label}`
+        return `<span  title="${item.label}">${item.label}</span>`
       },
       handleTransferChange (newTargetKeys, direction, moveKeys) {
         if (newTargetKeys.indexOf('1') != -1) {
-          this.formItem.apiIds = ['1']
+          this.formItem.authorityIds = ['1']
         } else {
-          this.formItem.apiIds = newTargetKeys
+          this.formItem.authorityIds = newTargetKeys
         }
       },
     },

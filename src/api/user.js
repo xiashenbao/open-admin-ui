@@ -32,8 +32,31 @@ export const logout = () => {
  */
 export const getUserInfo = () => {
   return request({
-    url: 'auth/user/me',
+    url: 'auth/current/user',
     method: 'get'
+  })
+}
+
+/**
+ * 获取登录用户菜单权限
+ */
+export const getCurrentUserMenu = () => {
+  return request({
+    url: 'base/current/user/menu',
+    method: 'get'
+  })
+}
+
+export const updateCurrentUserInfo = ({nickName, userDesc, avatar}) => {
+  const data = {
+    nickName: nickName,
+    userDesc: userDesc,
+    avatar: avatar
+  }
+  return request({
+    url: 'base/current/user/update',
+    data,
+    method: 'post'
   })
 }
 
@@ -50,15 +73,7 @@ export const getUsers = (params) => {
   })
 }
 
-/**
- * 获取登录用户菜单权限
- */
-export const getMyMenuAuthority = () => {
-  return request({
-    url: 'base/authority/granted/me/menu',
-    method: 'get'
-  })
-}
+
 
 /**
  * 获取所有用户列表
@@ -175,18 +190,7 @@ export const updatePassword = ({userId, password}) => {
     method: 'post'
   })
 }
-export const updateMyUserInfo = ({nickName, userDesc, avatar}) => {
-  const data = {
-    nickName: nickName,
-    userDesc: userDesc,
-    avatar: avatar
-  }
-  return request({
-    url: 'base/user/me/update',
-    data,
-    method: 'post'
-  })
-}
+
 
 
 

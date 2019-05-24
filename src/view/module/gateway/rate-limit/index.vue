@@ -77,7 +77,7 @@
 
 <script>
   import {getIpLimits, addIpLimit, updateIpLimit, removeIpLimit, getIpLimitApis, addIpLimitApis} from '@/api/ipLimit'
-  import {getApiAuthorityList} from '@/api/authority'
+  import {getAuthorityApi} from '@/api/authority'
   export default {
     name: 'GatewayRoute',
     data () {
@@ -262,7 +262,7 @@
           return
         }
         const that = this
-        const p1 = getApiAuthorityList()
+        const p1 = getAuthorityApi('',1)
         const p2 = getIpLimitApis(policyId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
@@ -270,7 +270,7 @@
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key = item.apiId
-              item.label = `${item.path} - ${item.apiName}(${item.serviceId})`
+              item.label = `${item.prefix.replace('/**','')}${item.path} - ${item.apiName}`
             })
             that.selectApis = res1.data
           }
@@ -283,7 +283,7 @@
         })
       },
       transferRender (item) {
-        return `<span  title="${item.label}">${item.label}`
+        return `<span  title="${item.label}">${item.label}</span>`
       },
       handleTransferChange (newTargetKeys, direction, moveKeys) {
         if (newTargetKeys.indexOf('1') != -1) {

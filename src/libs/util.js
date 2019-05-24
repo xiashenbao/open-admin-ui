@@ -619,7 +619,10 @@ export const listToTree = (array, startPid, currentDept, opt) => {
         let nextChild = listToTree(array, item[opt.primaryKey], currentDept + 1, opt)
         // 节点信息保存
         if (nextChild.length > 0) {
+          item['hasChild'] = true
           item[opt.childKey] = nextChild
+        }else{
+          item['hasChild'] = false
         }
         return item
       }
