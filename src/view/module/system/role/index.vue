@@ -30,8 +30,8 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a  @click="handleModal(row)" :disabled="row.roleCode === 'all' && !hasAuthority('systemRoleEdit')?true:false">编辑</a>&nbsp;
-          <a  @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' &&  !hasAuthority('systemRoleEdit')?true:false">分配菜单</a>&nbsp;
+          <a  @click="handleModal(row)" :disabled="row.roleCode != 'all' && hasAuthority('systemRoleEdit')?false:true">编辑</a>&nbsp;
+          <a  @click="handleModal(row,forms[1])" :disabled="row.roleCode != 'all' && hasAuthority('systemRoleEdit')?false:true">分配菜单</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemRoleEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">
               <span>更多</span>
