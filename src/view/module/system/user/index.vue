@@ -30,7 +30,7 @@
         </ButtonGroup>
       </div>
 
-      <Table :columns="columns" :data="data" :loading="loading" border>
+      <Table :columns="columns" :data="data" :loading="loading" >
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="正常"/>
           <Badge v-else-if="row.status===2" status="success" text="锁定"/>

@@ -15,9 +15,9 @@
         <span>{{row.actionName}}</span>
       </template>
       <template slot="action" slot-scope="{ row }">
-        <a  @click="handleModal(row)">编辑</a> &nbsp;
-        <a  @click="handleModal(row,forms[1])">接口授权</a> &nbsp;
-        <a @click="handleRemove(row)">删除</a>
+        <a  :disabled="hasAuthority('systemMenuEdit')?false:true" @click="handleModal(row)">编辑</a> &nbsp;
+        <a  :disabled="hasAuthority('systemMenuEdit')?false:true" @click="handleModal(row,forms[1])">接口授权</a> &nbsp;
+        <a  :disabled="hasAuthority('systemMenuEdit')?false:true" @click="handleRemove(row)">删除</a>
       </template>
     </Table>
     <Modal v-model="modalVisible"
