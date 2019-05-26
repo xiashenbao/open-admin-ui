@@ -204,7 +204,7 @@
                 updateAction(this.formItem).then(res => {
                   this.handleReset()
                   this.handleSearch()
-                  if (res.code === 0) {
+                  if (res.code === 100) {
                     this.$Message.success('保存成功')
                   }
                 }).finally(() => {
@@ -214,7 +214,7 @@
                 addAction(this.formItem).then(res => {
                   this.handleReset()
                   this.handleSearch()
-                  if (res.code === 0) {
+                  if (res.code === 100) {
                     this.$Message.success('保存成功')
                   }
                 }).finally(() => {
@@ -231,7 +231,7 @@
               grantAuthorityAction({actionId: this.formItem.actionId, authorityIds: this.formItem.authorityIds}).then(res => {
                 this.handleReset()
                 this.handleSearch()
-                if (res.code === 0) {
+                if (res.code === 100) {
                   this.$Message.success('绑定成功')
                 }
               }).finally(() => {
@@ -257,7 +257,7 @@
       handleRemove (data) {
         removeAction(data.actionId).then(res => {
           this.handleSearch()
-          if (res.code === 0) {
+          if (res.code === 100) {
             this.pageInfo.page = 1
             this.$Message.success('删除成功')
           }

@@ -344,7 +344,7 @@
             this.saving = true
             if (this.formItem.apiId) {
               updateApi(this.formItem).then(res => {
-                if (res.code === 0) {
+                if (res.code === 100) {
                   this.$Message.success('保存成功')
                 }
                 this.handleReset()
@@ -354,7 +354,7 @@
               })
             } else {
               addApi(this.formItem).then(res => {
-                if (res.code === 0) {
+                if (res.code === 100) {
                   this.$Message.success('保存成功')
                 }
                 this.handleReset()
@@ -372,7 +372,7 @@
           onOk: () => {
             removeApi(data.apiId).then(res => {
               this.handleSearch()
-              if (res.code === 0) {
+              if (res.code === 100) {
                 this.pageInfo.page = 1
                 this.$Message.success('删除成功')
               }
@@ -410,7 +410,7 @@
       },
       handleLoadServiceList () {
         getServiceList().then(res => {
-          if (res.code === 0) {
+          if (res.code === 100) {
             this.selectServiceList.push(...res.data)
           }
         })

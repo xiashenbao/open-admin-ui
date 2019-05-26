@@ -547,7 +547,7 @@
               const data = Object.assign({}, this.formItem)
               if (data.appId) {
                 updateApp(data).then(res => {
-                  if (res.code === 0) {
+                  if (res.code === 100) {
                     this.$Message.success('保存成功')
                   }
                   this.handleReset()
@@ -557,7 +557,7 @@
                 })
               } else {
                 addApp(data).then(res => {
-                  if (res.code === 0) {
+                  if (res.code === 100) {
                     this.$Message.success('保存成功')
                   }
                   this.handleReset()
@@ -579,7 +579,7 @@
                 this.formItem.refreshTokenValidity = -1
               }
               updateAppClientInfo(this.formItem).then(res => {
-                if (res.code === 0) {
+                if (res.code === 100) {
                   this.$Message.success('保存成功')
                 }
                 this.handleReset()
@@ -600,7 +600,7 @@
                 expireTime: this.formItem.expireTime ? this.formItem.expireTime.pattern('yyyy-MM-dd HH:mm:ss') : '',
                 authorityIds: this.formItem.authorities
               }).then(res => {
-                if (res.code === 0) {
+                if (res.code === 100) {
                   this.$Message.success('授权成功')
                   this.handleReset()
                 }
@@ -630,7 +630,7 @@
           onOk: () => {
             removeApp({appId: data.appId}).then(res => {
               this.handleSearch()
-              if (res.code === 0) {
+              if (res.code === 100) {
                 this.pageInfo.page = 1
                 this.$Message.success('删除成功')
               }
@@ -643,7 +643,7 @@
           title: '重置后将影响应用正常使用,确定重置吗？',
           onOk: () => {
             restApp({appId: data.appId}).then(res => {
-              if (res.code === 0) {
+              if (res.code === 100) {
                 this.pageInfo.page = 1
                 this.formItem.appSecret = res.data
                 this.$Message.success('重置成功,请妥善保管.并及时更新到相关应用')
@@ -727,7 +727,7 @@
           return
         }
         getAppClientInfo({appId: appId}).then(res => {
-          if (res.code === 0) {
+          if (res.code === 100) {
             this.formItem.scopes = res.data.scope ? res.data.scope : []
             this.formItem.redirectUrls = res.data.redirect_uri ? res.data.redirect_uri.join(',') : ''
             this.formItem.grantTypes = res.data.authorized_grant_types ? res.data.authorized_grant_types : []
@@ -751,7 +751,7 @@
       },
       handleLoadUsers () {
         getAllUsers().then(res => {
-          if (res.code === 0) {
+          if (res.code === 100) {
             this.selectUsers = res.data
           }
           this.modalVisible = true

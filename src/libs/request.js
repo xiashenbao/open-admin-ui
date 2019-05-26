@@ -20,7 +20,7 @@ service.interceptors.request.use((config) => {
     config.method === 'post'
       ? config.data = qs.stringify({...config.data})
       : config.params = {...config.params}
-    const  token = getToken()
+    const token = getToken()
     if (token) {
       config.headers['Authorization'] = 'Bearer ' + token
     }
@@ -32,7 +32,7 @@ service.interceptors.request.use((config) => {
  */
 service.interceptors.response.use(
   (response) => {
-    if (response.data.code === 0) {
+    if (response.data.code === 100) {
       // 服务端定义的响应code码为0时请求成功
       // 使用Promise.resolve 正常响应
       return Promise.resolve(response.data)
