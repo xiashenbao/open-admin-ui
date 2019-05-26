@@ -230,7 +230,7 @@
             this.saving = true
             if (this.formItem.menuId) {
               updateMenu(this.formItem).then(res => {
-                if (res.code === 100) {
+                if (res.code === 0) {
                   this.disabled = true
                   this.$Message.success('保存成功')
                 }
@@ -240,7 +240,7 @@
               })
             } else {
               addMenu(this.formItem).then(res => {
-                if (res.code === 100) {
+                if (res.code === 0) {
                   this.disabled = true
                   this.$Message.success('保存成功')
                 }
@@ -256,7 +256,7 @@
         removeMenu(this.formItem.menuId).then(res => {
           this.handleReset()
           this.handleSearch()
-          if (res.code === 100) {
+          if (res.code === 0) {
             this.$Message.success('删除成功')
           }
         })

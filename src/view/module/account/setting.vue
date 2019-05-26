@@ -87,7 +87,7 @@
           this.$refs['userForm'].validate((valid) => {
             if (valid) {
               updateCurrentUserInfo(this.profile).then(res => {
-                if (res.code === 100) {
+                if (res.code === 0) {
                   this.$Message.success('修改成功')
                   this.$store.commit("setAvatar",this.profile.avatar)
                   this.$store.commit("setNickName",this.profile.nickName)

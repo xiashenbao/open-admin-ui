@@ -61,7 +61,7 @@ export default {
           password
         }).then(res => {
           if (res) {
-            if (res.code === 100) {
+            if (res.code === 0) {
               let token = res.data.access_token
               commit('setToken', {token, auto})
               resolve()
@@ -89,7 +89,7 @@ export default {
     getUserInfo({state, commit}) {
       return new Promise((resolve, reject) => {
         getUserInfo().then(res => {
-          if (res.code === 100) {
+          if (res.code === 0) {
             commit('setAvatar', res.data.avatar)
             commit('setUserName', res.data.userName)
             commit('setNickName', res.data.nickName)
@@ -109,7 +109,7 @@ export default {
             commit('setAccess', access)
             commit('setHasGetInfo', true)
             getCurrentUserMenu().then(res => {
-              if (res.code === 100) {
+              if (res.code === 0) {
                 commit('setUserMenus', res.data)
                 resolve(state)
               }
