@@ -25,8 +25,8 @@
           <div class="search-con search-con-top">
             <ButtonGroup>
               <Button type="primary"  :disabled="hasAuthority('systemMenuEdit')?false:true" @click="setEnabled(true)">添加</Button>
-              <Button type="primary"  :disabled="formItem.menuId || hasAuthority('systemMenuEdit')?false:true" @click="setEnabled(false)">编辑</Button>
-              <Button type="primary"  :disabled="formItem.menuId || hasAuthority('systemMenuEdit')?false:true" @click="confirmModal = true">删除</Button>
+              <Button type="primary"  :disabled="formItem.menuId && hasAuthority('systemMenuEdit')?false:true" @click="setEnabled(false)">编辑</Button>
+              <Button type="primary"  :disabled="formItem.menuId && hasAuthority('systemMenuEdit')?false:true" @click="confirmModal = true">删除</Button>
             </ButtonGroup>
             <Modal
               v-model="confirmModal"

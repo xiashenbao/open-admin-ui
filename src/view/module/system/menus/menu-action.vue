@@ -2,7 +2,7 @@
   <div>
     <div class="search-con search-con-top">
       <ButtonGroup>
-        <Button :disabled="value.menuId && value.menuId!=='0' && !value.hasChild?false:true" class="search-btn" type="primary" @click="handleModal()">
+        <Button :disabled="value.menuId && value.menuId!=='0' && !value.hasChild && hasAuthority('systemMenuEdit')?false:true" class="search-btn" type="primary" @click="handleModal()">
           <Icon type="search"/>&nbsp;&nbsp;
           <span>添加功能权限</span>
         </Button>
