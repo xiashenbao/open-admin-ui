@@ -5,8 +5,8 @@ import request from '@/libs/request'
  * @param page
  * @param limit
  */
-export const getApis = ({page, limit, path, apiName, apiCode, serviceId,isOpen}) => {
-  const params = {page: page, limit: limit, path: path, apiName: apiName, apiCode: apiCode, serviceId: serviceId,isOpen:isOpen}
+export const getApis = ({page, limit, path, apiName, apiCode, serviceId}) => {
+  const params = {page: page, limit: limit, path: path, apiName: apiName, apiCode: apiCode, serviceId: serviceId}
   return request({
     url: 'base/api',
     params,
@@ -36,10 +36,9 @@ export const getAllApi = (serviceId) => {
  * @param status
  * @param priority
  * @param apiDesc
- * @param isOpen
  * @param isAuth
  */
-export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isOpen, isAuth}) => {
+export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isAuth}) => {
   const data = {
     apiCode: apiCode,
     apiName: apiName,
@@ -49,7 +48,6 @@ export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, 
     status: status,
     priority: priority,
     apiDesc: apiDesc,
-    isOpen: isOpen,
     isAuth: isAuth
   }
   return request({
@@ -70,10 +68,9 @@ export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, 
  * @param status
  * @param priority
  * @param apiDesc
- * @param isOpen
  * @param isAuth
  */
-export const updateApi = ({apiId, apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isOpen, isAuth}) => {
+export const updateApi = ({apiId, apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isAuth}) => {
   const data = {
     apiId: apiId,
     apiCode: apiCode,
@@ -84,7 +81,6 @@ export const updateApi = ({apiId, apiCode, apiName, apiCategory, serviceId, path
     status: status,
     priority: priority,
     apiDesc: apiDesc,
-    isOpen: isOpen,
     isAuth: isAuth
   }
   return request({

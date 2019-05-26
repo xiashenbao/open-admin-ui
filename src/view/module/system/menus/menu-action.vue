@@ -17,12 +17,7 @@
       <template slot="action" slot-scope="{ row }">
         <a  @click="handleModal(row)">编辑</a> &nbsp;
         <a  @click="handleModal(row,forms[1])">接口授权</a> &nbsp;
-        <Poptip
-          confirm
-          title="确定删除吗?"
-          @on-ok="handleRemove(row)">
-          <a >删除</a>
-        </Poptip>
+        <a @click="handleRemove(row)">删除</a>
       </template>
     </Table>
     <Modal v-model="modalVisible"
@@ -54,7 +49,9 @@
         </FormItem>
       </Form>
       <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <Alert type="warning" show-icon>请注意：某一功能可能涉及到很多请求,需绑定相关接口资源,请求服务器时将验证接口访问权限！</Alert>
+        <Alert type="warning" show-icon>请注意：某一功能可能涉及到很多请求,需绑定相关接口资源,请求服务器时将验证接口访问权限！
+          <a>支持动态授权,无需重新登录或刷新</a>
+          </Alert>
         <FormItem label="接口资源(选填)" prop="authorities">
           <Transfer
             :data="selectApis"
@@ -182,7 +179,6 @@
           actionName: '',
           authorityIds: [],
           status: 1,
-          menuId: '',
           priority: 0,
           actionDesc: ''
         }
@@ -255,11 +251,16 @@
         })
       },
       handleRemove (data) {
-        removeAction(data.actionId).then(res => {
-          this.handleSearch()
-          if (res.code === 0) {
-            this.pageInfo.page = 1
-            this.$Message.success('删除成功')
+        this.$Modal.confirm({
+          title: '确定删除吗？',
+          onOk: () => {
+            removeAction(data.actionId).then(res => {
+              this.handleSearch()
+              if (res.code === 0) {
+                this.pageInfo.page = 1
+                this.$Message.success('删除成功')
+              }
+            })
           }
         })
       },
@@ -268,7 +269,7 @@
           return
         }
         const that = this
-        const p1 = getAuthorityApi('','')
+        const p1 = getAuthorityApi('')
         const p2 = getAuthorityAction(actionId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]

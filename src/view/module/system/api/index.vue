@@ -17,13 +17,6 @@
         <FormItem label="服务名" prop="serviceId">
           <Input type="text" v-model="pageInfo.serviceId" placeholder="请输入关键字"/>
         </FormItem>
-        <FormItem label="开放接口" prop="isOpen">
-          <Select v-model="pageInfo.isOpen" filterable clearable>
-            <Option value="" label="全部"></Option>
-            <Option value="1" label="开放接口"></Option>
-            <Option value="0" label="未开放"></Option>
-          </Select>
-        </FormItem>
         <FormItem>
           <Button type="primary" @click="handleSearch(1)">查询</Button>&nbsp;
           <Button @click="handleResetForm('searchForm')">重置</Button>
@@ -39,7 +32,7 @@
       </div>
       <Alert show-icon>
         <Tag color="red">@EnableResourceServer</Tag>
-        <span>自动扫描服务下的API接口。&nbsp;&nbsp;已上线接口 <a><strong>{{openApiCount}}</strong></a> 个可授权</span>
+        <span>自动扫描服务下的API接口</span>
       </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="apiName" slot-scope="{ row }">
@@ -50,8 +43,6 @@
         <template slot="isAuth" slot-scope="{ row }">
           <Tag color="green" v-if="row.isAuth===1">身份认证</Tag>
           <Tag v-else-if="row.isAuth!==1">无认证</Tag>
-          <Tag color="green" v-if="row.isOpen===1">开放接口</Tag>
-          <Tag v-else-if="row.isOpen!==1">未开放</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a v-show="hasAuthority('systemApiEdit')"  @click="handleModal(row)">
@@ -118,12 +109,6 @@
         <FormItem label="优先级">
           <InputNumber v-model="formItem.priority"></InputNumber>
         </FormItem>
-        <FormItem label="开放接口">
-          <RadioGroup v-model="formItem.isOpen">
-            <Radio label="0">否</Radio>
-            <Radio label="1">是</Radio>
-          </RadioGroup>
-        </FormItem>
         <FormItem label="身份认证">
           <RadioGroup v-model="formItem.isAuth">
             <Radio label="0">否</Radio>
@@ -178,11 +163,9 @@
           path: '',
           apiName: '',
           apiCode: '',
-          serviceId: '',
-          isOpen:'',
+          serviceId: ''
         },
         selectServiceList: [{serviceId: '', serviceName: '无'}],
-        openApiCount: 0,
         formItemRules: {
           serviceId: [
             {required: true, message: '所属服务不能为空', trigger: 'blur'}
@@ -204,7 +187,6 @@
           apiCategory: 'default',
           path: '',
           status: 1,
-          isOpen: 0,
           isAuth: 1,
           openSwatch: false,
           authSwatch: true,
@@ -261,25 +243,7 @@
             title: '接口安全',
             key: 'isAuth',
             slot: 'isAuth',
-            width: 200,
-            filters: [
-              {
-                label: '未开放',
-                value: 0
-              },
-              {
-                label: '开放接口',
-                value: 1
-              }
-            ],
-            filterMultiple: false,
-            filterMethod (value, row) {
-              if (value === 0) {
-                return row.isOpen === 0
-              } else if (value === 1) {
-                return row.isOpen === 1
-              }
-            }
+            width: 200
           },
           {
             title: '最后更新时间',
@@ -311,7 +275,6 @@
           this.modalTitle = '添加接口'
         }
         this.formItem.status = this.formItem.status + ''
-        this.formItem.isOpen = this.formItem.isOpen + ''
         this.formItem.isAuth = this.formItem.isAuth + ''
         this.modalVisible = true
       },
@@ -326,7 +289,6 @@
           apiCategory: 'default',
           path: '',
           status: 1,
-          isOpen: 0,
           isAuth: 1,
           serviceId: '',
           priority: 0,
@@ -387,7 +349,6 @@
         this.loading = true
         getApis(this.pageInfo).then(res => {
           this.data = res.data.records
-          this.openApiCount = res.extra.openApiCount
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {
           this.loading = false

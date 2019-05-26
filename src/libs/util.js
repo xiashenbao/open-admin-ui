@@ -467,7 +467,7 @@ export const formatRouters = (array, access) => {
 export const filterRouter = (array, access, routers) => {
   let list = array.map(item => {
       let path = startWith(item.path, '/') ? item.path.substring(1) : item.path
-      let url = item.prefix + item.path
+      let url = item.scheme + item.path
       let router = {
         //使用菜单id不使用menuCode防止修改后,刷新后缓存的页面无法找到
         name: `${item.menuCode}`,
@@ -494,7 +494,7 @@ export const filterRouter = (array, access, routers) => {
             // 新窗口打开,使用meta.href
             router.meta.href = url
           } else {
-            if (item.prefix === '/') {
+            if (item.scheme === '/') {
               // 内部组件
               router.component = (resolve) => {
                 require([`@/view/module/${path}.vue`], resolve)
@@ -515,7 +515,7 @@ export const filterRouter = (array, access, routers) => {
           // 新窗口打开,使用meta.href
           router.meta.href = url
         } else {
-          if (item.prefix === '/') {
+          if (item.scheme === '/') {
             // 内部组件
             router.component = (resolve) => {
               require([`@/view/module/${path}.vue`], resolve)

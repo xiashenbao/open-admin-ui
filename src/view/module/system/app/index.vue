@@ -217,8 +217,8 @@
           </Badge>
           <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
         </FormItem>
-        <FormItem label="开放接口(选填)" prop="authorities">
-          <Alert type="warning" show-icon>请注意：由于客户端模式可以直接调用接口，为保证接口安全只能选择开放接口资源&nbsp;&nbsp;<a @click="handleGoApi()">开放更多接口</a></Alert>
+        <FormItem label="接口权限(选填)" prop="authorities">
+          <Alert type="warning" show-icon>请注意：&nbsp;&nbsp; <a>支持动态授权,无需重新登录或刷新</a></a></Alert>
           <Transfer
             :data="selectApis"
             :list-style="{width: '300px',height: '450px'}"
@@ -696,7 +696,7 @@
           return
         }
         const that = this
-        const p1 = getAuthorityApi('',1)
+        const p1 = getAuthorityApi('')
         const p2 = getAuthorityApp(appId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
@@ -786,9 +786,6 @@
           this.$Message.warning('只能上传一张.')
         }
         return check
-      },
-      handleGoApi(){
-        this.$router.push({name:'systemApi'})
       }
     },
     mounted: function () {

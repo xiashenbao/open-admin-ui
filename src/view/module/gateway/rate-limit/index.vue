@@ -262,7 +262,7 @@
           return
         }
         const that = this
-        const p1 = getAuthorityApi('',1)
+        const p1 = getAuthorityApi('')
         const p2 = getIpLimitApis(policyId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]

@@ -65,12 +65,11 @@ export const getAuthorityMenu = () => {
  * 获取API权限列表
  * @param serviceId
  */
-export const getAuthorityApi = (serviceId,isOpen) => {
+export const getAuthorityApi = (serviceId) => {
   return request({
     url: 'base/authority/api',
     method: 'get',
     params:{
-      isOpen:isOpen,
       serviceId:serviceId
     }
   })

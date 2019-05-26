@@ -52,7 +52,7 @@
             </FormItem>
             <FormItem label="页面地址" prop="path">
               <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
-                <Select :disabled="disabled" v-model="formItem.prefix" slot="prepend" style="width: 80px">
+                <Select :disabled="disabled" v-model="formItem.scheme" slot="prepend" style="width: 80px">
                   <Option value="/">/</Option>
                   <Option value="http://">http://</Option>
                   <Option value="https://">https://</Option>
@@ -157,7 +157,7 @@
           menuName: '',
           icon: 'md-document',
           path: '',
-          prefix: '/',
+          scheme: '/',
           target: '_self',
           status: 1,
           parentId: '0',
@@ -213,7 +213,7 @@
           menuName: '',
           icon: 'md-document',
           path: '',
-          prefix: '/',
+          scheme: '/',
           target: '_self',
           status: '1',
           parentId: '0',
