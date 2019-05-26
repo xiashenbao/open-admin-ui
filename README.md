@@ -1,28 +1,22 @@
-# 开放运营平台
+##    运营后台管理UI
 
 ---
-## 简介
+### 简介
 基于iview Admin 前端框架<a href="https://github.com/iview/iview-admin">传送门</a>  
   
 <a target="_blank" href="http://39.106.187.125/admin">演示地址</a>
  
 #### 服务端代码仓库
-
-##### 请随手给个Star! 感谢支持！
-
+##### 开源不易，请随手给个Star! 感谢支持！
+<a target="_blank" href="https://gitee.com/liuyadu">码云</a>  <a target="_blank" href="https://github.com/liuyadu/">Github</a>  
 
 #### 按钮权限控制
  全局函数
  hasAuthority('功能编码,功能编码2') 多个用,号隔开  
  ```html
- <Button v-show="hasAuthority('systemUserCreate')" type="primary"
-                   @click="handleModal()">
+ <Button v-show="hasAuthority('systemUserCreate')" type="primary">
  ```
-
-<a target="_blank" href="https://gitee.com/liuyadu">服务端源码-码云</a>  
-
-<a target="_blank" href="https://github.com/liuyadu/">服务端源码-Github</a>  
-
+ 
 ## Install
 ```bush
 // install dependencies
