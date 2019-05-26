@@ -21,7 +21,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemAppEdit')"  class="search-btn" type="primary" @click="handleModal()">
+          <Button :disabled="hasAuthority('systemAppEdit')?false:true"   class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -44,7 +44,7 @@
           <Tag color="blue" v-else="">手机网页应用</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('systemAppEdit')" @click="handleModal(row)" :disabled="row.appId === 'gateway' ?true:false">
+          <a :disabled="hasAuthority('systemAppEdit')?false:true"  @click="handleModal(row)" :disabled="row.appId === 'gateway' ?true:false">
             编辑</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemAppEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">

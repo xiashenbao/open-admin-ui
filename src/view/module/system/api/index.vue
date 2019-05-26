@@ -24,7 +24,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemApiEdit')" class="search-btn" type="primary" @click="handleModal()">
+          <Button :disabled="hasAuthority('systemApiEdit')?false:true"  class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -45,7 +45,7 @@
           <Tag v-else-if="row.isAuth!==1">无认证</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('systemApiEdit')"  @click="handleModal(row)">
+          <a :disabled="hasAuthority('systemApiEdit')?false:true"   @click="handleModal(row)">
             编辑</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemApiEdit')"  transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">

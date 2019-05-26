@@ -22,7 +22,7 @@
 
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemUserEdit')" type="primary"
+          <Button :disabled="hasAuthority('systemUserEdit')?false:true" type="primary"
                   @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
@@ -37,8 +37,8 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('systemUserEdit')" @click="handleModal(row)">编辑</a>&nbsp;
-          <a v-show="hasAuthority('systemUserEdit')" @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
+          <a :disabled="hasAuthority('systemUserEdit')?false:true"  @click="handleModal(row)">编辑</a>&nbsp;
+          <a :disabled="hasAuthority('systemUserEdit')?false:true"  @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemUserEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               <span>更多</span>

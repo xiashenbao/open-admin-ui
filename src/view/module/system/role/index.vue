@@ -18,7 +18,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('systemRoleEdit')" class="search-btn" type="primary" @click="handleModal()">
+          <Button :disabled="hasAuthority('systemRoleEdit')?false:true"   class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -30,8 +30,8 @@
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('systemRoleEdit')" @click="handleModal(row)" :disabled="row.roleCode === 'all' ?true:false">编辑</a>&nbsp;
-          <a v-show="hasAuthority('systemRoleEdit')" @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' ?true:false">分配菜单</a>&nbsp;
+          <a  @click="handleModal(row)" :disabled="row.roleCode === 'all' && !hasAuthority('systemRoleEdit')?true:false">编辑</a>&nbsp;
+          <a  @click="handleModal(row,forms[1])" :disabled="row.roleCode === 'all' &&  !hasAuthority('systemRoleEdit')?true:false">分配菜单</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemRoleEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">
               <span>更多</span>

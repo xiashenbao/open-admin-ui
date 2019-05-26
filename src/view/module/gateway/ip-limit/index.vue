@@ -15,7 +15,7 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('gatewayIpLimitEdit')"  class="search-btn" type="primary" @click="handleModal()">
+          <Button :disabled="hasAuthority('gatewayIpLimitEdit')?false:true"  class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -27,9 +27,9 @@
           <Tag color="red" v-else="">拒绝-黑名单</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('gatewayIpLimitEdit')" @click="handleModal(row)">
+          <a :disabled="hasAuthority('gatewayIpLimitEdit')?false:true" @click="handleModal(row)">
             编辑</a>&nbsp;
-          <a v-show="hasAuthority('gatewayIpLimitEdit')" @click="handleModal(row,forms[1])">
+          <a :disabled="hasAuthority('gatewayIpLimitEdit')?false:true" @click="handleModal(row,forms[1])">
             绑定API
           </a>
           &nbsp;

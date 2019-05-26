@@ -3,7 +3,7 @@
     <Card shadow>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button v-show="hasAuthority('jobEdit')" class="search-btn" type="primary" @click="handleModal()">
+          <Button :disabled="hasAuthority('jobEdit')?false:true"   class="search-btn" type="primary" @click="handleModal()">
             <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
@@ -15,7 +15,7 @@
           <Badge v-else="" status="error" text="暂停"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a  v-show="hasAuthority('jobEdit')" @click="handleModal(row)">编辑</a>&nbsp;
+          <a  :disabled="hasAuthority('jobEdit')?false:true"  @click="handleModal(row)">编辑</a>&nbsp;
           <Dropdown v-show="hasAuthority('jobEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a  href="javascript:void(0)">
               <span>更多</span>
