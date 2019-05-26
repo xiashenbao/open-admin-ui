@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Card shadow>
+    <Card>
       <Form ref="searchForm"
             :model="pageInfo"
             inline
@@ -30,24 +30,24 @@
         </ButtonGroup>
       </div>
 
-      <Table :columns="columns"  :data="data" :loading="loading">
+      <Table :columns="columns" :data="data" :loading="loading" border>
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="正常"/>
           <Badge v-else-if="row.status===2" status="success" text="锁定"/>
           <Badge v-else="" status="error" text="禁用"/>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a v-show="hasAuthority('systemUserEdit')"  @click="handleModal(row)">编辑</a>&nbsp;
-          <a v-show="hasAuthority('systemUserEdit')"  @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
+          <a v-show="hasAuthority('systemUserEdit')" @click="handleModal(row)">编辑</a>&nbsp;
+          <a v-show="hasAuthority('systemUserEdit')" @click="handleModal(row, forms[1])">分配角色</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemUserEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem   name="grantMenu">分配私人菜单</DropdownItem>
-              <DropdownItem   name="updatePassword">修改密码</DropdownItem>
-              <DropdownItem   name="sendToEmail">发送到密保邮箱</DropdownItem>
+              <DropdownItem name="grantMenu">分配私人菜单</DropdownItem>
+              <DropdownItem name="updatePassword">修改密码</DropdownItem>
+              <DropdownItem name="sendToEmail">发送到密保邮箱</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
         </template>
@@ -266,21 +266,25 @@
           },
           {
             title: '登录名',
+            align: "center",
             key: 'userName',
             width: 200
           },
           {
             title: '昵称',
+            align: "center",
             key: 'nickName',
             width: 150
           },
           {
             title: '邮箱',
+            align: "center",
             key: 'email',
             width: 200
           },
           {
             title: '手机号',
+            align: "center",
             key: 'mobile',
             width: 200
           },
@@ -317,6 +321,7 @@
           },
           {
             title: '用户类型',
+            align: "center",
             key: 'userType',
             width: 150,
             filters: [
@@ -346,16 +351,21 @@
           },
           {
             title: '注册时间',
+            align: "center",
             key: 'registerTime',
             width: 180
           },
           {
             title: '描述',
+            align: "center",
             key: 'userDesc',
+            ellipsis: true,
+            tooltip: true,
             width: 150
           },
           {
             title: '操作',
+            align: "center",
             slot: 'action',
             fixed: 'right',
             width: 200

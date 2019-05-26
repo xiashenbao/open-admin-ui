@@ -27,7 +27,7 @@
     </Layout>
 
     <Layout v-else=""  class="main-layout-left">
-      <Sider hide-trigger collapsible :width="256" :collapsed-width="64" v-model="collapsed" class="left-sider"
+      <Sider hide-trigger collapsible :width="220" :collapsed-width="64" v-model="collapsed" class="left-sider"
              :style="{overflow: 'hidden'}">
         <div class="main-layout-logo">
           <img v-show="!collapsed" class="max-logo" :src="maxLogo"  key="max-logo" />
