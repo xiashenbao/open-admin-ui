@@ -1,7 +1,7 @@
 <template >
 
   <Layout style="height: 100%" class="skin-blue">
-    <Layout v-if="layout === 'toptest'" class="main-layout-top">
+    <Layout v-if="layout === 'toptest'" style="height: 100%" class="main-layout-top">
       <Header class="main-layout-header">
         <div class="main-layout-logo">
           <img v-show="!collapsed" class="max-logo" :src="maxLogo"  key="max-logo" />
@@ -26,7 +26,7 @@
         </Content>
     </Layout>
 
-    <Layout v-else=""  class="main-layout-left">
+    <Layout v-else="" style="height: 100%" class="main-layout-left">
       <Sider hide-trigger collapsible :width="220" :collapsed-width="64" v-model="collapsed" class="left-sider"
              :style="{overflow: 'hidden'}">
         <div class="main-layout-logo">
@@ -65,15 +65,15 @@
         </Header>
         <Content :class="mainClass">
           <Layout class="main-layout-content-wrapper">
-            <div class="main-layout-tag-nav-wrapper">
-              <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
-            </div>
-            <Content class="main-layout-view-wrapper">
-              <keep-alive :include="cacheList">
-                <router-view/>
-              </keep-alive>
-              <ABackTop :height="100" :bottom="80" :right="50" container=".main-layout-view-wrapper"></ABackTop>
-            </Content>
+              <div class="main-layout-tag-nav-wrapper">
+                <tags-nav :value="$route" @input="handleClick" :list="tagNavList" @on-close="handleCloseTag"/>
+              </div>
+              <Content class="main-layout-view-wrapper">
+                <keep-alive :include="cacheList">
+                  <router-view/>
+                </keep-alive>
+                <ABackTop :height="100" :bottom="80" :right="50" container=".main-layout-view-wrapper"></ABackTop>
+              </Content>
           </Layout>
         </Content>
       </Layout>
