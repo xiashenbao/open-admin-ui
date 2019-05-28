@@ -1,5 +1,5 @@
 import request from '@/libs/request'
-
+import {getToken} from '@/libs/util'
 /**
  * 用户登录
  * @param username
@@ -11,7 +11,7 @@ export const login = ({username, password}) => {
     password
   }
   return request({
-    url: 'admin/login/token',
+    url: 'auth/login/token',
     data,
     method: 'post'
   })
@@ -22,8 +22,9 @@ export const login = ({username, password}) => {
  */
 export const logout = () => {
   return request({
-    url: 'admin/logout',
-    method: 'get'
+    url: 'auth/logout/token',
+    data:{token:getToken()},
+    method: 'post'
   })
 }
 
