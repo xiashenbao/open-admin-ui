@@ -714,9 +714,9 @@
               that.formItem.authorities.push(item.authorityId)
             })
             // 时间
-            if (res2.data.length > 0) {
-              that.formItem.expireTime = res2.data[0].expireTime
-              that.formItem.isExpired = res2.data[0].isExpired
+            if (res2.data.length > 1) {
+              that.formItem.expireTime = res2.data[1].expireTime
+              that.formItem.isExpired = res2.data[1].isExpired
             }
           }
           that.modalVisible = true
