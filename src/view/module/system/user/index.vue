@@ -280,29 +280,24 @@
           {
             type: 'selection',
             width: 60,
-            align: 'center'
           },
           {
             title: '登录名',
-            align: "center",
             key: 'userName',
             width: 200
           },
           {
             title: '昵称',
-            align: "center",
             key: 'nickName',
             width: 150
           },
           {
             title: '邮箱',
-            align: "center",
             key: 'email',
             width: 200
           },
           {
             title: '手机号',
-            align: "center",
             key: 'mobile',
             width: 200
           },
@@ -339,7 +334,6 @@
           },
           {
             title: '用户类型',
-            align: "center",
             key: 'userType',
             width: 150,
             filters: [
@@ -369,13 +363,11 @@
           },
           {
             title: '注册时间',
-            align: "center",
             key: 'registerTime',
             width: 180
           },
           {
             title: '描述',
-            align: "center",
             key: 'userDesc',
             ellipsis: true,
             tooltip: true,
@@ -383,7 +375,6 @@
           },
           {
             title: '操作',
-            align: "center",
             slot: 'action',
             fixed: 'right',
             width: 200
