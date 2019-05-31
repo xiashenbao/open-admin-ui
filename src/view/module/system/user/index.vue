@@ -167,16 +167,34 @@
   export default {
     name: 'SystemUser',
     data() {
+
       const validateEn = (rule, value, callback) => {
         let reg = /^[_a-zA-Z0-9]+$/
+        let reg2 = /^.{6,18}$/;
+        // 长度为6到18个字符
         if (value === '') {
           callback(new Error('登录名不能为空'))
         } else if (value !== '' && !reg.test(value)) {
           callback(new Error('只允许字母、数字、下划线'))
+        } else if(value !== '' && !reg2.test(value)){
+          callback(new Error('长度6到18个字符'))
         } else {
           callback()
         }
       }
+      const validatePass = (rule, value, callback) => {
+        let reg2 = /^.{6,18}$/;
+        if (value === '') {
+          callback(new Error('请输入密码'))
+        } else if (value !== this.formItem.password) {
+          callback(new Error('两次输入密码不一致'))
+        } else if(value !== '' && !reg2.test(value)){
+          callback(new Error('长度6到18个字符'))
+        } else {
+          callback()
+        }
+      }
+
       const validatePassConfirm = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请再次输入密码'))
@@ -223,7 +241,7 @@
             {required: true, validator: validateEn, trigger: 'blur'}
           ],
           password: [
-            {required: true, message: '登录密码不能为空', trigger: 'blur'}
+            {required: true, validator: validatePass, trigger: 'blur'}
           ],
           passwordConfirm: [
             {required: true, validator: validatePassConfirm, trigger: 'blur'}
