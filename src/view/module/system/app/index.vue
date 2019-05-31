@@ -211,7 +211,7 @@
       </Form>
       <Form ref="form3" v-show="current=='form3'" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="过期时间(选填)" prop="expireTime">
-          <Badge v-if="formItem.isExpired" count="授权已过期">
+          <Badge v-if="formItem.isExpired" text="授权已过期">
             <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime"
                         placeholder="设置有效期"></DatePicker>
           </Badge>
@@ -711,12 +711,14 @@
           }
           if (res2.code === 0) {
             res2.data.map(item => {
-              that.formItem.authorities.push(item.authorityId)
+              if(item.authority.indexOf('APP_')===-1){
+                that.formItem.authorities.push(item.authorityId)
+              }
             })
             // 时间
-            if (res2.data.length > 1) {
-              that.formItem.expireTime = res2.data[1].expireTime
-              that.formItem.isExpired = res2.data[1].isExpired
+            if (res2.data.length > 0) {
+              that.formItem.expireTime = res2.data[0].expireTime
+              that.formItem.isExpired = res2.data[0].isExpired
             }
           }
           that.modalVisible = true
