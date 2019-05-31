@@ -371,7 +371,7 @@
             key: 'userDesc',
             ellipsis: true,
             tooltip: true,
-            width: 150
+            width: 250
           },
           {
             title: '操作',
