@@ -15,6 +15,11 @@
           <Badge v-if="row.status===1" status="success" text="启用"/>
           <Badge v-else="" status="error" text="禁用"/>
         </template>
+        <template slot="routeType" slot-scope="{ row }">
+          <span v-if="row.serviceId?true:false"><Tag color="green">负载均衡</Tag>{{row.serviceId}}</span>
+          <span v-else-if="row.url?true:false"><Tag color="blue">反向代理</Tag>{{row.url}}</span>
+        </template>
+
         <template slot="action" slot-scope="{ row }">
           <a :disabled="hasAuthority('gatewayRouteEdit')?false:true"   @click="handleModal(row)">
             编辑</a>&nbsp;
@@ -39,24 +44,24 @@
            @on-cancel="handleReset">
       <Form ref="routeForm" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="路由名称" prop="routeName">
-          <Input v-model="formItem.routeName" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.routeName" placeholder="默认使用服务名称{application.name}"></Input>
         </FormItem>
         <FormItem label="路由地址" prop="path">
-          <Input v-model="formItem.path" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.path" placeholder="/{path}/**"></Input>
         </FormItem>
         <FormItem label="路由方式">
           <Select v-model="selectType">
-            <Option value="service" label="服务名称"></Option>
-            <Option value="url" label="服务地址"></Option>
+            <Option value="service" label="服务代理(serviceId)"></Option>
+            <Option value="url" label="服务地址(url)"></Option>
           </Select>
         </FormItem>
-        <FormItem v-if="selectType==='service'" label="服务名称" prop="serviceId"
+        <FormItem v-if="selectType==='service'" label="负载均衡" prop="serviceId"
                   :rules="{required: true, message: '服务名称不能为空', trigger: 'blur'}">
-          <Input v-model="formItem.serviceId" placeholder="请输入内容"></Input>
+          <Input v-model="formItem.serviceId" placeholder="服务名称application.name"></Input>
         </FormItem>
-        <FormItem v-if="selectType==='url'" label="服务地址" prop="url"
-                  :rules="{required: true, message: '服务地址不能为空', trigger: 'blur'}">
-          <Input v-model="formItem.url" placeholder="请输入内容"></Input>
+        <FormItem v-if="selectType==='url'" label="反向代理" prop="url"
+                  :rules="[{required: true, message: '服务地址不能为空', trigger: 'blur'},{type: 'url', message: '请输入有效网址', trigger: 'blur'}]">
+          <Input v-model="formItem.url" placeholder="http://localhost:8080"></Input>
         </FormItem>
         <FormItem label="状态">
           <RadioGroup v-model="formItem.status">
@@ -134,13 +139,8 @@
             width: 300
           },
           {
-            title: '服务名称',
-            key: 'serviceId',
-            width: 300
-          },
-          {
-            title: '服务地址',
-            key: 'url',
+            title: '路由方式',
+            slot: 'routeType',
             width: 300
           },
           {
@@ -156,8 +156,7 @@
           {
             title: '状态',
             key: 'status',
-            slot: 'status',
-            width: 100
+            slot: 'status'
           },
           {
             title: '操作',
@@ -180,6 +179,9 @@
         this.formItem.status = this.formItem.status + ''
         this.formItem.stripPrefix = this.formItem.stripPrefix + ''
         this.formItem.retryable = this.formItem.retryable + ''
+        this.formItem.url  =  this.formItem.service ? '':this.formItem.url
+        this.formItem.service  =  this.formItem.url ? '':this.formItem.service
+        this.selectType = this.formItem.url ?'url':'service'
         this.modalVisible = true
       },
       handleReset () {
@@ -188,7 +190,7 @@
           path: '',
           serviceId: '',
           url: '',
-          stripPrefix: 1,
+          stripPrefix: 0,
           retryable: 0,
           status: 1,
           routeName: ''

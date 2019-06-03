@@ -211,7 +211,6 @@
             title: '状态',
             slot: 'status',
             key: 'status',
-            width: 100,
             filters: [
               {
                 label: '禁用',

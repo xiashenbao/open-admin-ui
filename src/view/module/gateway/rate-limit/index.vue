@@ -128,8 +128,7 @@
           },
           {
             title: 'IP地址',
-            key: 'ipAddress',
-            width: 750
+            key: 'ipAddress'
           },
           {
             title: '操作',

@@ -167,7 +167,6 @@
           },
           {
             title: '最后修改时间',
-            width: 200,
             key: 'updateTime'
           },
           {

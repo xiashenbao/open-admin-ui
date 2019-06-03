@@ -90,7 +90,7 @@
       </Alert>
       <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
         <FormItem label="服务名称" prop="serviceId">
-          <Select :disabled="formItem.apiId?true:false" v-model="formItem.serviceId" filterable clearable>
+          <Select :disabled="formItem.apiId && formItem.isPersist === 1?true:false" v-model="formItem.serviceId" filterable clearable>
             <Option v-for="item in selectServiceList" :value="item.serviceId">{{ item.serviceName }}</Option>
           </Select>
         </FormItem>
@@ -98,13 +98,13 @@
           <Input v-model="formItem.apiCategory" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口标识" prop="apiCode">
-          <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
+          <Input :disabled="formItem.apiId && formItem.isPersist === 1?true:false" v-model="formItem.apiCode" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="接口名称" prop="apiName">
-          <Input :disabled="formItem.apiId?true:false" v-model="formItem.apiName" placeholder="请输入内容"></Input>
+          <Input :disabled="formItem.apiId && formItem.isPersist === 1?true:false" v-model="formItem.apiName" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="请求地址" prop="path">
-          <Input :disabled="formItem.apiId?true:false" v-model="formItem.path" placeholder="请输入内容"></Input>
+          <Input :disabled="formItem.apiId && formItem.isPersist === 1?true:false" v-model="formItem.path" placeholder="请输入内容"></Input>
         </FormItem>
         <FormItem label="优先级">
           <InputNumber v-model="formItem.priority"></InputNumber>
