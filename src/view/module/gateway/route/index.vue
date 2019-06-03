@@ -51,8 +51,8 @@
         </FormItem>
         <FormItem label="路由方式">
           <Select v-model="selectType">
-            <Option value="service" label="服务代理(serviceId)"></Option>
-            <Option value="url" label="服务地址(url)"></Option>
+            <Option value="service" label="负载均衡(serviceId)"></Option>
+            <Option value="url" label="反向代理(url)"></Option>
           </Select>
         </FormItem>
         <FormItem v-if="selectType==='service'" label="负载均衡" prop="serviceId"
