@@ -36,8 +36,9 @@
       </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="apiName" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success"/>
-          <Badge v-else="" status="error"/>
+          <Badge v-if="row.status===1" status="success" title="启用"/>
+          <Badge v-else-if="row.status===2" status="warning" title="维护中"/>
+          <Badge v-else="" status="error" title="已禁用"/>
           <span>{{row.apiName}}</span>
         </template>
         <template slot="isAuth" slot-scope="{ row }">
@@ -119,6 +120,7 @@
           <RadioGroup v-model="formItem.status">
             <Radio label="0">禁用</Radio>
             <Radio label="1">启用</Radio>
+            <Radio label="2">维护中</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="描述">
