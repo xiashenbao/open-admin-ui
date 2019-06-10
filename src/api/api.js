@@ -38,7 +38,7 @@ export const getAllApi = (serviceId) => {
  * @param apiDesc
  * @param isAuth
  */
-export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isAuth}) => {
+export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isAuth,isOpen}) => {
   const data = {
     apiCode: apiCode,
     apiName: apiName,
@@ -48,7 +48,8 @@ export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, 
     status: status,
     priority: priority,
     apiDesc: apiDesc,
-    isAuth: isAuth
+    isAuth: isAuth,
+    isOpen:isOpen
   }
   return request({
     url: 'base/api/add',
@@ -70,7 +71,7 @@ export const addApi = ({apiCode, apiName, apiCategory, serviceId, path, status, 
  * @param apiDesc
  * @param isAuth
  */
-export const updateApi = ({apiId, apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isAuth}) => {
+export const updateApi = ({apiId, apiCode, apiName, apiCategory, serviceId, path, status, priority, apiDesc, isAuth,isOpen}) => {
   const data = {
     apiId: apiId,
     apiCode: apiCode,
@@ -81,7 +82,8 @@ export const updateApi = ({apiId, apiCode, apiName, apiCategory, serviceId, path
     status: status,
     priority: priority,
     apiDesc: apiDesc,
-    isAuth: isAuth
+    isAuth: isAuth,
+    isOpen: isOpen
   }
   return request({
     url: 'base/api/update',

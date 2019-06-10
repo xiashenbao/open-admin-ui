@@ -31,8 +31,7 @@
         </ButtonGroup>
       </div>
       <Alert show-icon>
-        <Tag color="red">@EnableResourceServer</Tag>
-        <span>自动扫描服务下的API接口</span>
+        <span>自动扫描<Tag color="red">@EnableResourceServer</Tag>资源服务器接口,注:自动添加的接口,都是未公开的. <code>只有公开的接口,才可以通过网关访问。否则将提示:"拒绝访问!"</code></span>
       </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="apiName" slot-scope="{ row }">
@@ -42,6 +41,8 @@
           <span>{{row.apiName}}</span>
         </template>
         <template slot="isAuth" slot-scope="{ row }">
+          <Tag color="blue" v-if="row.isOpen===1">公开的</Tag>
+          <Tag v-else-if="row.isOpen!==1">内部的</Tag>
           <Tag color="green" v-if="row.isAuth===1">身份认证</Tag>
           <Tag v-else-if="row.isAuth!==1">无认证</Tag>
         </template>
@@ -111,10 +112,19 @@
           <InputNumber v-model="formItem.priority"></InputNumber>
         </FormItem>
         <FormItem label="身份认证">
-          <RadioGroup v-model="formItem.isAuth">
+          <RadioGroup :disabled="formItem.apiId && formItem.isPersist === 1?true:false" v-model="formItem.isAuth">
             <Radio label="0">否</Radio>
             <Radio label="1">是</Radio>
           </RadioGroup>
+        </FormItem>
+        <FormItem label="是否公开访问">
+          <RadioGroup v-model="formItem.isOpen">
+            <Radio label="0">否</Radio>
+            <Radio label="1">是</Radio>
+          </RadioGroup>
+            <Tooltip content="接口是否可以通过网关访问">
+              <Icon type="ios-alert" size="16"/>
+            </Tooltip>
         </FormItem>
         <FormItem label="状态">
           <RadioGroup v-model="formItem.status">
@@ -194,7 +204,8 @@
           authSwatch: true,
           serviceId: '',
           priority: 0,
-          apiDesc: ''
+          apiDesc: '',
+          isOpen:1
         },
         columns: [
           {
@@ -278,6 +289,7 @@
         }
         this.formItem.status = this.formItem.status + ''
         this.formItem.isAuth = this.formItem.isAuth + ''
+        this.formItem.isOpen = this.formItem.isOpen + ''
         this.modalVisible = true
       },
       handleResetForm (form) {
@@ -294,7 +306,8 @@
           isAuth: 1,
           serviceId: '',
           priority: 0,
-          apiDesc: ''
+          apiDesc: '',
+          isOpen:1
         }
         this.formItem = newData
         //重置验证
