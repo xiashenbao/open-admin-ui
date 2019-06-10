@@ -204,7 +204,7 @@
           <InputNumber :min="900" v-model="formItem.refreshTokenValidity"></InputNumber>
           <span>&nbsp;&nbsp;秒</span>
         </FormItem>
-        <FormItem label="第三方登陆回掉地址" prop="redirectUrls">
+        <FormItem label="第三方登陆回调地址" prop="redirectUrls">
           <Input v-model="formItem.redirectUrls" type="textarea" placeholder="请输入内容"></Input>
           <span>多个地址使用,逗号隔开</span>
         </FormItem>
