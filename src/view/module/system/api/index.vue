@@ -112,13 +112,13 @@
           <InputNumber v-model="formItem.priority"></InputNumber>
         </FormItem>
         <FormItem label="身份认证">
-          <RadioGroup :disabled="formItem.apiId && formItem.isPersist === 1?true:false" v-model="formItem.isAuth">
-            <Radio label="0">否</Radio>
-            <Radio label="1">是</Radio>
+          <RadioGroup  v-model="formItem.isAuth">
+            <Radio :disabled="formItem.apiId && formItem.isPersist === 1?true:false" label="0">否</Radio>
+            <Radio :disabled="formItem.apiId && formItem.isPersist === 1?true:false" label="1">是</Radio>
           </RadioGroup>
         </FormItem>
         <FormItem label="是否公开访问">
-          <RadioGroup v-model="formItem.isOpen">
+          <RadioGroup  v-model="formItem.isOpen">
             <Radio label="0">否</Radio>
             <Radio label="1">是</Radio>
           </RadioGroup>
