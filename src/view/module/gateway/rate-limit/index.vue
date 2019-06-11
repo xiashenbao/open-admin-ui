@@ -130,6 +130,7 @@
           },
           {
             title: '策略类型',
+            key: 'policyType',
             width: 300
           },
           {
