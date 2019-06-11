@@ -8,20 +8,21 @@ import request from '@/libs/request'
 export const getRateLimits = ({page, limit}) => {
   const params = {page: page, limit: limit}
   return request({
-    url: 'base/gateway/limit/ip',
+    url: 'base/gateway/limit/rate',
     params,
     method: 'get'
   })
 }
 
-export const addRateLimit = ({policyName, policyType, ipAddress}) => {
+export const addRateLimit = ({policyName, policyType, limitQuota,intervalUnit}) => {
   const data = {
     policyName: policyName,
     policyType: policyType,
-    ipAddress: ipAddress
+    limitQuota: limitQuota,
+    intervalUnit: intervalUnit
   }
   return request({
-    url: 'base/gateway/limit/ip/add',
+    url: 'base/gateway/limit/rate/add',
     data,
     method: 'post'
   })
@@ -33,15 +34,16 @@ export const addRateLimit = ({policyName, policyType, ipAddress}) => {
  * @param policyType
  * @param ipAddress
  */
-export const updateRateLimit = ({policyId,policyName, policyType, ipAddress}) => {
+export const updateRateLimit = ({policyId,policyName, policyType, limitQuota,intervalUnit}) => {
   const data = {
     policyId:policyId,
     policyName: policyName,
     policyType: policyType,
-    ipAddress: ipAddress
+    limitQuota: limitQuota,
+    intervalUnit: intervalUnit
   }
   return request({
-    url: 'base/gateway/limit/ip/update',
+    url: 'base/gateway/limit/rate/update',
     data,
     method: 'post'
   })
@@ -57,7 +59,7 @@ export const removeRateLimit = (policyId) => {
     policyId: policyId
   }
   return request({
-    url: 'base/gateway/limit/ip/remove',
+    url: 'base/gateway/limit/rate/remove',
     data,
     method: 'post'
   })
@@ -73,7 +75,7 @@ export const getRateLimitApis = (policyId) => {
     policyId: policyId
   }
   return request({
-    url: 'base/gateway/limit/ip/api/list',
+    url: 'base/gateway/limit/rate/api/list',
     params,
     method: 'get'
   })
@@ -90,7 +92,7 @@ export const addRateLimitApis = ({policyId,apiIds}) => {
     apiIds:apiIds.join(',')
   }
   return request({
-    url: 'base/gateway/limit/ip/api/add',
+    url: 'base/gateway/limit/rate/api/add',
     data,
     method: 'post'
   })

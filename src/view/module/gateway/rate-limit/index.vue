@@ -46,12 +46,21 @@
         </FormItem>
         <FormItem label="策略类型" prop="policyType">
           <Select v-model="formItem.policyType">
-            <Option value="0" label="拒绝-黑名单"></Option>
-            <Option value="1" label="允许-白名单"></Option>
+            <Option value="url" label="接口(url)"></Option>
+            <Option disabled value="origin" label="来源(origin)"></Option>
+            <Option disabled value="user" label="用户(user)"></Option>
           </Select>
         </FormItem>
-        <FormItem label="IP地址" prop="ipAddress">
-          <Input v-model="formItem.ipAddress" type="textarea" placeholder="请输入内容"></Input>
+        <FormItem label="单位时间" prop="intervalUnit">
+          <Select v-model="formItem.intervalUnit">
+            <Option value="seconds" label="秒(seconds)"></Option>
+            <Option value="minutes" label="分钟(minutes)"></Option>
+            <Option value="hours" label="小时(hours)"></Option>
+            <Option value="days" label="天(days)"></Option>
+          </Select>
+        </FormItem>
+        <FormItem label="限流数" prop="limitQuota">
+          <InputNumber :min="10" v-model="formItem.limitQuota"></InputNumber>
         </FormItem>
       </Form>
       <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
@@ -76,10 +85,10 @@
 </template>
 
 <script>
-  import {getIpLimits, addIpLimit, updateIpLimit, removeIpLimit, getIpLimitApis, addIpLimitApis} from '@/api/ipLimit'
+  import {getRateLimits, addRateLimit, updateRateLimit, removeRateLimit, getRateLimitApis, addRateLimitApis} from '@/api/rateLimit'
   import {getAuthorityApi} from '@/api/authority'
   export default {
-    name: 'GatewayRoute',
+    name: 'GatewayRateLimit',
     data () {
       return {
         loading: false,
@@ -103,16 +112,14 @@
           ],
           policyType: [
             {required: true, message: '策略类型不能为空', trigger: 'blur'}
-          ],
-          ipAddress: [
-            {required: true, message: 'IP地址不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
           policyId: '',
           policyName: '',
-          policyType: '0',
-          ipAddress: '',
+          policyType: 'url',
+          intervalUnit: 'second',
+          limitQuota: 10,
           apiIds: [],
         },
         columns: [
@@ -123,12 +130,15 @@
           },
           {
             title: '策略类型',
-            width: 300,
-            slot: 'policyType'
+            width: 300
           },
           {
-            title: 'IP地址',
-            key: 'ipAddress'
+            title: '单位时间',
+            key: 'intervalUnit'
+          },
+          {
+            title: '限流数',
+            key: 'limitQuota'
           },
           {
             title: '操作',
@@ -154,7 +164,7 @@
         }
         if (step === this.forms[1]) {
           this.modalTitle = data ? '绑定API - ' + this.formItem.policyName : '绑定API'
-          this.handleIpLimitApi(this.formItem.policyId);
+          this.handleRateLimitApi(this.formItem.policyId);
         }
         this.formItem.policyType = this.formItem.policyType + ''
         this.current = step
@@ -163,9 +173,10 @@
         const newData = {
           policyId: '',
           policyName: '',
-          policyType: '0',
-          ipAddress: '',
-          apiIds: []
+          policyType: 'url',
+          intervalUnit: 'second',
+          limitQuota: 10,
+          apiIds: [],
         }
         this.formItem = newData
         //重置验证
@@ -182,7 +193,7 @@
             if (valid) {
               this.saving = true
               if (this.formItem.policyId) {
-                updateIpLimit(this.formItem).then(res => {
+                updateRateLimit(this.formItem).then(res => {
                   this.handleReset()
                   this.handleSearch()
                   if (res.code === 0) {
@@ -192,7 +203,7 @@
                   this.saving = false
                 })
               } else {
-                addIpLimit(this.formItem).then(res => {
+                addRateLimit(this.formItem).then(res => {
                   this.handleReset()
                   this.handleSearch()
                   if (res.code === 0) {
@@ -209,7 +220,7 @@
           this.$refs[this.current].validate((valid) => {
             if (valid) {
               this.saving = true
-              addIpLimitApis({policyId: this.formItem.policyId, apiIds: this.formItem.apiIds}).then(res => {
+              addRateLimitApis({policyId: this.formItem.policyId, apiIds: this.formItem.apiIds}).then(res => {
                 this.handleReset()
                 this.handleSearch()
                 if (res.code === 0) {
@@ -227,7 +238,7 @@
           this.pageInfo.page = page
         }
         this.loading = true
-        getIpLimits({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
+        getRateLimits({page: this.pageInfo.page, limit: this.pageInfo.limit}).then(res => {
           this.data = res.data.records
           this.pageInfo.total = parseInt(res.data.total)
         }).finally(() => {
@@ -246,7 +257,7 @@
         this.$Modal.confirm({
           title: '确定删除吗？',
           onOk: () => {
-            removeIpLimit(data.policyId).then(res => {
+            removeRateLimit(data.policyId).then(res => {
               if (res.code === 0) {
                 this.pageInfo.page = 1
                 this.$Message.success('删除成功')
@@ -256,13 +267,13 @@
           }
         })
       },
-      handleIpLimitApi(policyId) {
+      handleRateLimitApi(policyId) {
         if (!policyId) {
           return
         }
         const that = this
         const p1 = getAuthorityApi('')
-        const p2 = getIpLimitApis(policyId)
+        const p2 = getRateLimitApis(policyId)
         Promise.all([p1, p2]).then(function (values) {
           let res1 = values[0]
           let res2 = values[1]

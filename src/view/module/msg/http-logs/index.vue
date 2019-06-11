@@ -58,7 +58,7 @@
   import {getNotifyHttpLogs} from '@/api/msg'
 
   export default {
-    name: 'MsgNotifyHttpLogs',
+    name: 'MsgHttpLogs',
     data () {
       return {
         drawer: false,

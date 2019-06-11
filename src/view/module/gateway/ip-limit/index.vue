@@ -93,7 +93,7 @@
   import {getAuthorityApi} from '@/api/authority'
 
   export default {
-    name: 'GatewayRoute',
+    name: 'GatewayIpLimit',
     data () {
       return {
         loading: false,
