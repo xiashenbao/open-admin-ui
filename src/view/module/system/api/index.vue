@@ -25,26 +25,25 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button :disabled="hasAuthority('systemApiEdit')?false:true"  class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
         </ButtonGroup>
       </div>
       <Alert show-icon>
-        <span>自动扫描<Tag color="red">@EnableResourceServer</Tag>资源服务器接口,注:自动添加的接口,都是未公开的. <code>只有公开的接口,才可以通过网关访问。否则将提示:"拒绝访问!"</code></span>
+        <span>自动扫描<Tag color="red">@EnableResourceServer</Tag>资源服务器接口,注:自动添加的接口,都是未公开的. <code>只有公开的接口,才可以通过网关访问。否则将提示:"请求地址,拒绝访问!"</code></span>
       </Alert>
       <Table :columns="columns" :data="data" :loading="loading">
         <template slot="apiName" slot-scope="{ row }">
-          <Badge v-if="row.status===1" status="success" title="启用"/>
-          <Badge v-else-if="row.status===2" status="warning" title="维护中"/>
-          <Badge v-else="" status="error" title="已禁用"/>
           <span>{{row.apiName}}</span>
         </template>
         <template slot="isAuth" slot-scope="{ row }">
           <Tag color="blue" v-if="row.isOpen===1">公开的</Tag>
           <Tag v-else-if="row.isOpen!==1">内部的</Tag>
           <Tag color="green" v-if="row.isAuth===1">身份认证</Tag>
-          <Tag v-else-if="row.isAuth!==1">无认证</Tag>
+          <Tag v-else-if="row.isAuth!==1">无需认证</Tag>
+          <Tag v-if="row.status===1"   color="green">启用</Tag>
+          <Tag v-else-if="row.status===2"   color="orange">维护中</Tag>
+          <Tag v-else=""  color="red">禁用</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
           <a :disabled="hasAuthority('systemApiEdit')?false:true"   @click="handleModal(row)">
@@ -256,17 +255,17 @@
             title: '接口安全',
             key: 'isAuth',
             slot: 'isAuth',
-            width: 200
-          },
-          {
-            title: '最后更新时间',
-            key: 'updateTime',
-            width: 180
+            width: 250
           },
           {
             title: '描述',
             key: 'apiDesc',
             width: 400
+          },
+          {
+            title: '最后更新时间',
+            key: 'updateTime',
+            width: 180
           },
           {
             title: '操作',

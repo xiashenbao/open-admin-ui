@@ -24,7 +24,6 @@
         <ButtonGroup>
           <Button :disabled="hasAuthority('systemUserEdit')?false:true" type="primary"
                   @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
         </ButtonGroup>

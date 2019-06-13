@@ -4,7 +4,6 @@
       <div class="search-con search-con-top">
         <ButtonGroup>
           <Button :disabled="hasAuthority('jobEdit')?false:true"   class="search-btn" type="primary" @click="handleModal()">
-            <Icon type="search"/>&nbsp;&nbsp;
             <span>添加</span>
           </Button>
         </ButtonGroup>
