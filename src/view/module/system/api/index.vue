@@ -184,6 +184,9 @@
           apiCategory: [
             {required: true, message: '接口分类不能为空', trigger: 'blur'}
           ],
+          path: [
+            {required: true, message: '接口地址不能为空', trigger: 'blur'}
+          ],
           apiCode: [
             {required: true, validator: validateEn, trigger: 'blur'}
           ],
