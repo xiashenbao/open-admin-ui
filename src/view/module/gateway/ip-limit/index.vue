@@ -187,7 +187,7 @@
           step = this.forms[0]
         }
         if (step === this.forms[0]) {
-          this.modalTitle = data ? '编辑IP策略 - ' + this.formItem.policyName : '添加IP策略'
+          this.modalTitle = data ? '编辑来源限制策略 - ' + this.formItem.policyName : '添加来源限制'
           this.modalVisible = true
         }
         if (step === this.forms[1]) {
