@@ -8,7 +8,7 @@ import request from '@/libs/request'
 export const getNotifyHttpLogs = ({page, limit, url, type, result}) => {
   const params = {page: page, limit: limit, url: url, type: type, result: result}
   return request({
-    url: 'msg/http/notify/logs',
+    url: 'msg/webhook/logs',
     params,
     method: 'get'
   })

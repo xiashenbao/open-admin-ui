@@ -33,36 +33,38 @@
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
-    <Modal v-model="modalVisible"
-           :title="modalTitle"
-           width="680"
-           @on-cancel="handleReset">
-      <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="任务名称" prop="jobName">
-          <Input v-model="formItem.jobName" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="远程调度任务" prop="path">
-          <Select filterable v-model="formItem.path" @on-change="handleOnSelectChange">
-            <Option v-for="item in selectApis" :value="item.path">{{ item.path }} - {{ item.apiName
-              }}({{ item.serviceId }})
-            </Option>
-          </Select>
-        </FormItem>
-        <FormItem label="cron表达式" prop="cron">
-          <Input v-model="formItem.cron" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="异常告警邮箱" prop="alarmMail">
-          <Input v-model="formItem.alarmMail" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="任务描述">
-          <Input v-model="formItem.jobDescription" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-      </Form>
-      <div slot="footer">
-        <Button type="default" @click="handleReset">取消</Button>&nbsp;
-        <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
+    <Drawer width="30"  v-model="drawerVisible" @on-close="handleReset">
+      <div slot="header">
+        {{modalTitle}}
       </div>
-    </Modal>
+      <div>
+        <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
+          <FormItem label="任务名称" prop="jobName">
+            <Input v-model="formItem.jobName" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="远程调度任务" prop="path">
+            <Select filterable v-model="formItem.path" @on-change="handleOnSelectChange">
+              <Option v-for="item in selectApis" :value="item.path">{{ item.path }} - {{ item.apiName
+                }}({{ item.serviceId }})
+            </Option>
+            </Select>
+          </FormItem>
+          <FormItem label="cron表达式" prop="cron">
+            <Input v-model="formItem.cron" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="异常告警邮箱" prop="alarmMail">
+            <Input v-model="formItem.alarmMail" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="任务描述">
+            <Input v-model="formItem.jobDescription" type="textarea" placeholder="请输入内容"></Input>
+          </FormItem>
+        </Form>
+        <div class="drawer-footer">
+          <Button type="default" @click="handleReset">取消</Button>&nbsp;
+          <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
+        </div>
+      </div>
+    </Drawer>
   </div>
 </template>
 
@@ -71,11 +73,11 @@
   import {getJobs, addHttpJob, updateHttpJob, removeJob, pauseJob, resumeJob} from '@/api/job'
   import {getAllApi} from '@/api/api'
   export default {
-    name: 'SchedulerJob',
+    name: 'TaskJob',
     data () {
       return {
         loading: false,
-        modalVisible: false,
+        drawerVisible: false,
         modalTitle: '',
         saving: false,
         pageInfo: {
@@ -143,15 +145,14 @@
           },
           {
             title: '任务参数',
-            key: 'data',
-            width: 450
+            key: 'data'
           },
           {
             title: '操作',
             key: '',
             slot: 'action',
             fixed: 'right',
-            width: 120
+            width: 150
           }
         ],
         data: []
@@ -172,10 +173,14 @@
         } else {
           this.modalTitle = '添加任务'
         }
-        this.modalVisible = true
+        this.drawerVisible = true
       },
       handleResetForm (form) {
         this.$refs[form].resetFields()
+      },
+      handleTabClick(name){
+        this.current = name
+        this.handleModal();
       },
       handleReset () {
         const newData = {
@@ -192,7 +197,7 @@
         this.formItem = newData
         //重置验证
         this.handleResetForm('form1')
-        this.modalVisible = false
+        this.drawerVisible = false
         this.saving = false
       },
       handleSubmit () {
@@ -305,7 +310,6 @@
         this.formItem.method = api.requestMethod
       },
       handleClick(name, row) {
-        console.log(name)
         switch (name) {
           case 'pause':
             this.handlePause(row)

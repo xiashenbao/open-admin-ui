@@ -28,11 +28,6 @@
               <Button @click="handleSubmit" :loading="loading" type="primary"  long>登录</Button>
             </FormItem>
           </Form>
-          <p class="login-tip">其他登录方式
-            <Icon custom="icon iconfont icon-QQ-circle-fill" @click="handleClick('qq')" color="#0099ff" size="20"/>
-            <Icon custom="icon iconfont icon-wechat-fill" @click="handleClick('wechat')" color="#339900" size="20"/>
-            <Icon custom="icon iconfont icon-gitee" @click="handleClick('gitee')" color="#cc0000" size="20"/>
-            <a href="#" style="float: right">注册账号</a></p>
         </div>
       </Card>
     </div>
@@ -41,7 +36,6 @@
 
 <script>
   import {mapActions} from 'vuex'
-  import {loginConfig} from '@/api/data'
 
   export default {
     name: 'LoginForm',
@@ -115,15 +109,9 @@
             })
           }
         })
-      },
-      handleLoginConfig(){
-        loginConfig().then(res => {
-          this.config = res.data
-        })
       }
     },
     mounted: function () {
-      this.handleLoginConfig()
     }
   }
 </script>

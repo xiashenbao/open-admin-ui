@@ -37,55 +37,60 @@
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
-    <Modal v-model="modalVisible"
-           :title="modalTitle"
-           width="680"
-           @on-cancel="handleReset">
-      <Form ref="routeForm" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="路由名称" prop="routeName">
-          <Input v-model="formItem.routeName" placeholder="默认使用服务名称{application.name}"></Input>
-        </FormItem>
-        <FormItem label="路由地址" prop="path">
-          <Input v-model="formItem.path" placeholder="/{path}/**"></Input>
-        </FormItem>
-        <FormItem label="路由方式">
-          <Select v-model="selectType">
-            <Option value="service" label="负载均衡(serviceId)"></Option>
-            <Option value="url" label="反向代理(url)"></Option>
-          </Select>
-        </FormItem>
-        <FormItem v-if="selectType==='service'" label="负载均衡" prop="serviceId"
-                  :rules="{required: true, message: '服务名称不能为空', trigger: 'blur'}">
-          <Input v-model="formItem.serviceId" placeholder="服务名称application.name"></Input>
-        </FormItem>
-        <FormItem v-if="selectType==='url'" label="反向代理" prop="url"
-                  :rules="[{required: true, message: '服务地址不能为空', trigger: 'blur'},{type: 'url', message: '请输入有效网址', trigger: 'blur'}]">
-          <Input v-model="formItem.url" placeholder="http://localhost:8080"></Input>
-        </FormItem>
-        <FormItem label="状态">
-          <RadioGroup v-model="formItem.status">
-            <Radio label="0">禁用</Radio>
-            <Radio label="1">启用</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="忽略前缀">
-          <RadioGroup v-model="formItem.stripPrefix">
-            <Radio label="0">否</Radio>
-            <Radio label="1">是</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="失败重试">
-          <RadioGroup v-model="formItem.retryable">
-            <Radio label="0">否</Radio>
-            <Radio label="1">是</Radio>
-          </RadioGroup>
-        </FormItem>
-      </Form>
-      <div slot="footer">
-        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
-        <Button type="default" @click="handleReset">取消</Button>
+    <Drawer width="30"  v-model="drawerVisible" @on-close="handleReset">
+      <div slot="header">
+        {{modalTitle}}
       </div>
-    </Modal>
+      <div>
+        <Form ref="routeForm" :model="formItem" :rules="formItemRules" :label-width="100">
+          <FormItem label="路由名称" prop="routeDesc">
+            <Input v-model="formItem.routeDesc"  placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="路由标识" prop="routeName">
+            <Input v-model="formItem.routeName" placeholder="默认使用服务名称{application.name}"></Input>
+          </FormItem>
+          <FormItem label="路由前缀" prop="path">
+            <Input v-model="formItem.path" placeholder="/{path}/**"></Input>
+          </FormItem>
+          <FormItem label="路由方式">
+            <Select v-model="selectType">
+              <Option value="service" label="负载均衡(serviceId)"></Option>
+              <Option value="url" label="反向代理(url)"></Option>
+            </Select>
+          </FormItem>
+          <FormItem v-if="selectType==='service'" label="负载均衡" prop="serviceId"
+                    :rules="{required: true, message: '服务名称不能为空', trigger: 'blur'}">
+            <Input v-model="formItem.serviceId" placeholder="服务名称application.name"></Input>
+          </FormItem>
+          <FormItem v-if="selectType==='url'" label="反向代理" prop="url"
+                    :rules="[{required: true, message: '服务地址不能为空', trigger: 'blur'},{type: 'url', message: '请输入有效网址', trigger: 'blur'}]">
+            <Input v-model="formItem.url" placeholder="http://localhost:8080"></Input>
+          </FormItem>
+          <FormItem label="忽略前缀">
+            <RadioGroup v-model="formItem.stripPrefix">
+              <Radio label="0">否</Radio>
+              <Radio label="1">是</Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="失败重试">
+            <RadioGroup v-model="formItem.retryable">
+              <Radio label="0">否</Radio>
+              <Radio label="1">是</Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="状态">
+            <RadioGroup v-model="formItem.status">
+              <Radio label="0">禁用</Radio>
+              <Radio label="1">启用</Radio>
+            </RadioGroup>
+          </FormItem>
+        </Form>
+        <div class="drawer-footer">
+          <Button type="default" @click="handleReset">取消</Button>&nbsp;
+          <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
+        </div>
+      </div>
+    </Drawer>
   </div>
 </template>
 
@@ -99,7 +104,7 @@
       return {
         loading: false,
         saving: false,
-        modalVisible: false,
+        drawerVisible: false,
         modalTitle: '',
         pageInfo: {
           total: 0,
@@ -109,11 +114,14 @@
         selectType: 'service',
         selectServiceList: [],
         formItemRules: {
+          routeDesc: [
+          {required: true, message: '路由名称不能为空', trigger: 'blur'}
+         ],
           routeName: [
-            {required: true, message: '路由名称不能为空', trigger: 'blur'}
+            {required: true, message: '路由标识不能为空', trigger: 'blur'}
           ],
           path: [
-            {required: true, message: '路由地址不能为空', trigger: 'blur'}
+            {required: true, message: '路由前缀不能为空', trigger: 'blur'}
           ]
         },
         formItem: {
@@ -124,18 +132,25 @@
           stripPrefix: 0,
           retryable: 0,
           status: 1,
-          routeName: ''
+          routeName: '',
+          routeDesc:''
         },
         columns: [
           {
             title: '路由名称',
-            key: 'routeName',
+            key: 'routeDesc',
             width: 300
           },
           {
-            title: '路由地址',
-            key: 'path',
+            title: '路由标识',
+            key: 'routeName',
             width: 300
+
+          },
+          {
+            title: '路由前缀',
+            key: 'path',
+            width: 200
           },
           {
             title: '路由方式',
@@ -144,13 +159,11 @@
           },
           {
             title: '忽略前缀',
-            key: 'stripPrefix',
-            width: 100
+            key: 'stripPrefix'
           },
           {
             title: '失败重试',
-            key: 'retryable',
-            width: 100
+            key: 'retryable'
           },
           {
             title: '状态',
@@ -181,7 +194,7 @@
         this.formItem.url  =  this.formItem.service ? '':this.formItem.url
         this.formItem.service  =  this.formItem.url ? '':this.formItem.service
         this.selectType = this.formItem.url ?'url':'service'
-        this.modalVisible = true
+        this.drawerVisible = true
       },
       handleReset () {
         const newData = {
@@ -192,12 +205,13 @@
           stripPrefix: 0,
           retryable: 0,
           status: 1,
-          routeName: ''
+          routeName: '',
+          routeDesc:''
         }
         this.formItem = newData
         //重置验证
         this.$refs['routeForm'].resetFields()
-        this.modalVisible = false
+        this.drawerVisible = false
         this.saving = false
       },
       handleSubmit () {

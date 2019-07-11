@@ -30,13 +30,11 @@
         </template>
         <template slot="action" slot-scope="{ row }">
           <a  @click="handleModal(row)" :disabled="row.roleCode != 'all' && hasAuthority('systemRoleEdit')?false:true">编辑</a>&nbsp;
-          <a  @click="handleModal(row,forms[1])" :disabled="row.roleCode != 'all' && hasAuthority('systemRoleEdit')?false:true">分配菜单</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemRoleEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.roleCode === 'all' ?true:false">
               <span>更多</span>
               <Icon type="ios-arrow-down"></Icon></a>
             <DropdownMenu slot="list">
-              <DropdownItem  name="addUser">添加成员</DropdownItem>
               <DropdownItem  name="remove">删除角色</DropdownItem>
             </DropdownMenu>
           </Dropdown>&nbsp;
@@ -47,74 +45,84 @@
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
-    <Modal v-model="modalVisible"
-           :title="modalTitle"
-           width="800"
-           @on-cancel="handleReset">
-      <Form v-show="current == 'form1'" ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="角色标识" prop="roleCode">
-          <Input v-model="formItem.roleCode" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="角色名称" prop="roleName">
-          <Input v-model="formItem.roleName" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="状态">
-          <RadioGroup v-model="formItem.status">
-            <Radio label="0">禁用</Radio>
-            <Radio label="1">启用</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="描述">
-          <Input v-model="formItem.roleDesc" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-      </Form>
-      <Form v-show="current == 'form2'" ref="form2" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="过期时间(选填)" prop="expireTime">
-          <Badge v-if="formItem.isExpired" text="授权已过期">
-            <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime"
-                        placeholder="设置有效期"></DatePicker>
-          </Badge>
-          <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
-        </FormItem>
-        <FormItem label="功能菜单(选填)" prop="grantMenus">
-          <tree-table
-            ref="tree"
-            style="max-height:500px;overflow: auto"
-            expand-key="menuName"
-            :expand-type="false"
-            :is-fold="false"
-            :tree-type="true"
-            :selectable="true"
-            :columns="columns2"
-            :data="selectMenus">
-            <template slot="operation" slot-scope="scope">
-              <CheckboxGroup v-model="formItem.grantActions">
-                <Checkbox v-for="item in scope.row.actionList" :label="item.authorityId">
-                  <span :title="item.actionDesc">{{item.actionName}}</span>
-                </Checkbox>
-              </CheckboxGroup>
-            </template>
-          </tree-table>
-        </FormItem>
-      </Form>
-      <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="添加成员(选填)" prop="authorities">
-          <Transfer
-            :data="selectUsers"
-            :list-style="{width: '300px',height: '500px'}"
-            :titles="['选择用户', '已选择用户']"
-            :render-format="transferRender"
-            :target-keys="formItem.userIds"
-            @on-change="handleTransferChange"
-            filterable>
-          </Transfer>
-        </FormItem>
-      </Form>
-      <div slot="footer">
-        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
-        <Button type="default" @click="handleReset">取消</Button>
+
+    <Drawer width="40"  v-model="drawerVisible" @on-close="handleReset">
+      <div slot="header">
+        {{modalTitle}}
       </div>
-    </Modal>
+      <div>
+        <Tabs @on-click="handleTabClick" :value="current">
+          <TabPane  label="角色信息" name="form1">
+            <Form v-show="current == 'form1'" ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
+              <FormItem label="角色标识" prop="roleCode">
+                <Input v-model="formItem.roleCode" placeholder="请输入内容"></Input>
+              </FormItem>
+              <FormItem label="角色名称" prop="roleName">
+                <Input v-model="formItem.roleName" placeholder="请输入内容"></Input>
+              </FormItem>
+              <FormItem label="状态">
+                <RadioGroup v-model="formItem.status">
+                  <Radio label="0">禁用</Radio>
+                  <Radio label="1">启用</Radio>
+                </RadioGroup>
+              </FormItem>
+              <FormItem label="描述">
+                <Input v-model="formItem.roleDesc" type="textarea" placeholder="请输入内容"></Input>
+              </FormItem>
+            </Form>
+          </TabPane>
+          <TabPane :disabled="!formItem.roleId" label="分配权限" name="form2">
+            <Form v-show="current == 'form2'" ref="form2" :model="formItem" :rules="formItemRules" :label-width="100">
+              <FormItem label="过期时间(选填)" prop="expireTime">
+                <Badge v-if="formItem.isExpired" text="授权已过期">
+                  <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime"
+                              placeholder="设置有效期"></DatePicker>
+                </Badge>
+                <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
+              </FormItem>
+              <FormItem label="功能菜单(选填)" prop="grantMenus">
+                <tree-table
+                  ref="tree"
+                  style="max-height:580px;overflow: auto"
+                  expand-key="menuName"
+                  :expand-type="false"
+                  :is-fold="false"
+                  :tree-type="true"
+                  :selectable="true"
+                  :columns="columns2"
+                  :data="selectMenus">
+                  <template slot="operation" slot-scope="scope">
+                    <CheckboxGroup v-model="formItem.grantActions">
+                      <Checkbox v-for="item in scope.row.actionList" :label="item.authorityId">
+                        <span :title="item.actionDesc">{{item.actionName}}</span>
+                      </Checkbox>
+                    </CheckboxGroup>
+                  </template>
+                </tree-table>
+              </FormItem>
+            </Form>
+          </TabPane>
+          <TabPane :disabled="!formItem.roleId" label="添加成员" name="form3">        <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
+            <FormItem label="添加成员(选填)" prop="authorities">
+              <Transfer
+                :data="selectUsers"
+                :list-style="{width: '45%',height: '680px'}"
+                :titles="['选择用户', '已选择用户']"
+                :render-format="transferRender"
+                :target-keys="formItem.userIds"
+                @on-change="handleTransferChange"
+                filterable>
+              </Transfer>
+            </FormItem>
+          </Form>
+          </TabPane>
+        </Tabs>
+        <div class="drawer-footer">
+          <Button type="default" @click="handleReset">取消</Button>&nbsp;
+          <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
+        </div>
+      </div>
+    </Drawer>
   </div>
 </template>
 
@@ -148,7 +156,7 @@
           height: '500px'
         },
         loading: false,
-        modalVisible: false,
+        drawerVisible: false,
         modalTitle: '',
         saving: false,
         current: 'form1',
@@ -243,7 +251,7 @@
             title: '操作',
             slot: 'action',
             fixed: 'right',
-            width: 200
+            width: 150
           }
         ],
         columns2: [
@@ -263,33 +271,30 @@
       }
     },
     methods: {
-      handleModal (data, step) {
+      handleModal (data) {
         if (data) {
           this.formItem = Object.assign({}, this.formItem, data)
         }
-        if (!step) {
-          step = this.forms[0]
-        }
-        if (step === this.forms[0]) {
+        if ( this.current === this.forms[0]) {
           this.modalTitle = data ? '编辑角色 - ' + data.roleName : '添加用户'
-          this.modalVisible = true
+          this.drawerVisible = true
         }
-        if (step === this.forms[1]) {
+        if ( this.current === this.forms[1]) {
           this.modalTitle = data ? '分配权限 - ' + data.roleName : '分配权限'
           this.handleLoadRoleGranted(this.formItem.roleId)
         }
-        if (step === this.forms[2]) {
+        if ( this.current === this.forms[2]) {
           this.modalTitle = data ? '添加成员 - ' + data.roleName : '添加成员'
           this.handleLoadRoleUsers(this.formItem.roleId)
         }
-        if (!step) {
-          step = this.forms[0]
-        }
         this.formItem.status = this.formItem.status + ''
-        this.current = step
       },
       handleResetForm (form) {
         this.$refs[form].resetFields()
+      },
+      handleTabClick(name){
+        this.current = name
+        this.handleModal();
       },
       handleReset () {
         const newData = {
@@ -315,7 +320,7 @@
         this.current = this.forms[0]
         this.formItem.grantMenus = []
         this.formItem.grantActions = []
-        this.modalVisible = false
+        this.drawerVisible = false
         this.saving = false
       },
       handleSubmit () {
@@ -469,7 +474,7 @@
             })
             that.selectMenus = listConvertTree(res1.data, opt)
           }
-          that.modalVisible = true
+          that.drawerVisible = true
         })
       },
       handleLoadRoleUsers (roleId) {
@@ -494,7 +499,7 @@
               that.formItem.userIds.push(item.userId)
             })
           }
-          that.modalVisible = true
+          that.drawerVisible = true
         })
       },
       transferRender (item) {
@@ -505,9 +510,6 @@
       },
       handleClick (name, row) {
         switch (name) {
-          case'addUser':
-            this.handleModal(row, this.forms[2])
-            break
           case 'remove':
             this.handleRemove(row)
             break

@@ -3,7 +3,7 @@
     <div class="search-con search-con-top">
       <ButtonGroup>
         <Button :disabled="value.menuId && value.menuId!=='0' && !value.hasChild && hasAuthority('systemMenuEdit')?false:true" class="search-btn" type="primary" @click="handleModal()">
-          <span>添加功能权限</span>
+          <span>添加功能按钮</span>
         </Button>
       </ButtonGroup>
     </div>
@@ -19,55 +19,57 @@
         <a  :disabled="hasAuthority('systemMenuEdit')?false:true" @click="handleRemove(row)">删除</a>
       </template>
     </Table>
-    <Modal v-model="modalVisible"
-           :title="modalTitle"
-           width="800"
-           @on-cancel="handleReset">
-      <Form ref="form1" v-show="current=='form1'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="所属菜单">
-          <Input disabled v-model="value.menuName"></Input>
-        </FormItem>
-        <FormItem label="功能标识" prop="actionCode">
-          <Input v-model="formItem.actionCode"  placeholder="请输入内容"></Input>
-          <span>菜单标识+自定义标识.默认后缀：View、Edit</span>
-        </FormItem>
-        <FormItem label="功能名称" prop="actionName">
-          <Input v-model="formItem.actionName" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="优先级">
-          <InputNumber v-model="formItem.priority"></InputNumber>
-        </FormItem>
-        <FormItem label="状态">
-          <RadioGroup v-model="formItem.status">
-            <Radio label="0">禁用</Radio>
-            <Radio label="1">启用</Radio>
-          </RadioGroup>
-        </FormItem>
-        <FormItem label="描述">
-          <Input v-model="formItem.actionDesc" type="textarea" placeholder="请输入内容"></Input>
-        </FormItem>
-      </Form>
-      <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <Alert type="warning" show-icon>请注意：某一功能可能涉及到很多请求,需绑定相关接口资源,请求服务器时将验证接口访问权限！
+    <Drawer width="40"  v-model="drawerVisible" @on-close="handleReset">
+      <div slot="header">
+        {{modalTitle}}
+      </div>
+      <div>
+        <Form ref="form1" v-show="current=='form1'" :model="formItem" :rules="formItemRules" :label-width="100">
+          <FormItem label="上级菜单">
+            <Input disabled v-model="value.menuName"></Input>
+          </FormItem>
+          <FormItem label="功能标识" prop="actionCode">
+            <Input v-model="formItem.actionCode"  placeholder="请输入内容"></Input>
+            <span>菜单标识+自定义标识.默认后缀：View、Edit</span>
+          </FormItem>
+          <FormItem label="功能名称" prop="actionName">
+            <Input v-model="formItem.actionName" placeholder="请输入内容"></Input>
+          </FormItem>
+          <FormItem label="优先级">
+            <InputNumber v-model="formItem.priority"></InputNumber>
+          </FormItem>
+          <FormItem label="状态">
+            <RadioGroup v-model="formItem.status">
+              <Radio label="0">禁用</Radio>
+              <Radio label="1">启用</Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem label="描述">
+            <Input v-model="formItem.actionDesc" type="textarea" placeholder="请输入内容"></Input>
+          </FormItem>
+        </Form>
+        <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" >
+          <Alert type="warning" show-icon>请注意：某一功能可能涉及到很多请求,需绑定相关接口资源,请求服务器时将验证接口访问权限！
           <a>支持动态授权,无需重新登录或刷新</a>
           </Alert>
-        <FormItem label="接口资源(选填)" prop="authorities">
-          <Transfer
-            :data="selectApis"
-            :list-style="{width: '300px',height: '500px'}"
-            :titles="['选择接口', '已选择接口']"
-            :render-format="transferRender"
-            :target-keys="formItem.authorityIds"
-            @on-change="handleTransferChange"
-            filterable>
-          </Transfer>
-        </FormItem>
-      </Form>
-      <div slot="footer">
-        <Button type="default" @click="handleReset">取消</Button>&nbsp;
-        <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
+          <FormItem  prop="authorities">
+            <Transfer
+              :data="selectApis"
+              :list-style="{width: '45%',height: '680px'}"
+              :titles="['选择接口', '已选择接口']"
+              :render-format="transferRender"
+              :target-keys="formItem.authorityIds"
+              @on-change="handleTransferChange"
+              filterable>
+            </Transfer>
+          </FormItem>
+        </Form>
+        <div class="drawer-footer">
+          <Button type="default" @click="handleReset">取消</Button>&nbsp;
+          <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
+        </div>
       </div>
-    </Modal>
+    </Drawer>
   </div>
 </template>
 
@@ -101,7 +103,7 @@
         }
       }
       return {
-        modalVisible: false,
+        drawerVisible: false,
         saving: false,
         loading: false,
         current: 'form1',
@@ -133,13 +135,11 @@
         columns: [
           {
             title: '功能名称',
-            slot: 'status',
-            width: 200
+            slot: 'status'
           },
           {
             title: '功能编码',
-            key: 'actionCode',
-            width: 150
+            key: 'actionCode'
           },
           {
             title: '操作',
@@ -161,7 +161,7 @@
         }
         if (step === this.forms[0]) {
           this.modalTitle = data ? '编辑功能 - ' + this.value.menuName + ' > ' + data.actionName : '添加功能 - ' + this.value.menuName
-          this.modalVisible = true
+          this.drawerVisible = true
           this.formItem.actionCode =  this.formItem.actionId ?this.formItem.actionCode:this.value.menuCode
         }
         if (step === this.forms[1]) {
@@ -187,7 +187,7 @@
           this.$refs[form].resetFields()
         })
         this.current = this.forms[0]
-        this.modalVisible = false
+        this.drawerVisible = false
         this.saving = false
       },
       handleSubmit () {
@@ -288,7 +288,7 @@
             })
             that.formItem.authorityIds = result
           }
-          that.modalVisible = true
+          that.drawerVisible = true
         })
       },
       transferRender (item) {

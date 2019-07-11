@@ -28,62 +28,60 @@
         <template slot="action" slot-scope="{ row }">
           <a :disabled="hasAuthority('gatewayIpLimitEdit')?false:true" @click="handleModal(row)">
             编辑</a>&nbsp;
-          <a :disabled="hasAuthority('gatewayIpLimitEdit')?false:true" @click="handleModal(row,forms[1])">
-            绑定API
+          <a :disabled="hasAuthority('gatewayIpLimitEdit')?false:true" @click="handleRemove(row)">
+            删除
           </a>
-          &nbsp;
-          <Dropdown v-show="hasAuthority('gatewayIpLimitEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
-            <a href="javascript:void(0)">
-              <span>更多</span>
-              <Icon type="ios-arrow-down"></Icon>
-            </a>
-            <DropdownMenu slot="list">
-              <DropdownItem  name="remove">删除</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
         </template>
       </Table>
       <Page :total="pageInfo.total" :current="pageInfo.page" :page-size="pageInfo.limit" show-elevator show-sizer
             show-total
             @on-change="handlePage" @on-page-size-change='handlePageSize'></Page>
     </Card>
-    <Modal v-model="modalVisible"
-           :title="modalTitle"
-           width="800"
-           @on-cancel="handleReset">
-      <Form ref="form1" v-show="current=='form1'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <FormItem label="策略名称" prop="policyName">
-          <Input v-model="formItem.policyName" placeholder="请输入内容"></Input>
-        </FormItem>
-        <FormItem label="策略类型" prop="policyType">
-          <Select v-model="formItem.policyType">
-            <Option value="0" label="拒绝-黑名单"></Option>
-            <Option value="1" label="允许-白名单"></Option>
-          </Select>
-        </FormItem>
-        <FormItem label="IP地址/域名" prop="ipAddress">
-          <Input v-model="formItem.ipAddress" type="textarea" placeholder="192.168.0.1;192.168.0.2;baidu.com;weixin.com"></Input> 同时支持Ip和域名,多个用分号";"隔开。示例：192.168.0.1;baidu.com;weixin.com
-        </FormItem>
-      </Form>
-      <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" :label-width="100">
-        <Alert type="warning" show-icon>请注意：如果API上原来已经绑定了一个策略，则会被本策略覆盖，请慎重选择！</Alert>
-        <FormItem label="绑定接口(选填)" prop="authorities">
-          <Transfer
-            :data="selectApis"
-            :list-style="{width: '300px',height: '500px'}"
-            :titles="['选择接口', '已选择接口']"
-            :render-format="transferRender"
-            :target-keys="formItem.apiIds"
-            @on-change="handleTransferChange"
-            filterable>
-          </Transfer>
-        </FormItem>
-      </Form>
-      <div slot="footer">
-        <Button type="primary" :loading="saving" @click="handleSubmit">保存</Button>&nbsp;
-        <Button type="default" @click="handleReset">取消</Button>
+    <Drawer width="40"  v-model="drawerVisible" @on-close="handleReset">
+      <div slot="header">
+        {{modalTitle}}
       </div>
-    </Modal>
+      <div>
+        <Tabs :value="current" @on-click="handleTabClick">
+          <TabPane label="策略信息" name="form1">
+            <Form ref="form1" v-show="current=='form1'" :model="formItem" :rules="formItemRules" :label-width="100">
+              <FormItem label="策略名称" prop="policyName">
+                <Input v-model="formItem.policyName" placeholder="请输入内容"></Input>
+              </FormItem>
+              <FormItem label="策略类型" prop="policyType">
+                <Select v-model="formItem.policyType">
+                  <Option value="0" label="拒绝-黑名单"></Option>
+                  <Option value="1" label="允许-白名单"></Option>
+                </Select>
+              </FormItem>
+              <FormItem label="IP地址/域名" prop="ipAddress">
+                <Input v-model="formItem.ipAddress" type="textarea" placeholder="192.168.0.1;192.168.0.2;baidu.com;weixin.com"></Input> 同时支持Ip和域名,多个用分号";"隔开。示例：192.168.0.1;baidu.com;weixin.com
+        </FormItem>
+            </Form>
+          </TabPane>
+          <TabPane :disabled="!formItem.policyId"  label="绑定接口" name="form2">
+            <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" >
+              <Alert type="warning" show-icon>请注意：如果API上原来已经绑定了一个策略，则会被本策略覆盖，请慎重选择！</Alert>
+              <FormItem prop="authorities">
+                <Transfer
+                  :data="selectApis"
+                  :list-style="{width: '45%',height: '680px'}"
+                  :titles="['选择接口', '已选择接口']"
+                  :render-format="transferRender"
+                  :target-keys="formItem.apiIds"
+                  @on-change="handleTransferChange"
+                  filterable>
+                </Transfer>
+              </FormItem>
+            </Form>
+          </TabPane>
+        </Tabs>
+        <div class="drawer-footer">
+          <Button type="default" @click="handleReset">取消</Button>&nbsp;
+          <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
+        </div>
+      </div>
+    </Drawer>
   </div>
 </template>
 
@@ -97,7 +95,7 @@
       return {
         loading: false,
         saving: false,
-        modalVisible: false,
+        drawerVisible: false,
         modalTitle: '',
         pageInfo: {
           total: 0,
@@ -172,33 +170,33 @@
             title: '操作',
             slot: 'action',
             fixed: 'right',
-            width: 200
+            width: 150
           }
         ],
         data: []
       }
     },
     methods: {
-      handleModal (data, step) {
+      handleModal (data) {
         if (data) {
           this.formItem = Object.assign({}, this.formItem, data)
         }
-        if (!step) {
-          step = this.forms[0]
-        }
-        if (step === this.forms[0]) {
+        if (this.current  === this.forms[0]) {
           this.modalTitle = data ? '编辑来源限制策略 - ' + this.formItem.policyName : '添加来源限制'
-          this.modalVisible = true
+          this.drawerVisible = true
         }
-        if (step === this.forms[1]) {
-          this.modalTitle = data ? '绑定API - ' + this.formItem.policyName : '绑定API'
+        if (this.current  === this.forms[1]) {
+          this.modalTitle = data ? '绑定接口 - ' + this.formItem.policyName : '绑定接口'
           this.handleIpLimitApi(this.formItem.policyId)
         }
         this.formItem.policyType = this.formItem.policyType + ''
-        this.current = step
       },
       handleResetForm (form) {
         this.$refs[form].resetFields()
+      },
+      handleTabClick(name){
+        this.current = name
+        this.handleModal();
       },
       handleReset () {
         const newData = {
@@ -214,7 +212,7 @@
           this.handleResetForm(form)
         })
         this.current = this.forms[0]
-        this.modalVisible = false
+        this.drawerVisible = false
         this.saving = false
       },
       handleSubmit () {
@@ -319,7 +317,7 @@
               that.formItem.apiIds.push(item.apiId)
             })
           }
-          that.modalVisible = true
+          that.drawerVisible = true
         })
       },
       transferRender (item) {
@@ -330,13 +328,6 @@
           this.formItem.apiIds = ['1']
         } else {
           this.formItem.apiIds = newTargetKeys
-        }
-      },
-      handleClick (name, row) {
-        switch (name) {
-          case 'remove':
-            this.handleRemove(row)
-            break
         }
       }
     },

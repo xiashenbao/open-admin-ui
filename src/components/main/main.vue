@@ -243,12 +243,15 @@
     },
     watch: {
       screenWidth(val) {
-        if (val < 768) {
-          // 小于768强制折叠
-          this.handleCollapsedChange(true)
-        } else {
-          this.handleCollapsedChange(false)
-        }
+        const  that = this;
+        setTimeout(function () {
+          if (val < 768) {
+            // 小于768强制折叠
+            that.handleCollapsedChange(true)
+          } else {
+            that.handleCollapsedChange(false)
+          }
+        },200)
       },
       '$route' (newRoute) {
         const {name, query, params, meta} = newRoute

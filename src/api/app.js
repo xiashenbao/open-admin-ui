@@ -27,7 +27,7 @@ export const getApps = ({page, limit, appId, appName, appNameEn}) => {
  * @param userId
  * @param userType
  */
-export const addApp = ({appName, appNameEn, appType, appIcon, appOs, appDesc, status, website, userId, userType}) => {
+export const addApp = ({appName, appNameEn, appType, appIcon, appOs, appDesc, status, website, developerId}) => {
   const data = {
     appName: appName,
     appNameEn: appNameEn,
@@ -37,8 +37,7 @@ export const addApp = ({appName, appNameEn, appType, appIcon, appOs, appDesc, st
     appDesc: appDesc,
     status: status,
     website: website,
-    userId: userId,
-    userType: userType
+    developerId: developerId
   }
   return request({
     url: 'base/app/add',
@@ -61,7 +60,7 @@ export const addApp = ({appName, appNameEn, appType, appIcon, appOs, appDesc, st
  * @param userId
  * @param userType
  */
-export const updateApp = ({appId, appName, appNameEn, appType, appIcon, appOs, appDesc, status, website, userId, userType}) => {
+export const updateApp = ({appId, appName, appNameEn, appType, appIcon, appOs, appDesc, status, website, developerId}) => {
   const data = {
     appId: appId,
     appName: appName,
@@ -72,8 +71,7 @@ export const updateApp = ({appId, appName, appNameEn, appType, appIcon, appOs, a
     appDesc: appDesc,
     status: status,
     website: website,
-    userId: userId,
-    userType: userType
+    developerId: developerId
   }
   return request({
     url: 'base/app/update',
@@ -154,9 +152,9 @@ export const getAppInfo = ({appId}) => {
  * 获取应用开发信息
  * @param appId
  */
-export const getAppClientInfo = ({appId}) => {
+export const getAppClientInfo = ({clientId}) => {
   return request({
-    url: `base/app/client/${appId}/info`,
+    url: `base/app/client/${clientId}/info`,
     method: 'get'
   })
 }

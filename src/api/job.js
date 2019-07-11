@@ -8,7 +8,7 @@ import request from '@/libs/request'
 export const getJobLogs = ({page, limit,jobName}) => {
   const params = {page: page, limit: limit,jobName:jobName}
   return request({
-    url: 'scheduler/job/logs',
+    url: 'task/job/logs',
     params,
     method: 'get'
   })
@@ -22,7 +22,7 @@ export const getJobLogs = ({page, limit,jobName}) => {
 export const getJobs = ({page, limit}) => {
   const params = {page: page, limit: limit}
   return request({
-    url: 'scheduler/job',
+    url: 'task/job',
     params,
     method: 'get'
   })
@@ -53,7 +53,7 @@ export const addHttpJob = ({jobName, jobDescription, cron, serviceId, path, meth
     alarmMail: alarmMail
   }
   return request({
-    url: 'scheduler/job/add/http',
+    url: 'task/job/add/http',
     data,
     method: 'post'
   })
@@ -85,7 +85,7 @@ export const updateHttpJob = ({jobName, jobDescription, cron, serviceId, path, m
     alarmMail: alarmMail
   }
   return request({
-    url: 'scheduler/job/update/http',
+    url: 'task/job/update/http',
     data,
     method: 'post'
   })
@@ -100,7 +100,7 @@ export const removeJob = (jobName) => {
     jobName: jobName
   }
   return request({
-    url: 'scheduler/job/delete',
+    url: 'task/job/delete',
     data,
     method: 'post'
   })
@@ -117,7 +117,7 @@ export const pauseJob = (jobName) => {
     jobName: jobName
   }
   return request({
-    url: 'scheduler/job/pause',
+    url: 'task/job/pause',
     data,
     method: 'post'
   })
@@ -133,7 +133,7 @@ export const resumeJob = (jobName) => {
     jobName: jobName
   }
   return request({
-    url: 'scheduler/job/resume',
+    url: 'task/job/resume',
     data,
     method: 'post'
   })

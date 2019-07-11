@@ -13,16 +13,6 @@ export const saveErrorLogger = info => {
 }
 
 /**
- * 获取第三方登录配置
- */
-export const loginConfig = () => {
-  return request({
-    url: 'auth/login/config',
-    method: 'get'
-  })
-}
-
-/**
  * 获取服务列表
  */
 export const getServiceList = () => {

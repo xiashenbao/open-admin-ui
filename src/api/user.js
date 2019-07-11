@@ -11,7 +11,7 @@ export const login = ({username, password}) => {
     password
   }
   return request({
-    url: 'auth/login/token',
+    url: 'admin/login/token',
     data,
     method: 'post'
   })
@@ -22,7 +22,7 @@ export const login = ({username, password}) => {
  */
 export const logout = () => {
   return request({
-    url: 'auth/logout/token',
+    url: 'admin/logout/token',
     data:{token:getToken()},
     method: 'post'
   })
@@ -33,7 +33,7 @@ export const logout = () => {
  */
 export const getUserInfo = () => {
   return request({
-    url: 'auth/current/user',
+    url: 'admin/current/user',
     method: 'get'
   })
 }

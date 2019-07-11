@@ -25,7 +25,6 @@
           <div class="search-con search-con-top">
             <ButtonGroup>
               <Button type="primary"  :disabled="hasAuthority('systemMenuEdit')?false:true" @click="setEnabled(true)">添加</Button>
-              <Button type="primary"  :disabled="formItem.menuId && hasAuthority('systemMenuEdit')?false:true" @click="setEnabled(false)">编辑</Button>
               <Button type="primary"  :disabled="formItem.menuId && hasAuthority('systemMenuEdit')?false:true" @click="confirmModal = true">删除</Button>
             </ButtonGroup>
             <Modal
@@ -38,37 +37,38 @@
           </div>
           <Form ref="menuForm" :model="formItem" :rules="formItemRules" :label-width="80">
             <FormItem label="上级菜单" prop="parentId">
-              <treeselect :disabled="disabled"
+              <treeselect
                           v-model="formItem.parentId"
                           :options="selectTreeData"
                           :default-expand-level="1"
                           :normalizer="treeSelectNormalizer"/>
             </FormItem>
             <FormItem label="菜单标识" prop="menuCode">
-              <Input :disabled="disabled" v-model="formItem.menuCode" placeholder="请输入内容"></Input>
+              <Input  v-model="formItem.menuCode" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem label="菜单名称" prop="menuName">
-              <Input :disabled="disabled" v-model="formItem.menuName" placeholder="请输入内容"></Input>
+              <Input  v-model="formItem.menuName" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem label="页面地址" prop="path">
-              <Input :disabled="disabled" v-model="formItem.path" placeholder="请输入内容">
-                <Select :disabled="disabled" v-model="formItem.scheme" slot="prepend" style="width: 80px">
+              <Input  v-model="formItem.path" placeholder="请输入内容">
+                <Select  v-model="formItem.scheme" slot="prepend" style="width: 80px">
                   <Option value="/">/</Option>
                   <Option value="http://">http://</Option>
                   <Option value="https://">https://</Option>
                 </Select>
-                <Select :disabled="disabled" v-model="formItem.target" slot="append" style="width: 100px">
+                <Select  v-model="formItem.target" slot="append" style="width: 100px">
                   <Option value="_self">窗口内打开</Option>
                   <Option value="_blank">新窗口打开</Option>
                 </Select>
               </Input>
-              <span>前端组件所在位置：/view/module/{{formItem.path}}.vue</span>
+              <span v-if="formItem.scheme === '/'">前端组件：/view/module/{{formItem.path}}.vue</span>
+              <span v-else="">跳转地址：{{formItem.scheme}}{{formItem.path}}</span>
             </FormItem>
             <FormItem label="图标">
-              <Input :disabled="disabled" v-model="formItem.icon" placeholder="请输入内容">
+              <Input  v-model="formItem.icon" placeholder="请输入内容">
                 <Icon size="16" :type="formItem.icon" slot="prepend"/>
                 <Poptip width="600" slot="append" placement="left">
-                  <Button :disabled="disabled" icon="ios-search"></Button>
+                  <Button  icon="ios-search"></Button>
                   <div slot="content">
                     <ul class="icons">
                       <li class="icons-item" :title="item" @click="onIconClick(item)" v-for="item in selectIcons">
@@ -81,20 +81,20 @@
               </Input>
             </FormItem>
             <FormItem label="优先级">
-              <InputNumber :disabled="disabled" v-model="formItem.priority"></InputNumber>
+              <InputNumber  v-model="formItem.priority"></InputNumber>
             </FormItem>
             <FormItem label="状态">
               <RadioGroup v-model="formItem.status">
-                <Radio :disabled="disabled" label="0">禁用</Radio>
-                <Radio :disabled="disabled" label="1">启用</Radio>
+                <Radio label="0">禁用</Radio>
+                <Radio label="1">启用</Radio>
               </RadioGroup>
             </FormItem>
             <FormItem label="描述">
-              <Input :disabled="disabled" v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
+              <Input  v-model="formItem.menuDesc" type="textarea" placeholder="请输入内容"></Input>
             </FormItem>
             <FormItem>
-              <Button :disabled="disabled" @click="handleSubmit"  :loading="saving" type="primary">保存</Button>
-              <Button :disabled="disabled" @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
+              <Button  @click="handleSubmit"  :loading="saving" type="primary">保存</Button>
+              <Button  @click="setEnabled(true)" style="margin-left: 8px">重置</Button>
             </FormItem>
           </Form>
         </Card>
@@ -132,7 +132,6 @@
       }
       return {
         confirmModal: false,
-        disabled: true,
         saving: false,
         visible: false,
         selectIcons: icons,
@@ -196,10 +195,8 @@
         if (enabled) {
           this.handleReset()
         }
-        this.disabled = false
       },
       rowClick (data) {
-        this.disabled = true
         this.handleReset()
         if (data) {
           this.formItem = Object.assign({}, data.row)
@@ -231,7 +228,6 @@
             if (this.formItem.menuId) {
               updateMenu(this.formItem).then(res => {
                 if (res.code === 0) {
-                  this.disabled = true
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()
@@ -241,7 +237,6 @@
             } else {
               addMenu(this.formItem).then(res => {
                 if (res.code === 0) {
-                  this.disabled = true
                   this.$Message.success('保存成功')
                 }
                 this.handleSearch()

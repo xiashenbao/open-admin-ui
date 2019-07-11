@@ -27,7 +27,7 @@ export const getRoutes = ({page, limit}) => {
  * @param isOpen
  * @param isAuth
  */
-export const addRoute = ({path, serviceId, url, stripPrefix, retryable, status, routeName}) => {
+export const addRoute = ({path, serviceId, url, stripPrefix, retryable, status, routeName,routeDesc}) => {
   const data = {
     path: path,
     serviceId: serviceId,
@@ -35,7 +35,8 @@ export const addRoute = ({path, serviceId, url, stripPrefix, retryable, status, 
     stripPrefix: stripPrefix,
     retryable: retryable,
     status: status,
-    routeName: routeName
+    routeName: routeName,
+    routeDesc: routeDesc
   }
   return request({
     url: 'base/gateway/route/add',
@@ -58,7 +59,7 @@ export const addRoute = ({path, serviceId, url, stripPrefix, retryable, status, 
  * @param isOpen
  * @param isAuth
  */
-export const updateRoute = ({routeId,path, serviceId, url, stripPrefix, retryable, status, routeName}) => {
+export const updateRoute = ({routeId,path, serviceId, url, stripPrefix, retryable, status, routeName , routeDesc}) => {
   const data = {
     routeId:routeId,
     path: path,
@@ -67,7 +68,8 @@ export const updateRoute = ({routeId,path, serviceId, url, stripPrefix, retryabl
     stripPrefix: stripPrefix,
     retryable: retryable,
     status: status,
-    routeName: routeName
+    routeName: routeName,
+    routeDesc: routeDesc
   }
   return request({
     url: 'base/gateway/route/update',

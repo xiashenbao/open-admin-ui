@@ -5,7 +5,7 @@ import request from '@/libs/request'
  * @param menuId
  */
 export const getActionsByMenu = (menuId) => {
-  const params = {menuId: menuId}
+  const params = { menuId: menuId }
   return request({
     url: 'base/menu/action',
     params,
@@ -23,7 +23,7 @@ export const getActionsByMenu = (menuId) => {
  * @param priority
  * @param actionDesc
  */
-export const addAction = ({actionCode, actionName, menuId,  status, priority, actionDesc}) => {
+export const addAction = ({ actionCode, actionName, menuId, status, priority, actionDesc }) => {
   const data = {
     actionCode: actionCode,
     actionName: actionName,
@@ -50,7 +50,7 @@ export const addAction = ({actionCode, actionName, menuId,  status, priority, ac
  * @param priority
  * @param actionDesc
  */
-export const updateAction = ({actionId, actionCode, actionName, menuId,  status, priority, actionDesc}) => {
+export const updateAction = ({ actionId, actionCode, actionName, menuId, status, priority, actionDesc }) => {
   const data = {
     actionId: actionId,
     actionCode: actionCode,
@@ -66,7 +66,6 @@ export const updateAction = ({actionId, actionCode, actionName, menuId,  status,
     method: 'post'
   })
 }
-
 
 /**
  * 删除操作

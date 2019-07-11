@@ -52,7 +52,7 @@
   import {getJobLogs} from '@/api/job'
 
   export default {
-    name: 'SchedulerJobLogs',
+    name: 'TaskJobLogs',
     data () {
       return {
         drawer: false,
