@@ -119,8 +119,7 @@
           },
           {
             title: '最后修改时间',
-            key: 'updateTime',
-            width: 200
+            key: 'updateTime'
           },
           {
             title: '详情',

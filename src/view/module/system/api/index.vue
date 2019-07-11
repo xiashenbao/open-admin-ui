@@ -142,7 +142,7 @@
 <script>
   import {listConvertTree} from '@/libs/util'
   import {getApis, updateApi, addApi, removeApi} from '@/api/api'
-  import {getServiceList} from '@/api/data'
+  import {getServiceList} from '@/api/gateway'
 
   export default {
     name: 'SystemApi',
@@ -171,7 +171,7 @@
           apiCode: '',
           serviceId: ''
         },
-        selectServiceList: [{serviceId: '', serviceName: '无'}],
+        selectServiceList: [],
         formItemRules: {
           serviceId: [
             {required: true, message: '所属服务不能为空', trigger: 'blur'}
@@ -377,7 +377,7 @@
       handleLoadServiceList () {
         getServiceList().then(res => {
           if (res.code === 0) {
-            this.selectServiceList.push(...res.data)
+            this.selectServiceList = res.data
           }
         })
       }

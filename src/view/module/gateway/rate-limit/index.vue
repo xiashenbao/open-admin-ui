@@ -283,9 +283,13 @@
             that.selectApis = res1.data
           }
           if (res2.code === 0) {
+            let apiIds = []
             res2.data.map(item => {
-              that.formItem.apiIds.push(item.apiId)
+              if(!apiIds.includes(item.apiId)){
+                apiIds.push(item.apiId)
+              }
             })
+            that.formItem.apiIds = apiIds
           }
           that.drawerVisible = true
         })

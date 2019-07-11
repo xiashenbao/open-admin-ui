@@ -244,14 +244,12 @@
     watch: {
       screenWidth(val) {
         const  that = this;
-        setTimeout(function () {
-          if (val < 768) {
-            // 小于768强制折叠
-            that.handleCollapsedChange(true)
-          } else {
-            that.handleCollapsedChange(false)
-          }
-        },200)
+        if (val < 768) {
+          // 小于768强制折叠
+          that.handleCollapsedChange(true)
+        } else {
+          that.handleCollapsedChange(false)
+        }
       },
       '$route' (newRoute) {
         const {name, query, params, meta} = newRoute

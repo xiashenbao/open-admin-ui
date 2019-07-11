@@ -111,8 +111,7 @@
           },
           {
             title: '创建时间',
-            key: 'createTime',
-            width: 200
+            key: 'createTime'
           },
           {
             title: '详情',

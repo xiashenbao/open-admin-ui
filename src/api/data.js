@@ -12,12 +12,4 @@ export const saveErrorLogger = info => {
   })
 }
 
-/**
- * 获取服务列表
- */
-export const getServiceList = () => {
-  return request({
-    url: 'service/list',
-    method: 'get'
-  })
-}
+

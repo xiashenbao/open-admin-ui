@@ -284,7 +284,9 @@
           if (res2.code === 0) {
             const result = []
             res2.data.map(item => {
-              result.push(item.authorityId)
+               if(!result.includes(item.authorityId)){
+                 result.push(item.authorityId)
+               }
             })
             that.formItem.authorityIds = result
           }

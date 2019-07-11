@@ -17,8 +17,8 @@
             <FormItem prop="password">
               <Input type="password" v-model="form.password" placeholder="请输入密码"/>
               <span slot="prepend">
-          <Icon :size="14" type="md-lock"></Icon>
-        </span>
+               <Icon :size="14" type="md-lock"></Icon>
+              </span>
             </FormItem>
             <FormItem>
               <Checkbox v-model="form.auto">自动登录</Checkbox>

@@ -450,16 +450,20 @@
               startPid: '0'
             }
             if (res2.code === 0 && res2.data && res2.data.length > 0) {
+              let  menus = []
+              let  actions= []
               res2.data.map(item => {
                 // 菜单权限
-                if (item.authority.indexOf('MENU_') != -1) {
-                  that.formItem.grantMenus.push(item.authorityId)
+                if (item.authority.indexOf('MENU_') != -1 && !menus.includes(item.authorityId)) {
+                  menus.push(item.authorityId)
                 }
                 // 操作权限
-                if (item.authority.indexOf('ACTION_') != -1) {
-                  that.formItem.grantActions.push(item.authorityId)
+                if (item.authority.indexOf('ACTION_') != -1 && !actions.includes(item.authorityId)) {
+                  actions.push(item.authorityId)
                 }
               })
+              that.formItem.grantMenus = menus;
+              that.formItem.grantActions = actions;
               // 时间
               if (res2.data.length > 0) {
                 that.formItem.expireTime = res2.data[0].expireTime
@@ -495,9 +499,13 @@
             that.selectUsers = res1.data
           }
           if (res2.code === 0) {
+            let userIds = []
             res2.data.map(item => {
-              that.formItem.userIds.push(item.userId)
+              if(!userIds.includes(item.userId)){
+                userIds.push(item.userId)
+              }
             })
+            that.formItem.userIds = userIds;
           }
           that.drawerVisible = true
         })

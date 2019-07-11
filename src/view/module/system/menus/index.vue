@@ -189,7 +189,7 @@
         }
       },
       setSelectTree (data) {
-        this.selectTreeData.push(...data)
+        this.selectTreeData = data
       },
       setEnabled (enabled) {
         if (enabled) {

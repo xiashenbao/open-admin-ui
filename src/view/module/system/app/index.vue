@@ -664,11 +664,13 @@
             that.selectApis = res1.data
           }
           if (res2.code === 0) {
+            let authorities = []
             res2.data.map(item => {
-              if(item.authority.indexOf('APP_')===-1){
-                that.formItem.authorities.push(item.authorityId)
+              if(item.authority.indexOf('APP_')===-1 && !authorities.includes(item.authorityId)){
+                authorities.push(item.authorityId)
               }
             })
+            that.formItem.authorities = authorities;
             // 时间
             if (res2.data.length > 0) {
               that.formItem.expireTime = res2.data[0].expireTime
