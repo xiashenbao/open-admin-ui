@@ -19,10 +19,10 @@
         <a  :disabled="hasAuthority('systemMenuEdit')?false:true" @click="handleRemove(row)">删除</a>
       </template>
     </Table>
-    <Drawer width="40"  v-model="drawerVisible" @on-close="handleReset">
-      <div slot="header">
-        {{modalTitle}}
-      </div>
+    <Modal v-model="modalVisible"
+           :title="modalTitle"
+           width="40"
+           @on-cancel="handleReset">
       <div>
         <Form ref="form1" v-show="current=='form1'" :model="formItem" :rules="formItemRules" :label-width="100">
           <FormItem label="上级菜单">
@@ -50,12 +50,12 @@
         </Form>
         <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" >
           <Alert type="warning" show-icon>请注意：某一功能可能涉及到很多请求,需绑定相关接口资源,请求服务器时将验证接口访问权限！
-          <a>支持动态授权,无需重新登录或刷新</a>
+          <a>支持动态授权</a>
           </Alert>
           <FormItem  prop="authorities">
             <Transfer
               :data="selectApis"
-              :list-style="{width: '45%',height: '680px'}"
+              :list-style="{width: '45%',height: '480px'}"
               :titles="['选择接口', '已选择接口']"
               :render-format="transferRender"
               :target-keys="formItem.authorityIds"
@@ -69,7 +69,7 @@
           <Button type="primary" @click="handleSubmit" :loading="saving">保存</Button>
         </div>
       </div>
-    </Drawer>
+    </Modal>
   </div>
 </template>
 
@@ -103,7 +103,7 @@
         }
       }
       return {
-        drawerVisible: false,
+        modalVisible: false,
         saving: false,
         loading: false,
         current: 'form1',
@@ -135,7 +135,8 @@
         columns: [
           {
             title: '功能名称',
-            slot: 'status'
+            slot: 'status',
+            width: 150
           },
           {
             title: '功能编码',
@@ -145,7 +146,7 @@
             title: '操作',
             slot: 'action',
             fixed: 'right',
-            width: 150
+            width: 160
           }
         ],
         data: []
@@ -161,7 +162,7 @@
         }
         if (step === this.forms[0]) {
           this.modalTitle = data ? '编辑功能 - ' + this.value.menuName + ' > ' + data.actionName : '添加功能 - ' + this.value.menuName
-          this.drawerVisible = true
+          this.modalVisible = true
           this.formItem.actionCode =  this.formItem.actionId ?this.formItem.actionCode:this.value.menuCode
         }
         if (step === this.forms[1]) {
@@ -187,7 +188,7 @@
           this.$refs[form].resetFields()
         })
         this.current = this.forms[0]
-        this.drawerVisible = false
+        this.modalVisible = false
         this.saving = false
       },
       handleSubmit () {
@@ -290,7 +291,7 @@
             })
             that.formItem.authorityIds = result
           }
-          that.drawerVisible = true
+          that.modalVisible = true
         })
       },
       transferRender (item) {
