@@ -2,11 +2,10 @@
   <div>
     <Card shadow>
         <Steps :current="current">
-          <Step title="配置数据库"></Step>
-          <Step title="生成配置"></Step>
-          <Step title="确定生成"></Step>
+          <Step title="数据库连接"></Step>
+          <Step title="生产代码"></Step>
         </Steps>
-      <Form  ref="form" :model="formItem" :rules="formItemRules" :label-width="140">
+      <Form style="margin-top: 20px;" ref="form" :model="formItem" :rules="formItemRules" :label-width="140">
         <FormItem v-show="current===0" label="数据库类型" prop="type">
           <Select  v-model="formItem.type">
             <Option value="mysql">mysql</Option>
@@ -26,7 +25,7 @@
           <Input v-model="formItem.password" type="password"  placeholder="请输入内容"></Input>
         </FormItem>
         <Row>
-        <Col span="12">
+        <Col span="10">
           <FormItem v-show="current===1" label="模块名称" prop="moduleName">
             <Input v-model="formItem.moduleName"  placeholder="请输入内容"></Input>
           </FormItem>
@@ -37,18 +36,18 @@
             <Input v-model="formItem.author"  placeholder="请输入内容"></Input>
           </FormItem>
           </Col>
-          <Col span="12">
-          <FormItem v-show="current===1" label="生成表" prop="includeTables">
+          <Col span="14">
+          <FormItem v-show="current===1" label="需要生成的表" prop="includeTables">
             <Transfer
               :data="selectTables"
-              :list-style="{width: '45%',height: '580px'}"
+              :list-style="{width: '45%',height: '500px'}"
               :titles="['选择表', '已选择表']"
               :target-keys="formItem.includeTables"
               @on-change="handleTransferChange"
               filterable>
             </Transfer>
           </FormItem>
-          <FormItem v-show="current===1" label="代码忽略表前缀" prop="tablePrefix">
+          <FormItem v-show="current===1" label="忽略表前缀" prop="tablePrefix">
           <Select v-model="formItem.tablePrefix" multiple style="width:260px">
             <Option v-for="item in formItem.tablePrefix" :value="item" :key="item">{{ item }}</Option>
           </Select>

@@ -4,7 +4,16 @@ import config from '@/config'
 import {getToken} from '@/libs/util'
 import {Message} from 'iview'
 
-const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
+let baseUrl = "";   //这里是一个默认的url，可以没有
+switch (process.env.NODE_ENV) {
+  case 'development':
+    baseUrl = config.apiUrl.dev  //这里是本地的请求url
+    break
+  case 'production':
+    baseUrl = config.apiUrl.pro   //生产环境url
+    break
+}
+
 /**
  * 创建axios实例
  * @type {AxiosInstance}
@@ -14,7 +23,7 @@ const service = axios.create({
   timeout: 30000  // 设置请求超时时间30s
 })
 
-service.baseUrl = baseUrl
+service.apiUrl = baseUrl
 
 /**
  * 请求参数处理

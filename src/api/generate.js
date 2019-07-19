@@ -30,7 +30,7 @@ const execute = (data) => {
   })
 }
 
-const downloadPath = `${request.baseUrl}/code/generate/download`
+const downloadPath = `${request.apiUrl}/code/generate/download`
 
 export default{
   tables,
