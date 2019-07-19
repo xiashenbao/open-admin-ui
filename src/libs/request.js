@@ -13,6 +13,9 @@ const service = axios.create({
   baseURL: baseUrl, // api的base_url
   timeout: 30000  // 设置请求超时时间30s
 })
+
+service.baseUrl = baseUrl
+
 /**
  * 请求参数处理
  */
