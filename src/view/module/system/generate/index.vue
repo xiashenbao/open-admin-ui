@@ -177,7 +177,6 @@
         let that = this
         if(val===1){
           Generate.tables(this.formItem).then(res => {
-            console.log(res)
             if (res.code === 0) {
               let items = []
               res.data.map(item => {
