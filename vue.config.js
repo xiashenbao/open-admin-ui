@@ -15,7 +15,6 @@ switch (process.env.NODE_ENV) {
     break
 }
 
-console.log(BASE_URL)
 module.exports = {
 // 项目部署基础
 // 默认情况下，我们假设你的应用将被部署在域的根目录下,
