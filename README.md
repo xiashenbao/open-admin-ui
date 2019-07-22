@@ -35,8 +35,8 @@ npm install
    *  api请求基础路径
    */
   apiUrl: {
-    dev: 'http://39.106.187.125/api', //  本地环境接口请求地址
-    pro: 'http://39.106.187.125/api'  //  生产环境接口请求地址
+    dev: 'http://localhost:8888', //  本地环境接口请求地址
+    pro: 'http://api.openc.top'  //  生产环境接口请求地址
   },
 ```
 #### 本地运行
