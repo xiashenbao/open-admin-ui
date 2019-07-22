@@ -29,7 +29,7 @@ npm install
    */
  publicPath: {
     dev: '/',      //  本地环境发布目录
-    pro: '/admin'  //  生产环境发布目录
+    pro: '/'  //  生产环境发布目录
   },
   /**
    *  api请求基础路径
