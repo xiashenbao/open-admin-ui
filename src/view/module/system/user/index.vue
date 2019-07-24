@@ -106,7 +106,7 @@
               </FormItem>
             </Form>
           </TabPane>
-          <TabPane :disabled="!formItem.userId" label="分配权限" name="form3">
+          <TabPane :disabled="!formItem.userId" label="分配个人权限" name="form3">
             <Form v-show="current == 'form3'" ref="form3" :model="formItem" :rules="formItemRules" :label-width="100">
               <FormItem label="过期时间(选填)" prop="expireTime">
                 <Badge v-if="formItem.isExpired" text="授权已过期">
