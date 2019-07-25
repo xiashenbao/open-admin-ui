@@ -59,12 +59,17 @@
           <FormItem v-if="formItem.jobType === 'simple'" label="结束时间" prop="endTime">
             <DatePicker v-model="formItem.endTime"  type="datetime" placeholder="结束时间" style="width: 100%"></DatePicker>
           </FormItem>
-          <FormItem v-if="formItem.jobType === 'simple'" label="间隔时间" prop="repeatInterval">
+          <FormItem v-if="formItem.jobType === 'simple'" label="重复执行" prop="repeatCount">
+            <InputNumber :min="-1" v-model="formItem.repeatCount"></InputNumber> &nbsp;&nbsp;次
+            &nbsp;&nbsp;
+            <RadioGroup v-model="formItem.repeatCountType" @on-change="repeatCountTypeChange" type="button">
+              <Radio  label="0">不重复执行</Radio>
+              <Radio  label="-1">不限制次数,一直重复执行(直到过期)</Radio>
+            </RadioGroup>
+          </FormItem>
+          <FormItem  v-if="formItem.jobType === 'simple'"  label="重复执行间隔" prop="repeatInterval">
             <InputNumber :min="1000" v-model="formItem.repeatInterval"></InputNumber>
             <span>&nbsp;&nbsp;毫秒</span>
-          </FormItem>
-          <FormItem v-if="formItem.jobType === 'simple'" label="重复次数" prop="repeatCount">
-            <InputNumber :min="1" v-model="formItem.repeatCount"></InputNumber>
           </FormItem>
           <FormItem v-if="formItem.jobType === 'cron'" label="cron表达式" prop="cron">
             <Input v-model="formItem.cron" placeholder="* * * * * ?"></Input>
@@ -120,7 +125,7 @@
             {required: true, message: 'cron表达式不能为空', trigger: 'blur'}
           ],
           path: [
-            {required: true, message: '任务不能为空', trigger: 'blur'}
+            {required: true, message: '调度接口不能为空', trigger: 'blur'}
           ],
           alarmMail: [
             {required: false, type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
@@ -129,10 +134,10 @@
             {required: true,  message: '开始时间不能为空'}
           ],
           repeatInterval: [
-            {required: true, type: 'integer', min: 1000, message: '间隔时间不能少于1000', trigger: 'blur'}
+            {required: true,  message: '间隔时间不能为空'}
           ],
           repeatCount: [
-            {required: true, type: 'integer', min:1, message: '重试次数不能小于1', trigger: 'blur'}
+            {required: true,  message: '重试次数不能为空'}
           ],
         },
         formItem: {
@@ -143,8 +148,9 @@
           cron: '',
           startTime: '',
           endTime: '',
-          repeatInterval:1000,
-          repeatCount:1,
+          repeatInterval:10000,
+          repeatCountType:'0',
+          repeatCount:0,
           serviceId: '',
           path: '',
           method: '',
@@ -208,6 +214,7 @@
           this.formItem.startTime = data.startDate
           this.formItem.endTime = data.endDate
           this.formItem.repeatInterval = data.repeatInterval?parseInt(data.repeatInterval):0
+          this.formItem.repeatCountType = data.repeatCount +''
           this.formItem.path = data.data.path
           this.formItem.serviceId = data.data.serviceId
           this.formItem.method = data.data.method
@@ -232,8 +239,9 @@
           cron: '',
           startTime: '',
           endTime: '',
-          repeatInterval:1000,
-          repeatCount:1,
+          repeatInterval:10000,
+          repeatCountType:'0',
+          repeatCount:0,
           serviceId: '',
           path: '',
           method: '',
@@ -371,6 +379,9 @@
             this.handleRemove(row)
             break
         }
+      },
+      repeatCountTypeChange(value){
+        this.formItem.repeatCount = parseInt(value)
       }
     },
     mounted: function () {

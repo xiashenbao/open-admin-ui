@@ -186,7 +186,7 @@
                 </CheckboxGroup>
               </FormItem>
               <FormItem label="令牌有效期" prop="accessTokenValidity">
-                <RadioGroup v-model="formItem.tokenValidity">
+                <RadioGroup v-model="formItem.tokenValidity" type="button">
                   <Radio label="1">设置有效期</Radio>
                   <Radio label="0">不限制</Radio>
                 </RadioGroup>
