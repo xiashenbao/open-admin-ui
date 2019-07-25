@@ -20,7 +20,7 @@
         </FormItem>
       </Form>
 
-      <Table :columns="columns" :data="data" :loading="loading">
+      <Table border :columns="columns" :data="data" :loading="loading">
         <template slot="httpStatus" slot-scope="{ row }">
           <Badge v-if="row.httpStatus==='200'" status="success"/>
           <Badge v-else="" status="error"/>
