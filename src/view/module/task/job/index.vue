@@ -13,6 +13,11 @@
           <Badge v-if="row.jobStatus==='NORMAL'" status="success" text="正常"/>
           <Badge v-else="" status="error" text="暂停"/>
         </template>
+        <template slot="type" slot-scope="{ row }">
+          <p>触发器：{{row.jobTrigger}}</p>
+          <p v-if="row.cronExpression">cron表达式:{{row.cronExpression}}</p>
+          <p v-else="">调度时间:{{row.startDate}} ~ {{row.endDate}}</p>
+        </template>
         <template slot="action" slot-scope="{ row }">
           <a  :disabled="hasAuthority('jobEdit')?false:true"  @click="handleModal(row)">编辑</a>&nbsp;
           <Dropdown v-show="hasAuthority('jobEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
@@ -40,23 +45,41 @@
       <div>
         <Form ref="form1" :model="formItem" :rules="formItemRules" :label-width="100">
           <FormItem label="任务名称" prop="jobName">
-            <Input v-model="formItem.jobName" placeholder="请输入内容"></Input>
+            <Input :disabled="formItem.newData?false:true" v-model="formItem.jobName" placeholder="请输入内容"></Input>
           </FormItem>
-          <FormItem label="远程调度任务" prop="path">
+          <FormItem label="任务类型" prop="jobType">
+            <Select v-model="formItem.jobType">
+              <Option value="cron">cron任务(CronTrigger)</Option>
+              <Option value="simple">简单任务(SimpleTrigger)</Option>
+            </Select>
+          </FormItem>
+          <FormItem v-if="formItem.jobType === 'simple'" label="开始时间" prop="startTime">
+            <DatePicker v-model="formItem.startTime" type="datetime"  placeholder="开始时间" style="width: 100%"></DatePicker>
+          </FormItem>
+          <FormItem v-if="formItem.jobType === 'simple'" label="结束时间" prop="endTime">
+            <DatePicker v-model="formItem.endTime"  type="datetime" placeholder="结束时间" style="width: 100%"></DatePicker>
+          </FormItem>
+          <FormItem v-if="formItem.jobType === 'simple'" label="间隔时间" prop="repeatInterval">
+            <InputNumber :min="1000" v-model="formItem.repeatInterval"></InputNumber>
+            <span>&nbsp;&nbsp;毫秒</span>
+          </FormItem>
+          <FormItem v-if="formItem.jobType === 'simple'" label="重复次数" prop="repeatCount">
+            <InputNumber :min="1" v-model="formItem.repeatCount"></InputNumber>
+          </FormItem>
+          <FormItem v-if="formItem.jobType === 'cron'" label="cron表达式" prop="cron">
+            <Input v-model="formItem.cron" placeholder="* * * * * ?"></Input>
+          </FormItem>
+          <FormItem label="远程调度接口" prop="path">
             <Select filterable v-model="formItem.path" @on-change="handleOnSelectChange">
-              <Option v-for="item in selectApis" :value="item.path">{{ item.path }} - {{ item.apiName
-                }}({{ item.serviceId }})
+              <Option v-for="item in selectApis" :value="item.path">{{ item.path }} - {{ item.apiName}} - {{ item.serviceId}}
             </Option>
             </Select>
           </FormItem>
-          <FormItem label="cron表达式" prop="cron">
-            <Input v-model="formItem.cron" placeholder="请输入内容"></Input>
+          <FormItem label="任务描述">
+            <Input v-model="formItem.jobDescription" type="textarea" placeholder="请输入内容"></Input>
           </FormItem>
           <FormItem label="异常告警邮箱" prop="alarmMail">
             <Input v-model="formItem.alarmMail" placeholder="请输入内容"></Input>
-          </FormItem>
-          <FormItem label="任务描述">
-            <Input v-model="formItem.jobDescription" type="textarea" placeholder="请输入内容"></Input>
           </FormItem>
         </Form>
         <div class="drawer-footer">
@@ -90,6 +113,9 @@
           jobName: [
             {required: true, message: '任务名称不能为空', trigger: 'blur'}
           ],
+          jobType: [
+            {required: true, message: '任务类型不能为空', trigger: 'blur'}
+          ],
           cron: [
             {required: true, message: 'cron表达式不能为空', trigger: 'blur'}
           ],
@@ -98,13 +124,27 @@
           ],
           alarmMail: [
             {required: false, type: 'email', message: '邮箱格式不正确', trigger: 'blur'}
-          ]
+          ],
+          startTime: [
+            {required: true,  message: '开始时间不能为空'}
+          ],
+          repeatInterval: [
+            {required: true, type: 'integer', min: 1000, message: '间隔时间不能少于1000', trigger: 'blur'}
+          ],
+          repeatCount: [
+            {required: true, type: 'integer', min:1, message: '重试次数不能小于1', trigger: 'blur'}
+          ],
         },
         formItem: {
           newData: true,
           jobName: '',
           jobDescription: '',
+          jobType: 'cron',
           cron: '',
+          startTime: '',
+          endTime: '',
+          repeatInterval:1000,
+          repeatCount:1,
           serviceId: '',
           path: '',
           method: '',
@@ -123,29 +163,29 @@
             width: 200,
           },
           {
-            title: '任务描述',
-            key: 'jobDescription',
-            width: 200
-          },
-          {
-            title: 'cron表达式',
-            key: 'cronExpression',
-            width: 150,
+            title: '任务触发器',
+            width: 350,
+            slot:'type'
           },
           {
             title: '任务执行器',
             key: 'jobClassName',
-            width: 300
+            width: 200
           },
           {
             title: '状态',
             key: 'jobStatus',
             slot: 'status',
-            width: 150
+            width: 100
           },
           {
             title: '任务参数',
-            key: 'data'
+            key: 'data',
+            width: 300
+          },
+          {
+            title: '任务描述',
+            key: 'jobDescription'
           },
           {
             title: '操作',
@@ -163,7 +203,11 @@
         if (data) {
           this.modalTitle = '编辑任务 - ' + data.jobName
           this.formItem = Object.assign({}, this.formItem, data)
+          this.formItem.jobType = this.formItem.jobTrigger === 'org.quartz.impl.triggers.SimpleTriggerImpl' ?'simple':'cron'
           this.formItem.cron = data.cronExpression
+          this.formItem.startTime = data.startDate
+          this.formItem.endTime = data.endDate
+          this.formItem.repeatInterval = data.repeatInterval?parseInt(data.repeatInterval):0
           this.formItem.path = data.data.path
           this.formItem.serviceId = data.data.serviceId
           this.formItem.method = data.data.method
@@ -175,9 +219,6 @@
         }
         this.modalVisible = true
       },
-      handleResetForm (form) {
-        this.$refs[form].resetFields()
-      },
       handleTabClick(name){
         this.current = name
         this.handleModal();
@@ -187,7 +228,12 @@
           newData: true,
           jobName: '',
           jobDescription: '',
+          jobType: 'cron',
           cron: '',
+          startTime: '',
+          endTime: '',
+          repeatInterval:1000,
+          repeatCount:1,
           serviceId: '',
           path: '',
           method: '',
@@ -196,13 +242,17 @@
         }
         this.formItem = newData
         //重置验证
-        this.handleResetForm('form1')
+        this.$refs['form1'].resetFields()
         this.modalVisible = false
         this.saving = false
       },
       handleSubmit () {
         this.$refs['form1'].validate((valid) => {
           if (valid) {
+            if(this.formItem.jobType ==='simple'){
+              this.formItem.startTime = this.formItem.startTime? this.formItem.startTime.pattern('yyyy-MM-dd HH:mm:ss') : ''
+              this.formItem.endTime = this.formItem.endTime? this.formItem.endTime.pattern('yyyy-MM-dd HH:mm:ss') : ''
+            }
             this.saving = true
             if (!this.formItem.newData) {
               updateHttpJob(this.formItem).then(res => {
