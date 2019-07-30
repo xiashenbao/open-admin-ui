@@ -42,7 +42,7 @@
             <InputNumber v-model="formItem.priority"></InputNumber>
           </FormItem>
           <FormItem label="状态">
-            <RadioGroup v-model="formItem.status">
+            <RadioGroup v-model="formItem.status" type="button">
               <Radio label="0">禁用</Radio>
               <Radio label="1">启用</Radio>
             </RadioGroup>

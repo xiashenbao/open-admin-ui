@@ -140,7 +140,7 @@
                 <Input v-model="formItem.website" placeholder="请输入内容"></Input>
               </FormItem>
               <FormItem label="状态">
-                <RadioGroup v-model="formItem.status">
+                <RadioGroup v-model="formItem.status" type="button">
                   <Radio label="0">下线</Radio>
                   <Radio label="1">上线</Radio>
                 </RadioGroup>
