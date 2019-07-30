@@ -162,7 +162,7 @@
           {
             title: '最后修改时间',
             key: 'updateTime',
-            width: 150
+            width: 180
           },
           {
             title: 'IP地址/域名',
