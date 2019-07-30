@@ -54,8 +54,8 @@
                 <Icon type="ios-arrow-forward"></Icon>
               </DropdownItem>
               <DropdownMenu slot="list">
-                <DropdownItem name="open1">公开的</DropdownItem>
-                <DropdownItem name="open2">内部的</DropdownItem>
+                <DropdownItem name="open1">允许公开访问</DropdownItem>
+                <DropdownItem name="open2">拒绝公开访问</DropdownItem>
               </DropdownMenu>
             </Dropdown>
             <Dropdown placement="right-start">
@@ -64,8 +64,8 @@
                 <Icon type="ios-arrow-forward"></Icon>
               </DropdownItem>
               <DropdownMenu slot="list">
-                <DropdownItem name="auth1">身份认证</DropdownItem>
-                <DropdownItem name="auth2">无需认证</DropdownItem>
+                <DropdownItem name="auth1">开启身份认证</DropdownItem>
+                <DropdownItem name="auth2">关闭身份认证</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </DropdownMenu>
