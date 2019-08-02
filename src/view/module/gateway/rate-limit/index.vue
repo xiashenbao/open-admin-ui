@@ -56,9 +56,10 @@
               </FormItem>
             </Form>
           </TabPane>
-          <TabPane :disabled="!formItem.policyId"  label="绑定接口" name="form2">
-            <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules" >
-              <FormItem  prop="authorities">
+          <TabPane :disabled="!formItem.policyId" label="绑定接口" name="form2">
+            <Alert type="warning" show-icon>请注意：如果API上原来已经绑定了一个策略，则会被本策略覆盖，请慎重选择！</Alert>
+            <Form ref="form2" v-show="current=='form2'" :model="formItem" :rules="formItemRules">
+              <FormItem prop="authorities">
                 <Transfer
                   :data="selectApis"
                   :list-style="{width: '45%',height: '480px'}"
@@ -82,7 +83,14 @@
 </template>
 
 <script>
-  import {getRateLimits, addRateLimit, updateRateLimit, removeRateLimit, getRateLimitApis, addRateLimitApis} from '@/api/rateLimit'
+  import {
+    getRateLimits,
+    addRateLimit,
+    updateRateLimit,
+    removeRateLimit,
+    getRateLimitApis,
+    addRateLimitApis
+  } from '@/api/rateLimit'
   import {getAuthorityApi} from '@/api/authority'
   export default {
     name: 'GatewayRateLimit',
@@ -153,11 +161,11 @@
         if (data) {
           this.formItem = Object.assign({}, this.formItem, data)
         }
-        if ( this.current === this.forms[0]) {
+        if (this.current === this.forms[0]) {
           this.modalTitle = data ? '编辑限流策略 - ' + this.formItem.policyName : '添加限流策略'
           this.modalVisible = true
         }
-        if ( this.current === this.forms[1]) {
+        if (this.current === this.forms[1]) {
           this.modalTitle = data ? '绑定接口 - ' + this.formItem.policyName : '绑定接口'
           this.handleRateLimitApi(this.formItem.policyId);
         }
@@ -278,14 +286,14 @@
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key = item.apiId
-              item.label = `${item.prefix.replace('/**','')}${item.path} - ${item.apiName}`
+              item.label = `${item.prefix.replace('/**', '')}${item.path} - ${item.apiName}`
             })
             that.selectApis = res1.data
           }
           if (res2.code === 0) {
             let apiIds = []
             res2.data.map(item => {
-              if(!apiIds.includes(item.apiId)){
+              if (!apiIds.includes(item.apiId)) {
                 apiIds.push(item.apiId)
               }
             })

@@ -21,11 +21,13 @@
       </Form>
       <div class="search-con search-con-top">
         <ButtonGroup>
-          <Button :disabled="hasAuthority('systemAppEdit')?false:true"   class="search-btn" type="primary" @click="handleModal()">
+          <Button :disabled="hasAuthority('systemAppEdit')?false:true" class="search-btn" type="primary"
+                  @click="handleModal()">
             <span>添加</span>
           </Button>
         </ButtonGroup>
       </div>
+      <Alert type="info" show-icon>客户端模式,请授权相关接口资源。否则请求网关服务器将提示<code>"权限不足,拒绝访问!"</code></Alert>
       <Table border :columns="columns" :data="data" :loading="loading">
         <template slot="status" slot-scope="{ row }">
           <Badge v-if="row.status===1" status="success" text="上线"/>
@@ -38,7 +40,7 @@
           <Tag color="blue" v-else="">手机网页应用</Tag>
         </template>
         <template slot="action" slot-scope="{ row }">
-          <a   @click="handleModal(row)" :disabled="row.appId != 'gateway' && hasAuthority('systemAppEdit') ?false:true">
+          <a @click="handleModal(row)" :disabled="row.appId != 'gateway' && hasAuthority('systemAppEdit') ?false:true">
             编辑</a>&nbsp;
           <Dropdown v-show="hasAuthority('systemAppEdit')" transfer ref="dropdown" @on-click="handleClick($event,row)">
             <a href="javascript:void(0)" :disabled="row.appId === 'gateway' ?true:false">
@@ -46,8 +48,8 @@
               <Icon type="ios-arrow-down"></Icon>
             </a>
             <DropdownMenu slot="list">
-              <DropdownItem  name="resetSecret">重置密钥</DropdownItem>
-              <DropdownItem  name="remove">删除应用</DropdownItem>
+              <DropdownItem name="resetSecret">重置密钥</DropdownItem>
+              <DropdownItem name="remove">删除应用</DropdownItem>
             </DropdownMenu>
           </Dropdown>
         </template>
@@ -138,7 +140,7 @@
                 <Input v-model="formItem.website" placeholder="请输入内容"></Input>
               </FormItem>
               <FormItem label="状态">
-                <RadioGroup v-model="formItem.status">
+                <RadioGroup v-model="formItem.status" type="button">
                   <Radio label="0">下线</Radio>
                   <Radio label="1">上线</Radio>
                 </RadioGroup>
@@ -186,7 +188,7 @@
                 </CheckboxGroup>
               </FormItem>
               <FormItem label="令牌有效期" prop="accessTokenValidity">
-                <RadioGroup v-model="formItem.tokenValidity">
+                <RadioGroup v-model="formItem.tokenValidity" type="button">
                   <Radio label="1">设置有效期</Radio>
                   <Radio label="0">不限制</Radio>
                 </RadioGroup>
@@ -205,17 +207,16 @@
               </FormItem>
             </Form>
           </TabPane>
-          <TabPane :disabled="!formItem.appId" label="功能授权" name="form3">
-            <Form ref="form3" v-show="current=='form3'" :model="formItem" :rules="formItemRules" >
-              <FormItem  prop="expireTime">
+          <TabPane :disabled="!formItem.appId" label="分配权限" name="form3">
+            <Form ref="form3" v-show="current=='form3'" :model="formItem"  :label-width="100" :rules="formItemRules">
+              <FormItem prop="expireTime" label="过期时间">
                 <Badge v-if="formItem.isExpired" text="授权已过期">
                   <DatePicker v-model="formItem.expireTime" class="ivu-form-item-error" type="datetime"
                               placeholder="授权有效期"></DatePicker>
                 </Badge>
                 <DatePicker v-else="" v-model="formItem.expireTime" type="datetime" placeholder="设置有效期"></DatePicker>
               </FormItem>
-              <FormItem prop="authorities">
-                <Alert  show-icon>提示：支持动态授权,无需重新获取令牌或刷新令牌</Alert>
+              <FormItem prop="authorities" label="功能接口" >
                 <Transfer
                   :data="selectApis"
                   :list-style="{width: '45%',height: '480px'}"
@@ -455,7 +456,7 @@
           this.handleLoadAppClientInfo(this.formItem.apiKey)
         }
         if (this.current === this.forms[2]) {
-          this.modalTitle = data ? '功能授权 - ' + data.appName : '功能授权'
+          this.modalTitle = data ? '分配权限 - ' + data.appName : '分配权限'
           this.handleLoadAppGranted(this.formItem.appId)
         }
         this.formItem.status = this.formItem.status + ''
@@ -613,8 +614,8 @@
         })
       },
       handleTabClick(name){
-          this.current = name
-          this.handleModal();
+        this.current = name
+        this.handleModal();
       },
       handleClick (name, row) {
         switch (name) {
@@ -660,7 +661,7 @@
           if (res1.code === 0) {
             res1.data.map(item => {
               item.key = item.authorityId
-              item.label = `${item.prefix.replace('/**','')}${item.path} - ${item.apiName}`
+              item.label = `${item.prefix.replace('/**', '')}${item.path} - ${item.apiName}`
               item.disabled = item.path === '/**'
             })
             that.selectApis = res1.data
@@ -668,7 +669,7 @@
           if (res2.code === 0) {
             let authorities = []
             res2.data.map(item => {
-              if(item.authority.indexOf('APP_')===-1 && !authorities.includes(item.authorityId)){
+              if (item.authority.indexOf('APP_') === -1 && !authorities.includes(item.authorityId)) {
                 authorities.push(item.authorityId)
               }
             })
